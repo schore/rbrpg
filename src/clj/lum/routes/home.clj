@@ -16,5 +16,13 @@
    ["/" {:get home-page}]
    ["/docs" {:get (fn [_]
                     (-> (response/ok (-> "docs/docs.md" io/resource slurp))
-                        (response/header "Content-Type" "text/plain; charset=utf-8")))}]])
+                        (response/header "Content-Type" "text/plain; charset=utf-8")))}]
+   ["/plus/:x/:y" {:get (fn [req]
+                          (let [x (read-string (-> req :path-params :x))
+                                y (read-string (-> req :path-params :y))]
+                            {:status 200
+                             :headers {"content-type" "application/json"}
+                             :body {:x x
+                                    :y y
+                                    :result (+ x y)}}))}]])
 

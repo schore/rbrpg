@@ -51,6 +51,7 @@
   (let [state (r/atom 1)]
     (fn []
       [:section.section>div.container>div.content
+       [:h2 "Dann schreib ich noch was blödes"]
        [:p @state]
        [:input {:type "Button"
                 :defaultValue "Click Me"

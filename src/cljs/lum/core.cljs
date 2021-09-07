@@ -1,6 +1,5 @@
 (ns lum.core
   (:require
-   [ajax.core :refer [GET]]
    [day8.re-frame.http-fx]
    [reagent.dom :as rdom]
    [reagent.core :as r]
@@ -48,17 +47,15 @@
      [:div {:dangerouslySetInnerHTML {:__html (md->html docs)}}])])
 
 (defn test-page []
-  (let [state (r/atom 1)]
+  (let [state (rf/subscribe [:test/count])]
     (fn []
       [:section.section>div.container>div.content
-       [:h2 "Dann schreib ich noch was blödes"]
+       [:h2 "Dann schreib ich noch was blödes!!"]
        [:p @state]
        [:input {:type "Button"
                 :defaultValue "Click Me"
                 :on-click (fn []
-                            (GET (str "/plus/" @state "/" @state)
-                              {:handler (fn [resp]
-                                          (reset! state (:result resp)))}))}]])))
+                            (rf/dispatch [:test/plus @state @state]))}]])))
 
 (defn page []
   (if-let [page @(rf/subscribe [:common/page])]
@@ -77,7 +74,8 @@
     ["/about" {:name :about
                :view #'about-page}]
     ["/test" {:name :test
-              :view #'test-page}]]))
+              :view #'test-page
+              }]]))
 
 (defn start-router! []
   (rfe/start!
@@ -94,4 +92,5 @@
 (defn init! []
   (start-router!)
   (ajax/load-interceptors!)
+  (rf/dispatch [:initialize])
   (mount-components))

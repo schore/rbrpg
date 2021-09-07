@@ -1,9 +1,11 @@
 (ns lum.events
   (:require
-    [re-frame.core :as rf]
-    [ajax.core :as ajax]
-    [reitit.frontend.easy :as rfe]
-    [reitit.frontend.controllers :as rfc]))
+   [day8.re-frame.http-fx]
+   [re-frame.core :as rf]
+   [ajax.core :as ajax]
+   [reitit.frontend.easy :as rfe]
+   [reitit.frontend.controllers :as rfc]
+   ))
 
 ;;dispatchers
 
@@ -48,6 +50,39 @@
   (fn [_ _]
     {:dispatch [:fetch-docs]}))
 
+(rf/reg-event-fx
+ :initialize
+ (fn [_ _]
+   {:dispatch-n (list [:test/initialize-plus]
+                      [:fetch-docs])}))
+
+(rf/reg-event-db
+ :test/initialize-plus
+ (fn [db []]
+   (assoc db :test/count 1)))
+
+
+
+(rf/reg-event-fx
+ :test/plus
+ (fn [cofx _]
+   (let [[_ a b] (:event cofx)]
+     {:http-xhrio {:method :get
+                   :uri (str "/plus/" a "/" b)
+                   :response-format (ajax/json-response-format {:keywords? true})
+                   :on-success [:test/plus-response]
+                   }})))
+
+(rf/reg-event-db
+ :test/plus-response
+ (fn [db [_ resp]]
+   (assoc db :test/count (:result resp))))
+
+
+;; (GET (str "/plus/" @state "/" @state)
+;;   {:handler (fn [resp]
+;;               (reset! state (:result resp)))})
+
 ;;subscriptions
 
 (rf/reg-sub
@@ -76,3 +111,8 @@
   :common/error
   (fn [db _]
     (:common/error db)))
+
+(rf/reg-sub
+ :test/count
+ (fn [db _]
+   (:test/count db)))

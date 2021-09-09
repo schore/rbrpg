@@ -1,16 +1,14 @@
 (ns lum.middleware
   (:require
-    [lum.env :refer [defaults]]
-    [clojure.tools.logging :as log]
-    [lum.layout :refer [error-page]]
-    [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
-    [lum.middleware.formats :as formats]
-    [muuntaja.middleware :refer [wrap-format wrap-params]]
-    [lum.config :refer [env]]
-    [ring.middleware.flash :refer [wrap-flash]]
-    [ring.adapter.undertow.middleware.session :refer [wrap-session]]
-    [ring.middleware.defaults :refer [site-defaults wrap-defaults]])
-  )
+   [lum.env :refer [defaults]]
+   [clojure.tools.logging :as log]
+   [lum.layout :refer [error-page]]
+   [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
+   [lum.middleware.formats :as formats]
+   [muuntaja.middleware :refer [wrap-format wrap-params]]
+   [lum.config :refer [env]]
+   [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+   [ring-ttl-session.core :refer [ttl-memory-store]]))
 
 (defn wrap-internal-error [handler]
   (fn [req]
@@ -40,10 +38,9 @@
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
-      wrap-flash
-      (wrap-session {:cookie-attrs {:http-only true}})
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)
-            (dissoc :session)))
+            (assoc-in [:session :store] (ttl-memory-store (* 60 30)))
+            ))
       wrap-internal-error))

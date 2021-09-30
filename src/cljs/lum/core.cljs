@@ -11,7 +11,8 @@
    [lum.events]
    [reitit.core :as reitit]
    [reitit.frontend.easy :as rfe]
-   [clojure.string :as string])
+   [clojure.string :as string]
+   [lum.picture-game :refer [picture-game]])
   (:import goog.History))
 
 (defn nav-link [uri title page]
@@ -35,7 +36,8 @@
       [:div.navbar-start
        [nav-link "#/" "Home" :home]
        [nav-link "#/about" "About" :about]
-       [nav-link "#/test" "Test" :test]]]]))
+       [nav-link "#/test" "Test" :test]
+       [nav-link "#/game" "Game" :game]]]]))
 
 (defn about-page []
   [:section.section>div.container>div.content
@@ -50,7 +52,7 @@
   (let [state (rf/subscribe [:test/count])]
     (fn []
       [:section.section>div.container>div.content
-       [:h2 "Dann schreib ich noch was blödes!!"]
+       [:h2 "Dann schreib ich noch was intelligentes!!"]
        [:p @state]
        [:input {:type "Button"
                 :defaultValue "Click Me"
@@ -74,8 +76,9 @@
     ["/about" {:name :about
                :view #'about-page}]
     ["/test" {:name :test
-              :view #'test-page
-              }]]))
+              :view #'test-page}]
+    ["/game" {:name :game
+              :view #'picture-game}]]))
 
 (defn start-router! []
   (rfe/start!

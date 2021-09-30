@@ -33,3 +33,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#grayed {
+    opacity: 0.4;
+    filter: alpha(opacity=40); /* msie */
+}

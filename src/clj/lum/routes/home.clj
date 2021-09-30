@@ -25,4 +25,3 @@
                              :body {:x x
                                     :y y
                                     :result (+ x y)}}))}]])
-

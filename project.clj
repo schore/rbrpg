@@ -45,6 +45,8 @@
 
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
   :test-paths ["test/clj"]
+  :test-selectors {:default (complement :integration)
+                   :integration :integration}
   :resource-paths ["resources" "target/cljsbuild"]
   :target-path "target/%s/"
   :main ^:skip-aot lum.core

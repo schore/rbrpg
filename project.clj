@@ -33,6 +33,7 @@
                  [org.webjars/webjars-locator "0.41"]
                  [org.webjars/webjars-locator-jboss-vfs "0.1.0"]
                  [re-frame "1.2.0"]
+                 [re-pressed "0.3.1"]
                  [reagent "1.1.0"]
                  [ring-webjars "0.2.0"]
                  [ring/ring-core "1.9.4"]
@@ -51,7 +52,7 @@
   :target-path "target/%s/"
   :main ^:skip-aot lum.core
 
-  :plugins []
+  :plugins [[lein-doo "0.1.11"]]
   :clean-targets ^{:protect false}
   [:target-path "target/cljsbuild"]
 

@@ -9,6 +9,18 @@
 (defn home-page [request]
   (layout/render request "home.html"))
 
+(defn new-function []
+  {:collumns 3
+                                 :images ["img/0001.jpg"
+                                          "img/0002.jpg"
+                                          "img/0003.jpg"
+                                          "img/0004.jpg"
+                                          "img/0005.jpg"
+                                          "img/0006.jpg"
+                                          "img/0007.jpg"
+                                          "img/0008.jpg"
+                                          ]})
+
 (defn home-routes []
   [""
    {:middleware [middleware/wrap-csrf
@@ -24,4 +36,8 @@
                              :headers {"content-type" "application/json"}
                              :body {:x x
                                     :y y
-                                    :result (+ x y)}}))}]])
+                                    :result (+ x y)}}))}]
+   ["/game/pics" {:get (fn [_]
+                         {:status 200
+                          :headers {"content-type" "application/json"}
+                          :body (new-function)})}]])

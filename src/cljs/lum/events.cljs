@@ -54,6 +54,7 @@
  :initialize
  (fn [_ _]
    {:dispatch-n (list [:test/initialize-plus]
+                      [:game/initialize]
                       [:fetch-docs])}))
 
 (rf/reg-event-db

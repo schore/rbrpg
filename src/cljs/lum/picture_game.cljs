@@ -1,7 +1,70 @@
 (ns lum.picture-game
   (:require
-    [reagent.core :as r]))
+   [reagent.core :as r]
+   [re-frame.core :as rf]
+   [re-pressed.core :as rp]
+   [ajax.core :as ajax]))
 
+
+;; re-frame dispatcher
+
+;;(rf/dispatch-sync [::rp/add-keyboard-event-listener "keydown"])
+(rf/dispatch-sync [::rp/add-keyboard-event-listener "keypress"])
+;;(rf/dispatch-sync [::rp/add-keyboard-event-listener "keyup"])
+
+(rf/reg-event-fx
+ :game/initialize
+ (fn [{:keys [db]} _]
+   ;; {:http-xhrio {:method :get
+   ;;               :uri "game/pics"
+   ;;               :response-format (ajax/json-response-format {:keywords? true})
+   ;;               :on-success [:game/update-db]
+   ;;               :on-failure [:game/error]}
+   {:dispatch [::rp/set-keypress-rules
+               {:event-keys [[[:game/key "left"] [{:keyCode 104}]];;h
+                             [[:game/key "right"] [{:keyCode 108}]];;l
+                             [[:game/key "up"] [{:keyCode 107}]];;k
+                             [[:game/key "down"] [{:keyCode 106}]];;j
+                             ]}]
+    :db (assoc db :position {:x 0 :y 0})}))
+
+(rf/reg-event-db
+ :game/update-db
+ (fn [db [_ response]]
+   (assoc db :game/data
+          {:images (:images response)
+           :collumns (:collumns response)})))
+
+
+(rf/reg-event-db
+ :game/key
+ (fn [db [_ direction]]
+   (let [
+         db (assoc-in db [:position :direction] direction)]
+     (case direction
+       "right" (update-in db [:position :x] inc)
+       "left" (update-in db [:position :x] dec)
+       "up" (update-in db [:position :y] inc)
+       "down" (update-in db [:position :y] dec)
+       db))))
+
+
+(rf/reg-sub
+ :game/pics
+ (fn [db _]
+   (-> db :game/data :images)))
+
+(rf/reg-sub
+ :game/collumns
+ (fn [db _]
+   (-> db :game/data :collumns)))
+
+(rf/reg-sub
+ :game/position
+ (fn [db _]
+   [(-> db :position :x)
+    (-> db :position :y)
+    (-> db :position :direction)]))
 
 
 (defn table-from-entries
@@ -42,13 +105,67 @@
          :on-click (fn []
                      (swap! active? not))}])))
 
+
+(defn player []
+   (let [position (rf/subscribe [:game/position])
+         tile 32]
+     (fn []
+       (let [[x y direction] @position
+             x (* x tile)
+             y (* y tile)
+             rotation (case direction
+                        "left" 270
+                        "up" 0
+                        "right" 90
+                        "down" 180
+                        0)]
+            [:img {:src "img/player.gif"
+                   :style {:position "absolute"
+                           :transform (str "rotate(" rotation "deg)")
+                           :bottom y
+                           :left x}}]))))
+
+(defn position-to-n
+  [x y]
+  (let [size-x 40
+        size-y 17]
+    (+ x (- (* size-x size-y) (* size-x y)))))
+
+(defn n-to-position
+  [n]
+  (let [size-x 40
+        size-y 17
+        x (mod n size-x)
+        y (- size-y (/ (- n x) size-x))]
+    [x y]))
+
+(def board-data
+  {[0 0] :wall
+   [0 1] :wall
+   [5 5] :tree
+   [39 17] :wall})
+
+(defn tile-data
+  [board-data n]
+  (get board-data (n-to-position n) :default))
+
+(defn tile-to-graphic
+  [key]
+  (get {:wall "#"
+        :tree "X"
+        :default "."}
+       key))
+
+
+(defn board []
+  [:div.grid-container
+   (for [i (range 720)]
+     ^{:key (str "grid" i)}
+     [:div.grid-item
+      (tile-to-graphic (tile-data board-data i))
+      ])])
+
 (defn picture-game []
   [:section.section>div.container>div.content
-   [table-from-entries 3
-    [toggle-image "img/0001.jpg"]
-    [toggle-image "img/0002.jpg"]
-    [toggle-image "img/0003.jpg"]
-    [toggle-image "img/0004.jpg"]
-    [toggle-image "img/0005.jpg"]
-    [toggle-image "img/0006.jpg"]
-    [toggle-image "img/0007.jpg"]]])
+   [board]
+   [player]])

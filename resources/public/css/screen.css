@@ -42,12 +42,13 @@ body {
 .grid-container {
   display: grid;
   background: lightblue;
-  grid-auto-columns: 32px;
-  grid-auto-rows: 32px;
-  grid-template-columns: repeat(40, 32px);
+  grid-auto-columns: 15px;
+  grid-auto-rows: 15px;
+  grid-template-columns: repeat(50, 15px);
 }
 
 .grid-item {
   border: 1px solid black;
+  font-size: 12px;
   background-color: lightgray;
 }

@@ -9,24 +9,34 @@
 ;; re-frame dispatcher
 
 ;;(rf/dispatch-sync [::rp/add-keyboard-event-listener "keydown"])
-(rf/dispatch-sync [::rp/add-keyboard-event-listener "keypress"])
+;;(rf/dispatch-sync [::rp/add-keyboard-event-listener "keypress"])
 ;;(rf/dispatch-sync [::rp/add-keyboard-event-listener "keyup"])
+
+(def size-x 50)
+(def size-y 30)
+
+(def board-data
+  {[0 0] :wall
+   [0 1] :wall
+   [0 2] :wall
+   [5 5] :tree
+   [39 17] :wall})
+
 
 (rf/reg-event-fx
  :game/initialize
  (fn [{:keys [db]} _]
-   ;; {:http-xhrio {:method :get
-   ;;               :uri "game/pics"
-   ;;               :response-format (ajax/json-response-format {:keywords? true})
-   ;;               :on-success [:game/update-db]
-   ;;               :on-failure [:game/error]}
-   {:dispatch [::rp/set-keypress-rules
-               {:event-keys [[[:game/key "left"] [{:keyCode 104}]];;h
-                             [[:game/key "right"] [{:keyCode 108}]];;l
-                             [[:game/key "up"] [{:keyCode 107}]];;k
-                             [[:game/key "down"] [{:keyCode 106}]];;j
-                             ]}]
-    :db (assoc db :position {:x 0 :y 0})}))
+   {:fx [[:dispatch [::rp/set-keypress-rules
+                     {:event-keys [[[:game/key "left"] [{:keyCode 104}]];;h
+                                   [[:game/key "right"] [{:keyCode 108}]];;l
+                                   [[:game/key "up"] [{:keyCode 106}]];;k
+                                   [[:game/key "down"] [{:keyCode 107}]];;j
+                                   ]}]]
+         [:dispatch [::rp/add-keyboard-event-listener "keypress"]]]
+
+    :db (-> db
+            (assoc :position {:x 0 :y 0})
+            (assoc :board board-data))}))
 
 (rf/reg-event-db
  :game/update-db
@@ -48,11 +58,23 @@
        "down" (update-in db [:position :y] dec)
        db))))
 
+(rf/reg-event-fx
+ :game/get-new-map
+ (fn [_ _]
+   {:http-xhrio {:method :get
+                 :uri "game/dungeon"
+                 :response-format (ajax/json-response-format {:keywords? false})
+                 :on-success [:game/set-new-map]
+                 :on-failure [:game/error]}}))
 
-(rf/reg-sub
- :game/pics
- (fn [db _]
-   (-> db :game/data :images)))
+(rf/reg-event-db
+ :game/set-new-map
+ (fn [db [_ request]]
+   (println (str request))
+   (let [update (into {} (map (fn [[k v]]
+                                [k  (keyword v)])
+                              request))]
+     (assoc db :board update))))
 
 (rf/reg-sub
  :game/collumns
@@ -65,6 +87,11 @@
    [(-> db :position :x)
     (-> db :position :y)
     (-> db :position :direction)]))
+
+(rf/reg-sub
+ :game/board
+ (fn [db _]
+   (:board db)))
 
 
 (defn table-from-entries
@@ -108,7 +135,7 @@
 
 (defn player []
    (let [position (rf/subscribe [:game/position])
-         tile 32]
+         tile 15]
      (fn []
        (let [[x y direction] @position
              x (* x tile)
@@ -122,28 +149,21 @@
             [:img {:src "img/player.gif"
                    :style {:position "absolute"
                            :transform (str "rotate(" rotation "deg)")
-                           :bottom y
+                           :top y
+                           :width "15px"
+                           :height "15px"
                            :left x}}]))))
 
 (defn position-to-n
   [x y]
-  (let [size-x 40
-        size-y 17]
-    (+ x (- (* size-x size-y) (* size-x y)))))
+    (+ x (* y size-x)))
 
 (defn n-to-position
   [n]
-  (let [size-x 40
-        size-y 17
-        x (mod n size-x)
-        y (- size-y (/ (- n x) size-x))]
+  (let [x (mod n size-x)
+        y (quot n size-x)]
     [x y]))
 
-(def board-data
-  {[0 0] :wall
-   [0 1] :wall
-   [5 5] :tree
-   [39 17] :wall})
 
 (defn tile-data
   [board-data n]
@@ -158,14 +178,24 @@
 
 
 (defn board []
-  [:div.grid-container
-   (for [i (range 720)]
-     ^{:key (str "grid" i)}
-     [:div.grid-item
-      (tile-to-graphic (tile-data board-data i))
-      ])])
+  (let [board (rf/subscribe [:game/board])]
+    (fn []
+      (let [board @board]
+        [:div.grid-container
+         (for [i (range (* size-x size-y))]
+           ^{:key (str "grid" i)}
+           [:div.grid-item
+            (tile-to-graphic (tile-data board i))
+            ])]))))
+
+(defn new-map-button []
+  [:input {:type "Button"
+           :defaultValue "New map"
+           :on-click (fn [] (rf/dispatch [:game/get-new-map]))}
+])
 
 (defn picture-game []
   [:section.section>div.container>div.content
+   [player]
    [board]
-   [player]])
+   [new-map-button]])

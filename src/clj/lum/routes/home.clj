@@ -4,22 +4,13 @@
    [clojure.java.io :as io]
    [lum.middleware :as middleware]
    [ring.util.response]
-   [ring.util.http-response :as response]))
+   [ring.util.http-response :as response]
+   [lum.routes.game.cavegen :as cavegen]))
 
 (defn home-page [request]
   (layout/render request "home.html"))
 
-(defn new-function []
-  {:collumns 3
-                                 :images ["img/0001.jpg"
-                                          "img/0002.jpg"
-                                          "img/0003.jpg"
-                                          "img/0004.jpg"
-                                          "img/0005.jpg"
-                                          "img/0006.jpg"
-                                          "img/0007.jpg"
-                                          "img/0008.jpg"
-                                          ]})
+
 
 (defn home-routes []
   [""
@@ -37,7 +28,8 @@
                              :body {:x x
                                     :y y
                                     :result (+ x y)}}))}]
-   ["/game/pics" {:get (fn [_]
-                         {:status 200
-                          :headers {"content-type" "application/json"}
-                          :body (new-function)})}]])
+   ["/game/dungeon" {:get (fn [_]
+                            {:status 200
+                             :headers {"content-type" "application/json"}
+                             :body (into [] (cavegen/get-dungeon))
+                             })}]])

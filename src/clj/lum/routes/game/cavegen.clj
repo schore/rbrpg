@@ -1,20 +1,11 @@
-(ns lum.routes.game.cavegen)
+(ns lum.routes.game.cavegen
+  (:require [lum.maputil :as m]))
 
-(def xsize 50)
-(def ysize 30)
-
-
-(defn get-tile
-  [input x y]
-  (nth input (+ x (* y xsize))))
+(def xsize m/sizex)
+(def ysize m/sizey)
 
 
-(defn to-map
-  [col]
-  (for [x (range xsize)
-        y (range ysize)]
-    (let [wall (get-tile col x y)]
-        [[x y] wall])))
+
 
 
 (defn random-board []
@@ -23,12 +14,6 @@
                  :wall
                  nil)))
 
-(defn inmap?
-  [x y]
-  (and (>= x 0)
-       (< x xsize)
-       (>= y 0)
-       (< y ysize)))
 
 (defn count-neighbours
   [input x y]
@@ -36,8 +21,8 @@
              dy [-1 0 1]]
          [dx dy])
        (map (fn [[dx dy]] [(+ x dx) (+ y dy)]))
-       (map (fn [[x y]] (if (inmap? x y)
-                            (get-tile input x y)
+       (map (fn [[x y]] (if (m/inmap? x y)
+                            (m/get-tile input x y)
                             :wall)))
        (filter #(= % :wall))
        count))
@@ -58,10 +43,9 @@
 
 (defn get-dungeon []
   (let [f (apply comp (repeat 5 populate-map))]
-    (into {} (-> (random-board)
-                 f
-                 to-map))))
-
+    (-> (random-board)
+        f
+        m/to-map)))
 
 
 (defn print-new-map []
@@ -76,4 +60,3 @@
     (println i))
   (println (repeat xsize "-")))
 
-(print-new-map)

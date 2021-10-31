@@ -1,2 +1,2 @@
-(ns lum.validation
-  (:require [struct.core :as st]))
+(ns lum.validation)
+

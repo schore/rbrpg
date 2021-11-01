@@ -17,8 +17,11 @@
 
 
 (defn get-tile
-  [input x y]
-  (nth input (+ x (* y sizex))))
+  ([input n]
+   (let [[x y] (n-to-position n)]
+     (get-tile input x y)))
+  ([input x y]
+   (nth input (+ x (* y sizex)))))
 
 
 (defn to-map

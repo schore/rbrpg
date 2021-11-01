@@ -10,9 +10,6 @@
 
 ;; re-frame dispatcher
 
-;;(rf/dispatch-sync [::rp/add-keyboard-event-listener "keydown"])
-;;(rf/dispatch-sync [::rp/add-keyboard-event-listener "keypress"])
-;;(rf/dispatch-sync [::rp/add-keyboard-event-listener "keyup"])
 
 (def sizex 50)
 (def sizey 30)
@@ -25,16 +22,18 @@
  :game/initialize
  (fn [{:keys [db]} _]
    {:fx [[:dispatch [::rp/set-keypress-rules
-                     {:event-keys [[[:game/key "left"] [{:keyCode 104}]];;h
-                                   [[:game/key "right"] [{:keyCode 108}]];;l
-                                   [[:game/key "up"] [{:keyCode 106}]];;k
-                                   [[:game/key "down"] [{:keyCode 107}]];;j
+                     {:event-keys [[[:game/key :left] [{:keyCode 104}]];;h
+                                   [[:game/key :right] [{:keyCode 108}]];;l
+                                   [[:game/key :up] [{:keyCode 106}]];;k
+                                   [[:game/key :down] [{:keyCode 107}]];;j
                                    ]}]]
          [:dispatch [::rp/add-keyboard-event-listener "keypress"]]]
 
     :db (-> db
             (assoc :position {:x 0 :y 0})
-            (assoc :board board-data))}))
+            (assoc :board board-data)
+            (assoc :npc [{:x 10 :y 15}
+                         {:x 10 :y 16}]))}))
 
 (rf/reg-event-db
  :game/update-db
@@ -43,17 +42,29 @@
           {:images (:images response)
            :collumns (:collumns response)})))
 
+(defn player-move [board xp yp direction]
+  (let [[x y] (case direction
+                      :left [(dec xp) yp]
+                      :right [(inc xp) yp]
+                      :up [xp (inc yp)]
+                      :down [xp (dec yp)]
+                      [xp yp direction])]
+    (if (= :wall (:type (maputil/get-tile board x y)))
+      [xp yp]
+      [x y]))
+  )
 
 (rf/reg-event-db
  :game/key
  (fn [db [_ direction]]
-   (let [db (assoc-in db [:position :direction] direction)]
-     (case direction
-       "right" (update-in db [:position :x] inc)
-       "left" (update-in db [:position :x] dec)
-       "up" (update-in db [:position :y] inc)
-       "down" (update-in db [:position :y] dec)
-       db))))
+   (let [x (get-in db [:position :x])
+         y (get-in db [:position :y])
+         board (:board db)
+         [x y] (player-move board x y direction)]
+     (-> db
+         (assoc-in [:position :x] x)
+         (assoc-in [:position :y] y)
+         (assoc-in [:position :direction] direction)))))
 
 (rf/reg-event-fx
  :game/get-new-map
@@ -88,26 +99,33 @@
  (fn [db _]
    (:board db)))
 
+(rf/reg-sub
+ :game/npc
+ (fn [db _]
+   (:npc db)))
 
 
-(defn player [direction]
-       (let [rotation (case direction
-                        "left" 270
-                        "up" 0
-                        "right" 90
-                        "down" 180
-                        0)]
-            [:img {:src "img/player.gif"
-                   :style {
-                           :transform (str "rotate(" rotation "deg)")
-                           :width "15px"
-                           :height "15px"
-                           }}]))
+(defn position-css [x y]
+  {:width "15px"
+   :height "15px"
+   :position "absolute"
+   :top (str (* y 15) "px")
+   :left (str (* x 15) "px")})
 
+(defn player []
+  (let [player (rf/subscribe [:game/position])]
+    (fn []
+      (let [[x y direction] @player
+            rotation (case direction
+                       :left 270
+                       :up 0
+                       :right 90
+                       :down 180
+                       0)]
+        [:img {:src "img/player.gif"
+               :style (assoc (position-css x y)
+                             :transform (str "rotate(" rotation "deg)"))}]))))
 
-(defn tile-data
-  [board-data n]
-  (nth board-data n :default))
 
 (defn tile-to-graphic
   [key]
@@ -117,22 +135,28 @@
         :default "."}
        key))
 
+(defn monsters []
+  (let [mon (rf/subscribe [:game/npc])]
+    [:<>
+     (for [m @mon]
+       ^{:key (str "monster" m)}
+       [:div {:style (position-css (:x m) (:y m))}
+        "M"])]))
 
 (defn board []
-  (let [board (rf/subscribe [:game/board])
-        position (rf/subscribe [:game/position])]
+  (let [board (rf/subscribe [:game/board])]
     (fn []
-      (let [board @board
-            [x y direction] @position]
+      (let [board @board]
         [:div.grid-container
          (for [i (range (* sizex sizey))]
            ^{:key (str "grid" i)}
            [:div.grid-item
-            (if (= i (maputil/position-to-n x y))
-              [player direction]
-              (tile-to-graphic (get (tile-data board i)
-                                    :type)))
-            ])]))))
+              (tile-to-graphic (get (maputil/get-tile board i)
+                                    :type))
+            ])
+         [player]
+         [monsters]
+         ]))))
 
 (defn new-map-button []
   [:input {:type "Button"
@@ -142,6 +166,5 @@
 
 (defn picture-game []
   [:section.section>div.container>div.content
-  ;; [player]
    [board]
    [new-map-button]])

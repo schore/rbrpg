@@ -147,16 +147,13 @@
   (let [board (rf/subscribe [:game/board])]
     (fn []
       (let [board @board]
-        [:div.grid-container
+        [:<>
          (for [i (range (* sizex sizey))]
            ^{:key (str "grid" i)}
            [:div.grid-item
-              (tile-to-graphic (get (maputil/get-tile board i)
-                                    :type))
-            ])
-         [player]
-         [monsters]
-         ]))))
+            (tile-to-graphic (get (maputil/get-tile board i)
+                                  :type))
+            ])]))))
 
 (defn new-map-button []
   [:input {:type "Button"
@@ -166,5 +163,8 @@
 
 (defn picture-game []
   [:section.section>div.container>div.content
-   [board]
+   [:div.grid-container
+    [board]
+    [player]
+    [monsters]]
    [new-map-button]])

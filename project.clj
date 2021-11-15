@@ -40,6 +40,7 @@
                  [ring/ring-defaults "0.3.3"]
                  [selmer "1.12.44"]
                  [etaoin "0.4.6"]
+                 [haslett "0.1.6"]
                  [thheller/shadow-cljs "2.15.2" :scope "provided"]]
 
   :min-lein-version "2.0.0"
@@ -78,7 +79,7 @@
                                  [ring/ring-mock "0.4.0"]]
                   :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
                                  [jonase/eastwood "0.3.5"]
-                                 [cider/cider-nrepl "0.26.0"]]
+                                 ]
 
                   :source-paths ["env/dev/clj"  "env/dev/cljs" "test/cljs"]
                   :resource-paths ["env/dev/resources"]

@@ -1,11 +1,11 @@
 (ns lum.routes.home
   (:require
-   [lum.layout :as layout]
    [clojure.java.io :as io]
+   [lum.game.cavegen :as cavegen]
+   [lum.layout :as layout]
    [lum.middleware :as middleware]
-   [ring.util.response]
    [ring.util.http-response :as response]
-   [lum.routes.game.cavegen :as cavegen]))
+   [ring.util.response]))
 
 (defn home-page [request]
   (layout/render request "home.html"))

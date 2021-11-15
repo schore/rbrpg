@@ -1,8 +1,8 @@
 (ns lum.cavegen-test
-  (:require  [clojure.test :as t :refer [deftest is testing]]
-             [lum.routes.game.cavegen :as cg]
-             [lum.maputil :as mu]))
-
+  (:require
+   [clojure.test :as t :refer [deftest is testing]]
+   [lum.game.cavegen :as cg]
+   [lum.maputil :as mu]))
 
 (deftest count-neighbours
   (testing "all empty cells"

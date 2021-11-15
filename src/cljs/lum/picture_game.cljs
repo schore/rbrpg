@@ -1,13 +1,71 @@
 (ns lum.picture-game
+  ;; (:require-macros
+  ;;  [cljs.core.async.macros :refer [go]])
   (:require
    [reagent.core :as r]
    [re-frame.core :as rf]
    [re-pressed.core :as rp]
    [clojure.walk]
    [lum.maputil :as maputil]
-   [ajax.core :as ajax]))
+   [ajax.core :as ajax]
+   [haslett.client :as ws]
+   [haslett.format :as fmt]
+   [clojure.walk]
+   [cljs.core.async :as a :refer [<! >! go-loop go]]))
 
 
+;; websocket connection
+
+
+;; (go (let [stream (<! (ws/connect "ws://localhost:3000/game/ws" {:format fmt/json}))]
+;;         (println "Hello world" stream)
+;;         (>! (:sink stream) {:message "Bla"})
+;;         (<! (a/timeout 1000))
+;;         (println "Message send")
+;;         (ws/close stream)))
+
+
+(defmulti dispatch-ws
+  (fn [msg]
+    (println (str msg))
+    (keyword (:type msg))))
+
+(defmethod dispatch-ws
+  :player-move
+  [msg]
+  (println "Player move" (str msg)))
+
+(defmethod dispatch-ws
+  :default
+  [msg]
+  (println "Default handler" (str msg)))
+
+(defn keyify-ws
+  [msg]
+  (dispatch-ws (clojure.walk/keywordize-keys msg)))
+
+(defn create-ws
+  [rx]
+  (let [stream  (ws/connect "ws://localhost:3000/game/ws"
+                            {:format fmt/json})
+        send-message (fn [msg] (go (>! (:sink (<! stream)) msg)))]
+
+    (go (while (ws/connected? (<! stream))
+          (let [message (<! (:source (<! stream)))]
+            (rx message))))
+    {:stream stream
+     :send-message send-message}))
+
+
+
+
+(defonce wsconn (create-ws keyify-ws))
+
+(rf/reg-fx
+ :game/send-message
+ (fn [msg] ((:send-message wsconn) msg)))
+
+;;(def bla (second (create-ws println)))
 ;; re-frame dispatcher
 
 
@@ -24,16 +82,17 @@
    {:fx [[:dispatch [::rp/set-keypress-rules
                      {:event-keys [[[:game/key :left] [{:keyCode 104}]];;h
                                    [[:game/key :right] [{:keyCode 108}]];;l
-                                   [[:game/key :up] [{:keyCode 106}]];;k
-                                   [[:game/key :down] [{:keyCode 107}]];;j
+                                   [[:game/key :down] [{:keyCode 106}]];;k
+                                   [[:game/key :up] [{:keyCode 107}]];;j
                                    ]}]]
          [:dispatch [::rp/add-keyboard-event-listener "keypress"]]]
-
     :db (-> db
             (assoc :position {:x 0 :y 0})
             (assoc :board board-data)
             (assoc :npc [{:x 10 :y 15}
-                         {:x 10 :y 16}]))}))
+                         {:x 10 :y 16}]))
+    :game/send-message {:message "Hello World"
+                        :type 3}}))
 
 (rf/reg-event-db
  :game/update-db
@@ -46,25 +105,28 @@
   (let [[x y] (case direction
                       :left [(dec xp) yp]
                       :right [(inc xp) yp]
-                      :up [xp (inc yp)]
-                      :down [xp (dec yp)]
+                      :up [xp (dec yp)]
+                      :down [xp (inc yp)]
                       [xp yp direction])]
     (if (= :wall (:type (maputil/get-tile board x y)))
       [xp yp]
       [x y]))
   )
 
-(rf/reg-event-db
+(rf/reg-event-fx
  :game/key
- (fn [db [_ direction]]
-   (let [x (get-in db [:position :x])
-         y (get-in db [:position :y])
-         board (:board db)
-         [x y] (player-move board x y direction)]
-     (-> db
-         (assoc-in [:position :x] x)
-         (assoc-in [:position :y] y)
-         (assoc-in [:position :direction] direction)))))
+ (fn [{:keys [db]} [_ direction]]
+   {:db (let [x (get-in db [:position :x])
+              y (get-in db [:position :y])
+              board (:board db)
+              [x y] (player-move board x y direction)]
+          (-> db
+              (assoc-in [:position :x] x)
+              (assoc-in [:position :y] y)
+              (assoc-in [:position :direction] direction)))
+    :game/send-message {:type :player-move
+                        :direction direction}
+    }))
 
 (rf/reg-event-fx
  :game/get-new-map

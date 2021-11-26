@@ -94,12 +94,6 @@
     :game/send-message {:message "Hello World"
                         :type 3}}))
 
-(rf/reg-event-db
- :game/update-db
- (fn [db [_ response]]
-   (assoc db :game/data
-          {:images (:images response)
-           :collumns (:collumns response)})))
 
 (defn player-move [board xp yp direction]
   (let [[x y] (case direction
@@ -110,8 +104,7 @@
                       [xp yp direction])]
     (if (= :wall (:type (maputil/get-tile board x y)))
       [xp yp]
-      [x y]))
-  )
+      [x y])))
 
 (rf/reg-event-fx
  :game/key

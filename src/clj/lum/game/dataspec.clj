@@ -1,6 +1,6 @@
 (ns lum.game.dataspec
   (:require [clojure.spec.alpha :as s]
-            [clojure.walk]
+            [lum.maputil :as mu]
             [lum.game.cavegen :as g]))
 
 (s/def :tile/type (s/nilable #{:wall
@@ -8,20 +8,31 @@
 
 (s/def :game/tile (s/keys :req-un [:tile/type]))
 
-(defn valid-tile? [tile] (s/valid? :game/tile tile))
 
 (s/def :game/dungeon (s/coll-of :game/tile
                                 :count 1500))
 
 
+(s/def :game/position (s/cat :x (fn [x] (and (nat-int? x)
+                                             (< x mu/sizex)))
+                             :y (fn [y] (and (nat-int? y)
+                                             (< y mu/sizey)))))
 
-(s/valid? :game/dungeon (repeat 1500 {:type :wall}))
+(s/def :game/player (s/keys :req-un [:game/position]))
 
-(s/explain :game/dungeon (g/get-dungeon))
+(s/def :npc/type #{:elf
+                   :monster})
 
-;; (time (let [data (into [] (g/get-dungeon))]
-;;         (time (g/print-new-map data))
-;;         ))
+(s/def :game/npc (s/keys :req-un [:game/position
+                                  :npc/type]))
+
+(s/def :game/npcs (s/coll-of :game/npc))
 
 
-(g/get-dungeon)
+(s/def :game/game (s/keys :req-un [:game/npcs
+                                   :game/player
+                                   :game/board]))
+
+;; (s/explain :game/game {:board (g/get-dungeon)
+;;                        :player {:position [1 1]}
+;;                        :npcs  []})

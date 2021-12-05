@@ -17,23 +17,21 @@
 ;; websocket connection
 
 
-;; (go (let [stream (<! (ws/connect "ws://localhost:3000/game/ws" {:format fmt/json}))]
-;;         (println "Hello world" stream)
-;;         (>! (:sink stream) {:message "Bla"})
-;;         (<! (a/timeout 1000))
-;;         (println "Message send")
-;;         (ws/close stream)))
 
 
 (defmulti dispatch-ws
   (fn [msg]
-    (println (str msg))
-    (keyword (:type msg))))
+    (keyword (first msg))))
 
 (defmethod dispatch-ws
   :player-move
-  [msg]
-  (println "Player move" (str msg)))
+  [[_ x y]]
+  (rf/dispatch [:game/set-player-postion x y]))
+
+(defmethod dispatch-ws
+  :new-board
+  [[_ board]]
+  (rf/dispatch [:game/set-board board]))
 
 (defmethod dispatch-ws
   :default
@@ -65,8 +63,6 @@
  :game/send-message
  (fn [msg] ((:send-message wsconn) msg)))
 
-;;(def bla (second (create-ws println)))
-;; re-frame dispatcher
 
 
 (def sizex 50)
@@ -90,48 +86,58 @@
             (assoc :position {:x 0 :y 0})
             (assoc :board board-data)
             (assoc :npc [{:x 10 :y 15}
-                         {:x 10 :y 16}]))
-    :game/send-message {:message "Hello World"
-                        :type 3}}))
+                         {:x 10 :y 16}]))}))
 
 
-(defn player-move [board xp yp direction]
-  (let [[x y] (case direction
-                      :left [(dec xp) yp]
-                      :right [(inc xp) yp]
-                      :up [xp (dec yp)]
-                      :down [xp (inc yp)]
-                      [xp yp direction])]
-    (if (= :wall (:type (maputil/get-tile board x y)))
-      [xp yp]
-      [x y])))
+;; (defn player-move [board xp yp direction]
+;;   (let [[x y] (case direction
+;;                       :left [(dec xp) yp]
+;;                       :right [(inc xp) yp]
+;;                       :up [xp (dec yp)]
+;;                       :down [xp (inc yp)]
+;;                       [xp yp direction])]
+;;     (if (= :wall (:type (maputil/get-tile board x y)))
+;;       [xp yp]
+;;       [x y])))
 
-(rf/reg-event-fx
- :game/key
- (fn [{:keys [db]} [_ direction]]
-   {:db (let [x (get-in db [:position :x])
-              y (get-in db [:position :y])
-              board (:board db)
-              [x y] (player-move board x y direction)]
-          (-> db
-              (assoc-in [:position :x] x)
-              (assoc-in [:position :y] y)
-              (assoc-in [:position :direction] direction)))
-    :game/send-message {:type :player-move
-                        :direction direction}
-    }))
+;; (rf/reg-event-fx
+;;  :game/key
+;;  (fn [{:keys [db]} [_ direction]]
+;;    {:db (let [x (get-in db [:position :x])
+;;               y (get-in db [:position :y])
+;;               board (:board db)
+;;               [x y] (player-move board x y direction)]
+;;           (-> db
+;;               (assoc-in [:position :x] x)
+;;               (assoc-in [:position :y] y)
+;;               (assoc-in [:position :direction] direction)))
+;;     :game/send-message {:type :player-move
+;;                         :direction direction}
+;;     }))
+
+;; (rf/reg-event-fx
+;;  :game/get-new-map
+;;  (fn [_ _]
+;;    {:http-xhrio {:method :get
+;;                  :uri "game/dungeon"
+;;                  :response-format (ajax/json-response-format {:keywords? false})
+;;                  :on-success [:game/set-new-map]
+;;                  :on-failure [:game/error]}}))
+
+(rf/reg-event-db
+ :game/set-player-postion
+ (fn [db [_ x y]]
+   (-> db
+       (assoc-in [:position :x] x)
+       (assoc-in [:position :y] y))))
 
 (rf/reg-event-fx
  :game/get-new-map
  (fn [_ _]
-   {:http-xhrio {:method :get
-                 :uri "game/dungeon"
-                 :response-format (ajax/json-response-format {:keywords? false})
-                 :on-success [:game/set-new-map]
-                 :on-failure [:game/error]}}))
+   {:game/send-message [:new-board]}))
 
 (rf/reg-event-db
- :game/set-new-map
+ :game/set-board
  (fn [db [_ request]]
    (assoc db :board (->> request
                          (map clojure.walk/keywordize-keys)

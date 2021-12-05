@@ -5,10 +5,11 @@
 (def ysize m/sizey)
 
 (defn random-board []
-  (for [_ (range (* xsize ysize))]
-    (if (< (rand) 0.45)
-      :wall
-      nil)))
+  (into []
+        (for [_ (range (* xsize ysize))]
+          (if (< (rand) 0.45)
+            :wall
+            nil))))
 
 (defn count-neighbours
   [input x y]
@@ -30,8 +31,9 @@
 
 (defn populate-map
   [input]
-   (->> (map-to-count input)
-        (map #(if (> % 4) :wall nil))))
+  (->> (map-to-count input)
+       (map #(if (> % 4) :wall nil))
+       (into [])))
 
 (defn get-dungeon []
   (let [f (apply comp (repeat 5 populate-map))]
@@ -46,3 +48,4 @@
      (println i))
    (println (repeat xsize "-"))))
 
+(time (nil? (into [] (get-dungeon))))

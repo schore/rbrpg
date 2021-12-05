@@ -9,7 +9,7 @@
 (s/def :game/tile (s/keys :req-un [:tile/type]))
 
 
-(s/def :game/dungeon (s/coll-of :game/tile
+(s/def :game/board (s/coll-of :game/tile
                                 :count 1500))
 
 
@@ -33,6 +33,6 @@
                                    :game/player
                                    :game/board]))
 
-;; (s/explain :game/game {:board (g/get-dungeon)
+;; (s/valid? :game/game {:board (g/get-dungeon)
 ;;                        :player {:position [1 1]}
 ;;                        :npcs  []})

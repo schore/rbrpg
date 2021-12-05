@@ -3,12 +3,91 @@
    [org.httpkit.server :refer [send! as-channel]]
    [cheshire.core :as json]
    [clojure.walk]
-   [clojure.tools.logging :as log]))
+   [lum.game.cavegen :as cavegen]
+   [clojure.core.async :as a :refer [chan go go-loop <! >! close!]]
+   [clojure.tools.logging :as log]
+   [lum.game.cavegen :as g]))
 
+(defmulti calc-new-state
+  (fn [_ action]
+    (log/info "calc-new-state" action (keyword (first action)))
+    (keyword (first action))))
+
+(defmethod calc-new-state
+  :player-move
+  [data _]
+  (println "Player move ...")
+  data)
+
+(defmethod calc-new-state
+  :default
+  [data action]
+  (log/error "Default reached " action)
+  data)
+
+(defmethod calc-new-state
+  :new-board
+  [data _]
+  (assoc data :board (g/get-dungeon)))
+
+(defmethod calc-new-state
+  :initialize
+  [_ _]
+  {:board (g/get-dungeon)
+   :npcs []
+   :player {:position [10 10]}})
+
+(defn board-update
+  [data new-data]
+  (if (not= (:board data)
+            (:board new-data))
+    [:new-board (:board new-data)]
+    nil))
+
+(defn player-move
+  [data new-data]
+  (when (not= (get-in data [:player :position])
+              (get-in new-data [:player :position]))
+    (let [[x y] (get-in new-data [:player :position])]
+      [:player-move x y])))
+
+(def update-calc-functions
+  [board-update
+   player-move])
+
+(defn calc-updates [data new-data]
+  (filter (complement nil?)
+          (reduce (fn [r f]
+                    ;;(log/info (f data new-data))
+                    (conj r (f data new-data)))
+                  []
+                  update-calc-functions)))
+
+(defn game-master
+  [input-chan]
+  (let [out (chan)]
+    (go-loop [data {}]
+      (let [action (<! input-chan)
+            new-data (calc-new-state data action)
+            updates (calc-updates data new-data)]
+        (if (some? action)
+          (do
+            (doseq [update updates] (>! out update))
+            (recur new-data))
+          (do
+            (close! out)
+            data))))
+    out))
 
 (defn connect!
-  [_]
-  (log/info "Channel open"))
+  [in out]
+  (fn [chan]
+    (log/info "Channel open")
+    (go (>! in [:initialize]))
+    (go-loop []
+      (when-let [msg (<! out)]
+        (send! chan (json/generate-string msg))
+        (recur)))))
 
 (defn disconnect!
   [_ status]
@@ -24,23 +103,34 @@
   (log/info "Player move" (:direction msg)))
 
 (defmethod dispatch-ws
+  :new-board
+  [c _]
+  (log/info "new board")
+  (send! c (json/generate-string {:type :set-board
+                                  :board (cavegen/get-dungeon)})))
+
+(defmethod dispatch-ws
   :default
   [_ msg]
   (log/info "default dispatch" msg))
 
 (defn handle-receive!
-  [channel message]
-  (let [message (clojure.walk/keywordize-keys (json/parse-string message))]
-    (log/info "notify-clients" message)
-   (dispatch-ws channel message)))
+  [in]
+  (fn
+    [_ message]
+    (log/info message)
+    (let [message (json/parse-string-strict message)]
+      (go (>! in message)))))
 
 (defn ws-handler [request]
   (if-not (:websocket? request)
     {:status 200 :body "Game channel"}
-    (as-channel request
-                {:on-open connect!
-                 :on-close disconnect!
-                 :on-receive handle-receive!})))
+    (let [in (chan)
+          out (game-master in)]
+      (as-channel request
+                  {:on-open (connect! in out)
+                   :on-close disconnect!
+                   :on-receive (handle-receive! in)}))))
 
 (def ws-routes
   ["/game/ws" ws-handler])

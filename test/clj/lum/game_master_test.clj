@@ -1,6 +1,6 @@
 (ns lum.game-master-test
   (:require [lum.routes.websockets :as gm]
-            [lum.game.dataspec :as gspec]
+            [lum.maputil :as mu]
             [clojure.spec.alpha :as s]
             [clojure.core.async :refer [>!! <!! chan alts!! timeout put! take! go >! <! close!]]
             [clojure.test :as t :refer [testing deftest is]]
@@ -17,7 +17,7 @@
   (let [[in out] (create-game-maser)
         responses (chan)]
     (go (doseq [command commands]
-           (>! in command))
+          (>! in command))
         (close! in))
     (go (>! responses (loop [a []]
                         (if-let [v (<! out)]
@@ -57,16 +57,53 @@
 (def game-initialized
   [[:initialize]])
 
+(defn player-in-position
+  [x y]
+  (conj game-initialized
+        [:set-position x y]))
+
+(defn player-move
+  [startx starty direction]
+  (conj (player-in-position startx starty)
+        [:move direction]))
+
 (deftest calc-updates
   (testing "New board"
     (let [[action data] (first (gm/calc-updates  {:board "old val"} {:board "new val"}))]
       (is (= action :new-board))
       (is (= data "new val")))))
 
-(deftest game-tests
+(deftest initalize-tests
   (testing "Initializing"
     (let [state (commands-to-state game-initialized)]
       (is (some? (:board state)))
       (is (s/valid? :game/board (:board state)))
       (is (some? (get-in state [:player :position])))
       (is (s/valid? :game/position (get-in state [:player :position]))))))
+
+(deftest set-player
+  (let [state (commands-to-state (player-in-position 50 50))]
+    (testing "Set player command"
+      (is (= [50 50] (get-in state [:player :position]))))))
+
+(defn move-to-position
+  [startx starty direction]
+  (get-in (commands-to-state (player-move startx starty direction))
+          [:player :position]))
+
+(deftest move
+  (testing "move with strings"
+    (is (= [0 0] (move-to-position 1 0 "left")))
+    (is (= [1 0] (move-to-position 0 0 "right")))
+    (is (= [0 0] (move-to-position 0 1 "up")))
+    (is (= [0 1] (move-to-position 0 0 "down"))))
+  (testing "normal move"
+    (is (= [0 0] (move-to-position 1 0 :left)))
+    (is (= [1 0] (move-to-position 0 0 :right)))
+    (is (= [0 0] (move-to-position 0 1 :up)))
+    (is (= [0 1] (move-to-position 0 0 :down))))
+  (testing "don't move out"
+    (is (= [0 0] (move-to-position 0 0 :left)))
+    (is (= [0 0] (move-to-position 0 0 :up)))
+    (is (= [mu/sizex mu/sizey] (move-to-position mu/sizex mu/sizey :down)))
+    (is (= [mu/sizex mu/sizey] (move-to-position mu/sizex mu/sizey :right)))))

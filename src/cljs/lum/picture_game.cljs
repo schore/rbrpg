@@ -13,11 +13,7 @@
    [clojure.walk]
    [cljs.core.async :as a :refer [<! >! go-loop go]]))
 
-
 ;; websocket connection
-
-
-
 
 (defmulti dispatch-ws
   (fn [msg]
@@ -54,23 +50,17 @@
     {:stream stream
      :send-message send-message}))
 
-
-
-
 (defonce wsconn (create-ws keyify-ws))
 
 (rf/reg-fx
  :game/send-message
  (fn [msg] ((:send-message wsconn) msg)))
 
-
-
 (def sizex 50)
 (def sizey 30)
 
 (def board-data
   (repeat (* sizex sizey) [:wall]))
-
 
 (rf/reg-event-fx
  :game/initialize
@@ -87,7 +77,6 @@
             (assoc :board board-data)
             (assoc :npc [{:x 10 :y 15}
                          {:x 10 :y 16}]))}))
-
 
 ;; (defn player-move [board xp yp direction]
 ;;   (let [[x y] (case direction
@@ -114,6 +103,13 @@
 ;;     :game/send-message {:type :player-move
 ;;                         :direction direction}
 ;;     }))
+
+(rf/reg-event-fx
+ :game/key
+ (fn [_ [_ direction]]
+   {:game/send-message [:move direction]}))
+
+
 
 ;; (rf/reg-event-fx
 ;;  :game/get-new-map
@@ -165,7 +161,6 @@
  (fn [db _]
    (:npc db)))
 
-
 (defn position-css [x y]
   {:width "15px"
    :height "15px"
@@ -186,7 +181,6 @@
         [:img {:src "img/player.gif"
                :style (assoc (position-css x y)
                              :transform (str "rotate(" rotation "deg)"))}]))))
-
 
 (defn tile-to-graphic
   [key]
@@ -213,14 +207,12 @@
            ^{:key (str "grid" i)}
            [:div.grid-item
             (tile-to-graphic (get (maputil/get-tile board i)
-                                  :type))
-            ])]))))
+                                  :type))])]))))
 
 (defn new-map-button []
   [:input {:type "Button"
            :defaultValue "New map"
-           :on-click (fn [] (rf/dispatch [:game/get-new-map]))}
-])
+           :on-click (fn [] (rf/dispatch [:game/get-new-map]))}])
 
 (defn picture-game []
   [:section.section>div.container>div.content

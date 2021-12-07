@@ -6,18 +6,32 @@
    [lum.game.cavegen :as cavegen]
    [clojure.core.async :as a :refer [chan go go-loop <! >! close!]]
    [clojure.tools.logging :as log]
-   [lum.game.cavegen :as g]))
+   [lum.game.cavegen :as g]
+   [clojure.spec.alpha :as s]))
 
 (defmulti calc-new-state
   (fn [_ action]
     (log/info "calc-new-state" action (keyword (first action)))
     (keyword (first action))))
 
+
 (defmethod calc-new-state
-  :player-move
-  [data _]
-  (println "Player move ...")
-  data)
+  :set-position
+  [data [_ x y]]
+  (assoc-in data [:player :position] [x y]))
+
+(defmethod calc-new-state
+  :move
+  [data [_ direction]]
+  (let [new-data (case (keyword direction)
+          :left (update-in data [:player :position 0] dec)
+          :right (update-in data [:player :position 0] inc)
+          :up (update-in data [:player :position 1] dec)
+          :down (update-in data [:player :position 1] inc))
+        position (get-in new-data [:player :position])]
+    (if (s/valid? :game/position position)
+      new-data
+      data)))
 
 (defmethod calc-new-state
   :default

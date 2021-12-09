@@ -67,6 +67,11 @@
   (conj (player-in-position startx starty)
         [:move direction]))
 
+(defn loadmap
+  [file]
+  (conj game-initialized
+        [:load-map file]))
+
 (deftest calc-updates
   (testing "New board"
     (let [[action data] (first (gm/calc-updates  {:board "old val"} {:board "new val"}))]
@@ -107,3 +112,12 @@
     (is (= [0 0] (move-to-position 0 0 :up)))
     (is (= [mu/sizex mu/sizey] (move-to-position mu/sizex mu/sizey :down)))
     (is (= [mu/sizex mu/sizey] (move-to-position mu/sizex mu/sizey :right)))))
+
+
+(deftest load-map
+  (testing "load a map from file"
+    (let [m (:board (commands-to-state (loadmap "docs/test.txt")))]
+      (is (nil? (:type (first m))))
+      (is (s/valid? :game/board m))
+      (is (= :wall (:type (mu/get-tile m 2 0 ))))
+      (is (= nil ( :type (mu/get-tile m 0 2)))))))

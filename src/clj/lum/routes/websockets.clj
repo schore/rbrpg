@@ -7,13 +7,15 @@
    [clojure.core.async :as a :refer [chan go go-loop <! >! close!]]
    [clojure.tools.logging :as log]
    [lum.game.cavegen :as g]
-   [clojure.spec.alpha :as s]))
+   [lum.maputil :as mu]
+   [clojure.string]
+   [clojure.spec.alpha :as s]
+   [clojure.java.io :as io]))
 
 (defmulti calc-new-state
   (fn [_ action]
     (log/info "calc-new-state" action (keyword (first action)))
     (keyword (first action))))
-
 
 (defmethod calc-new-state
   :set-position
@@ -24,14 +26,43 @@
   :move
   [data [_ direction]]
   (let [new-data (case (keyword direction)
-          :left (update-in data [:player :position 0] dec)
-          :right (update-in data [:player :position 0] inc)
-          :up (update-in data [:player :position 1] dec)
-          :down (update-in data [:player :position 1] inc))
+                   :left (update-in data [:player :position 0] dec)
+                   :right (update-in data [:player :position 0] inc)
+                   :up (update-in data [:player :position 1] dec)
+                   :down (update-in data [:player :position 1] inc))
         position (get-in new-data [:player :position])]
     (if (s/valid? :game/position position)
       new-data
       data)))
+
+(defn pad [n pad coll]
+  (take n (concat coll (repeat pad))))
+
+(defn load-map-from-string
+  [inp]
+  (->> (clojure.string/split-lines inp)
+       (map (fn [line]
+              (->> (seq line)
+                   (map (fn [c]
+                          (case c
+                            \  {:type nil}
+                            \. {:type nil}
+                            \# {:type :wall}
+                            {:type :wall}))))))
+       (map (fn [line]
+              (pad mu/sizex {:type :wall} line)))
+       flatten
+       (pad (* mu/sizex mu/sizey) {:type :wall})))
+
+
+(defmethod calc-new-state
+  :load-map
+  [data [_ file]]
+  (if-let [mf (try
+                (slurp (io/resource file))
+                (catch Exception e (log/error "Exception thrown " (.getMessage e))))]
+    (assoc data :board (load-map-from-string mf))
+    data))
 
 (defmethod calc-new-state
   :default

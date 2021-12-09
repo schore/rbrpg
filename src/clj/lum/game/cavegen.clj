@@ -9,7 +9,7 @@
         (for [_ (range (* xsize ysize))]
           (if (< (rand) 0.45)
             :wall
-            nil))))
+            :ground))))
 
 (defn count-neighbours
   [input x y]
@@ -32,7 +32,7 @@
 (defn populate-map
   [input]
   (->> (map-to-count input)
-       (map #(if (> % 4) :wall nil))
+       (map #(if (> % 4) :wall :ground))
        (into [])))
 
 (defn get-dungeon []

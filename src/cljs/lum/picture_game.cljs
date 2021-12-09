@@ -132,6 +132,12 @@
  (fn [_ _]
    {:game/send-message [:new-board]}))
 
+(rf/reg-event-fx
+ :game/load-map
+ (fn [_ _]
+   {:game/send-message [:load-map "docs/test.txt"]}))
+
+
 (rf/reg-event-db
  :game/set-board
  (fn [db [_ request]]
@@ -185,8 +191,6 @@
 (defn tile-to-graphic
   [key]
   (get {:wall "#"
-        "wall" "8"
-        "tree" "X"
         :default "."}
        key))
 
@@ -214,10 +218,18 @@
            :defaultValue "New map"
            :on-click (fn [] (rf/dispatch [:game/get-new-map]))}])
 
+(defn load-map-button []
+  [:input {:type "Button"
+           :defaultValue "Load map"
+           :on-click (fn [] (rf/dispatch [:game/load-map]))}])
+
+
+
 (defn picture-game []
   [:section.section>div.container>div.content
    [:div.grid-container
     [board]
     [player]
     [monsters]]
-   [new-map-button]])
+   [new-map-button]
+   [load-map-button]])

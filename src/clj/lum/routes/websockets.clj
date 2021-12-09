@@ -45,8 +45,8 @@
               (->> (seq line)
                    (map (fn [c]
                           (case c
-                            \  {:type nil}
-                            \. {:type nil}
+                            \  {:type :ground}
+                            \. {:type :ground}
                             \# {:type :wall}
                             {:type :wall}))))))
        (map (fn [line]

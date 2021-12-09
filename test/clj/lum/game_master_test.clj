@@ -117,7 +117,7 @@
 (deftest load-map
   (testing "load a map from file"
     (let [m (:board (commands-to-state (loadmap "docs/test.txt")))]
-      (is (nil? (:type (first m))))
+      (is (= :ground (:type (first m))))
       (is (s/valid? :game/board m))
       (is (= :wall (:type (mu/get-tile m 2 0 ))))
-      (is (= nil ( :type (mu/get-tile m 0 2)))))))
+      (is (= :ground ( :type (mu/get-tile m 0 2)))))))

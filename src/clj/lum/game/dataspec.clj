@@ -3,15 +3,14 @@
             [lum.maputil :as mu]
             [lum.game.cavegen :as g]))
 
-(s/def :tile/type (s/nilable #{:wall
-                               :tree}))
+(s/def :tile/type  #{:wall
+                     :ground
+                     :tree})
 
 (s/def :game/tile (s/keys :req-un [:tile/type]))
 
-
 (s/def :game/board (s/coll-of :game/tile
-                                :count 1500))
-
+                              :count 1500))
 
 (s/def :game/position (s/cat :x (fn [x] (and (nat-int? x)
                                              (< x mu/sizex)))
@@ -27,7 +26,6 @@
                                   :npc/type]))
 
 (s/def :game/npcs (s/coll-of :game/npc))
-
 
 (s/def :game/game (s/keys :req-un [:game/npcs
                                    :game/player

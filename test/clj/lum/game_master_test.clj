@@ -55,22 +55,25 @@
 (defn commands-to-state [commands] (summarize-responses (run-gamle-logic commands)))
 
 (def game-initialized
-  [[:initialize]])
+  [[:initialize]
+   []])
+
+
+(defn loadmap
+  [file]
+  (conj game-initialized
+        [:load-map file]))
+
 
 (defn player-in-position
   [x y]
-  (conj game-initialized
+  (conj (loadmap "docs/test.txt")
         [:set-position x y]))
 
 (defn player-move
   [startx starty direction]
   (conj (player-in-position startx starty)
         [:move direction]))
-
-(defn loadmap
-  [file]
-  (conj game-initialized
-        [:load-map file]))
 
 (deftest calc-updates
   (testing "New board"
@@ -96,6 +99,17 @@
   (get-in (commands-to-state (player-move startx starty direction))
           [:player :position]))
 
+(defn player-on-test-map
+  [x y direction]
+  (conj (loadmap "docs/test.txt")
+        [:set-position x y]
+        [:move direction]))
+
+(defn move-on-testmap
+  [x y direction]
+  (get-in (commands-to-state (player-on-test-map x y direction))
+          [:player :position]))
+
 (deftest move
   (testing "move with strings"
     (is (= [0 0] (move-to-position 1 0 "left")))
@@ -106,12 +120,18 @@
     (is (= [0 0] (move-to-position 1 0 :left)))
     (is (= [1 0] (move-to-position 0 0 :right)))
     (is (= [0 0] (move-to-position 0 1 :up)))
-    (is (= [0 1] (move-to-position 0 0 :down))))
+    (is (= [0 1] (move-to-position 0 0 :down)))
+    (is (= [2 2] (move-on-testmap 2 1 :down))))
   (testing "don't move out"
     (is (= [0 0] (move-to-position 0 0 :left)))
     (is (= [0 0] (move-to-position 0 0 :up)))
     (is (= [mu/sizex mu/sizey] (move-to-position mu/sizex mu/sizey :down)))
-    (is (= [mu/sizex mu/sizey] (move-to-position mu/sizex mu/sizey :right)))))
+    (is (= [mu/sizex mu/sizey] (move-to-position mu/sizex mu/sizey :right))))
+  (testing "don't move on walls"
+    (is (= [4 1] (move-on-testmap 4 1 :up)))
+    (is (= [4 1] (move-on-testmap 4 1 :up)))
+    (is (= [4 1] (move-on-testmap 4 1 :up)))
+    (is (= [4 1] (move-on-testmap 4 1 :up)))))
 
 
 (deftest load-map
@@ -119,5 +139,6 @@
     (let [m (:board (commands-to-state (loadmap "docs/test.txt")))]
       (is (= :ground (:type (first m))))
       (is (s/valid? :game/board m))
-      (is (= :wall (:type (mu/get-tile m 2 0 ))))
+      (is (= :wall (:type (mu/get-tile m 3 5))))
       (is (= :ground ( :type (mu/get-tile m 0 2)))))))
+

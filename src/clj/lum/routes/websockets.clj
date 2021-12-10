@@ -31,7 +31,11 @@
                    :up (update-in data [:player :position 1] dec)
                    :down (update-in data [:player :position 1] inc))
         position (get-in new-data [:player :position])]
-    (if (s/valid? :game/position position)
+    (if (and (s/valid? :game/position position)
+             (= :ground
+                (:type (mu/get-tile (:board new-data)
+                                    (get-in new-data [:player :position 0])
+                                    (get-in new-data [:player :position 1])))))
       new-data
       data)))
 

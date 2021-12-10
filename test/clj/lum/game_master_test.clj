@@ -1,5 +1,5 @@
 (ns lum.game-master-test
-  (:require [lum.routes.websockets :as gm]
+  (:require [lum.game.gamelogic :as gm]
             [lum.maputil :as mu]
             [clojure.spec.alpha :as s]
             [clojure.core.async :refer [>!! <!! chan alts!! timeout put! take! go >! <! close!]]

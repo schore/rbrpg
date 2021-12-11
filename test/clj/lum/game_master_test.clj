@@ -56,8 +56,7 @@
 (defn commands-to-state [commands] (summarize-responses (run-gamle-logic commands)))
 
 (def commands-initialized
-  [[:initialize]
-   []])
+  [[:initialize]])
 
 
 (defn commands-loadmap
@@ -142,6 +141,12 @@
       (is (= :wall (:type (mu/get-tile m 3 5))))
       (is (= :ground ( :type (mu/get-tile m 0 2)))))))
 
-(deftest fight
-  (testing "Starting a fight"
-    ))
+(defn start-fight
+  []
+  (with-redefs [rand (fn [] 0.9)]
+    (commands-to-state (commands-move-on-testmap 1 1 :up))))
+
+;; (deftest fight
+;;   (testing "Starting a fight"
+;;     (let [state (start-fight)]
+;;       (is (:fight? state)))))

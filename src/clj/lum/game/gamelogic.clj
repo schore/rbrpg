@@ -9,18 +9,12 @@
    [clojure.tools.logging :as log]))
 
 
-(defmulti calc-new-state
- (fn [_ action]
-    (log/info "calc-new-state" action (keyword (first action)))
-    (keyword (first action))))
 
-(defmethod calc-new-state
-  :set-position
+(defn set-position
   [data [_ x y]]
   (assoc-in data [:player :position] [x y]))
 
-(defmethod calc-new-state
-  :move
+(defn move
   [data [_ direction]]
   (let [new-data (case (keyword direction)
                    :left (update-in data [:player :position 0] dec)
@@ -56,8 +50,19 @@
        (pad (* mu/sizex mu/sizey) {:type :wall})))
 
 
-(defmethod calc-new-state
-  :load-map
+
+(defn new-board
+  [data _]
+  (assoc data :board (cavegen/get-dungeon)))
+
+
+(defn initialize
+  [_ _]
+    {:board (cavegen/get-dungeon)
+     :npcs []
+     :player {:position [10 10]}})
+
+(defn load-map
   [data [_ file]]
   (if-let [mf (try
                 (slurp (io/resource file))
@@ -65,23 +70,26 @@
     (assoc data :board (load-map-from-string mf))
     data))
 
-(defmethod calc-new-state
-  :default
+
+(def calc-new-state-functions
+  {:initialize [initialize]
+   :load-map [load-map]
+   :move [move]
+   :set-position [set-position]
+   :new-board [new-board]})
+
+
+(defn calc-new-state
   [data action]
-  (log/error "Default reached " action)
-  data)
-
-(defmethod calc-new-state
-  :new-board
-  [data _]
-  (assoc data :board (cavegen/get-dungeon)))
-
-(defmethod calc-new-state
-  :initialize
-  [_ _]
-  {:board (cavegen/get-dungeon)
-   :npcs []
-   :player {:position [10 10]}})
+  (if action
+    (do
+      (when (nil? (get calc-new-state-functions (first action)))
+        (log/error "No entry defined " action))
+      (reduce (fn [data f]
+                (f data action))
+              data (get calc-new-state-functions
+                        (first action) [])))
+    data))
 
 (defn board-update
   [data new-data]
@@ -108,6 +116,7 @@
                     (conj r (f data new-data)))
                   []
                   update-calc-functions)))
+
 
 (defn game-master
   [input-chan]

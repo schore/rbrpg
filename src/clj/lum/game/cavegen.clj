@@ -49,3 +49,6 @@
    (println (repeat xsize "-"))))
 
 (time (nil? (into [] (get-dungeon))))
+
+
+(rand)

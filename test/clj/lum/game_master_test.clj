@@ -1,10 +1,11 @@
 (ns lum.game-master-test
-  (:require [lum.game.gamelogic :as gm]
-            [lum.maputil :as mu]
-            [clojure.spec.alpha :as s]
-            [clojure.core.async :refer [>!! <!! chan alts!! timeout put! take! go >! <! close!]]
-            [clojure.test :as t :refer [testing deftest is]]
-            [clojure.tools.logging :as log]))
+  (:require
+   [clojure.core.async :refer [<! >! alts!! chan close! go timeout]]
+   [clojure.spec.alpha :as s]
+   [clojure.test :as t :refer [deftest is testing]]
+   [clojure.tools.logging :as log]
+   [lum.game.gamelogic :as gm]
+   [lum.maputil :as mu]))
 
 (defn create-game-maser
   []
@@ -54,25 +55,25 @@
 
 (defn commands-to-state [commands] (summarize-responses (run-gamle-logic commands)))
 
-(def game-initialized
+(def commands-initialized
   [[:initialize]
    []])
 
 
-(defn loadmap
+(defn commands-loadmap
   [file]
-  (conj game-initialized
+  (conj commands-initialized
         [:load-map file]))
 
 
-(defn player-in-position
+(defn commands-player-in-position
   [x y]
-  (conj (loadmap "docs/test.txt")
+  (conj (commands-loadmap "docs/test.txt")
         [:set-position x y]))
 
-(defn player-move
+(defn commands-player-move
   [startx starty direction]
-  (conj (player-in-position startx starty)
+  (conj (commands-player-in-position startx starty)
         [:move direction]))
 
 (deftest calc-updates
@@ -83,31 +84,31 @@
 
 (deftest initalize-tests
   (testing "Initializing"
-    (let [state (commands-to-state game-initialized)]
+    (let [state (commands-to-state commands-initialized)]
       (is (some? (:board state)))
       (is (s/valid? :game/board (:board state)))
       (is (some? (get-in state [:player :position])))
       (is (s/valid? :game/position (get-in state [:player :position]))))))
 
 (deftest set-player
-  (let [state (commands-to-state (player-in-position 50 50))]
+  (let [state (commands-to-state (commands-player-in-position 50 50))]
     (testing "Set player command"
       (is (= [50 50] (get-in state [:player :position]))))))
 
 (defn move-to-position
   [startx starty direction]
-  (get-in (commands-to-state (player-move startx starty direction))
+  (get-in (commands-to-state (commands-player-move startx starty direction))
           [:player :position]))
 
-(defn player-on-test-map
+(defn commands-move-on-testmap
   [x y direction]
-  (conj (loadmap "docs/test.txt")
+  (conj (commands-loadmap "docs/test.txt")
         [:set-position x y]
         [:move direction]))
 
 (defn move-on-testmap
   [x y direction]
-  (get-in (commands-to-state (player-on-test-map x y direction))
+  (get-in (commands-to-state (commands-move-on-testmap x y direction))
           [:player :position]))
 
 (deftest move
@@ -133,12 +134,14 @@
     (is (= [4 1] (move-on-testmap 4 1 :up)))
     (is (= [4 1] (move-on-testmap 4 1 :up)))))
 
-
 (deftest load-map
   (testing "load a map from file"
-    (let [m (:board (commands-to-state (loadmap "docs/test.txt")))]
+    (let [m (:board (commands-to-state (commands-loadmap "docs/test.txt")))]
       (is (= :ground (:type (first m))))
       (is (s/valid? :game/board m))
       (is (= :wall (:type (mu/get-tile m 3 5))))
       (is (= :ground ( :type (mu/get-tile m 0 2)))))))
 
+(deftest fight
+  (testing "Starting a fight"
+    ))

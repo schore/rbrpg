@@ -244,7 +244,10 @@
     (fn []
       [:section.section>div.container>div.content
        (if @fight?
-         [:h1 "FIGHT"]
+         [:<>
+          [:h1 "FIGHT"]
+          [:p "a:" "Attack"]
+          [:p "r:" "Run"]]
          [:div.grid-container
           [board]
           [player]])

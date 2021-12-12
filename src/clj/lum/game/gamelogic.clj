@@ -90,12 +90,12 @@
   [data action]
   (if action
     (do
-      (when (nil? (get calc-new-state-functions (first action)))
+      (when (nil? (get calc-new-state-functions (keyword (first action))))
         (log/error "No entry defined " action))
       (reduce (fn [data f]
                 (f data action))
               data (get calc-new-state-functions
-                        (first action) [])))
+                        (keyword (first action)) [])))
     data))
 
 (defn board-update

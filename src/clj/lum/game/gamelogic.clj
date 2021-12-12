@@ -60,7 +60,8 @@
   [_ _]
     {:board (cavegen/get-dungeon)
      :npcs []
-     :player {:position [10 10]}})
+     :player {:position [10 10]}
+     :fight? false})
 
 (defn load-map
   [data [_ file]]
@@ -70,11 +71,17 @@
     (assoc data :board (load-map-from-string mf))
     data))
 
+(defn check-fight
+  [data _]
+  (if (> (rand) 0.97)
+    ;;Start a fight every 20 turns
+    (assoc data :fight? true)
+    data))
 
 (def calc-new-state-functions
   {:initialize [initialize]
    :load-map [load-map]
-   :move [move]
+   :move [move check-fight]
    :set-position [set-position]
    :new-board [new-board]})
 
@@ -105,9 +112,16 @@
     (let [[x y] (get-in new-data [:player :position])]
       [:player-move x y])))
 
+(defn fight
+  [data new-data]
+  (when (not= (:fight? data)
+         (:fight? new-data))
+    [:fight (:fight? new-data)]))
+
 (def update-calc-functions
   [board-update
-   player-move])
+   player-move
+   fight])
 
 (defn calc-updates [data new-data]
   (filter (complement nil?)

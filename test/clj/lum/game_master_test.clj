@@ -42,6 +42,11 @@
   (assoc-in m [:player :position] [x y]))
 
 (defmethod summarize-response
+  :fight
+  [m [_ fight?]]
+  (assoc m :fight? fight?))
+
+(defmethod summarize-response
   :default
   [m r]
   (log/error "Default reached " r)
@@ -143,10 +148,10 @@
 
 (defn start-fight
   []
-  (with-redefs [rand (fn [] 0.9)]
+  (with-redefs [rand (fn [] 0.98)]
     (commands-to-state (commands-move-on-testmap 1 1 :up))))
 
-;; (deftest fight
-;;   (testing "Starting a fight"
-;;     (let [state (start-fight)]
-;;       (is (:fight? state)))))
+(deftest fight
+  (testing "Starting a fight"
+    (let [state (start-fight)]
+      (is (:fight? state)))))

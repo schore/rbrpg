@@ -30,6 +30,11 @@
   (rf/dispatch [:game/set-board board]))
 
 (defmethod dispatch-ws
+  :fight
+  [[_ fight?]]
+  (rf/dispatch [:game/fight fight?]))
+
+(defmethod dispatch-ws
   :default
   [msg]
   (println "Default handler" (str msg)))
@@ -110,7 +115,6 @@
    {:game/send-message [:move direction]}))
 
 
-
 ;; (rf/reg-event-fx
 ;;  :game/get-new-map
 ;;  (fn [_ _]
@@ -126,6 +130,11 @@
    (-> db
        (assoc-in [:position :x] x)
        (assoc-in [:position :y] y))))
+
+(rf/reg-event-db
+ :game/fight
+ (fn [db [_ fight?]]
+   (assoc db :fight? fight?)))
 
 (rf/reg-event-fx
  :game/get-new-map
@@ -166,6 +175,11 @@
  :game/npc
  (fn [db _]
    (:npc db)))
+
+(rf/reg-sub
+ :game/fight?
+ (fn [db _]
+   (:fight? db)))
 
 (defn position-css [x y]
   {:width "15px"
@@ -226,10 +240,13 @@
 
 
 (defn picture-game []
-  [:section.section>div.container>div.content
-   [:div.grid-container
-    [board]
-    [player]
-    [monsters]]
-   [new-map-button]
-   [load-map-button]])
+  (let [fight? (rf/subscribe [:game/fight?])]
+    (fn []
+      [:section.section>div.container>div.content
+       (if @fight?
+         [:h1 "FIGHT"]
+         [:div.grid-container
+          [board]
+          [player]])
+       [new-map-button]
+       [load-map-button]])))

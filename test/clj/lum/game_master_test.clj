@@ -1,6 +1,6 @@
 (ns lum.game-master-test
   (:require
-   [clojure.core.async :refer [<! >! alts!! chan close! go timeout]]
+   [clojure.core.async :refer [<! <!! >! alts! alts!! chan close! go timeout]]
    [clojure.spec.alpha :as s]
    [clojure.test :as t :refer [deftest is testing]]
    [clojure.tools.logging :as log]
@@ -13,19 +13,26 @@
         out (gm/game-master in)]
     [in out]))
 
-(defn run-gamle-logic
-  [commands]
-  (let [[in out] (create-game-maser)
-        responses (chan)]
-    (go (doseq [command commands]
-          (>! in command))
-        (close! in))
-    (go (>! responses (loop [a []]
-                        (if-let [v (<! out)]
-                          (recur (conj a v))
-                          a))))
-    (first (alts!! [responses
-                    (timeout 2000)]))))
+
+(defn run-game-logic
+  ([commands]
+   (let [[in out] (create-game-maser)]
+     (run-game-logic in out commands true [])))
+  ([in out commands close? accu]
+   (let [responses (chan)]
+     (go (doseq [command commands]
+           (>! in command))
+         (when close?
+           (close! in)))
+     (go (>! responses (loop [a accu]
+                         (if-let [v (first (alts! [out
+                                                   (timeout 500)]))]
+                             (recur (conj a v))
+                           a))))
+     (let [updates (first (alts!! [responses
+                                   (timeout 2000)]))]
+       (close! responses)
+       [in out updates]))))
 
 (defmulti summarize-response
   (fn [_ response]
@@ -58,7 +65,7 @@
             (summarize-response r response))
           {} responses))
 
-(defn commands-to-state [commands] (summarize-responses (run-gamle-logic commands)))
+(defn commands-to-state [commands] (summarize-responses (nth (run-game-logic commands) 2)))
 
 (def commands-initialized
   [[:initialize]])
@@ -151,7 +158,13 @@
   (with-redefs [rand (fn [] 0.98)]
     (commands-to-state (commands-move-on-testmap 1 1 :up))))
 
+(defn attack-and-kill
+  []
+  (commands-to-state (conj (commands-move-on-testmap 1 1 :up)
+                           [:attack])))
+
 (deftest fight
   (testing "Starting a fight"
     (let [state (start-fight)]
-      (is (:fight? state)))))
+      (is (:fight? state))))
+  (testing "attack and kill"))

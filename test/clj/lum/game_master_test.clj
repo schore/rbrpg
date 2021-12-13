@@ -5,6 +5,7 @@
    [clojure.test :as t :refer [deftest is testing]]
    [clojure.tools.logging :as log]
    [lum.game.gamelogic :as gm]
+   [lum.game.dataspec]
    [lum.maputil :as mu]))
 
 (defn create-game-maser

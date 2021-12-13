@@ -2,6 +2,7 @@
   (:require
    [lum.game.cavegen :as cavegen]
    [lum.maputil :as mu]
+   [lum.game.dataspec]
    [clojure.string]
    [clojure.spec.alpha :as s]
    [clojure.core.async :as a :refer [chan go go-loop <! >! close!]]

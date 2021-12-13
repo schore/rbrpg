@@ -88,7 +88,8 @@
    :move [move check-fight]
    :set-position [set-position]
    :new-board [new-board]
-   :attack [attack]})
+   :attack [attack]
+   :nop []})
 
 
 

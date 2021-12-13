@@ -21,18 +21,21 @@
    (let [[in out] (create-game-maser)]
      (run-game-logic commands close? [] in out)))
   ([commands close? accu in out]
-   (let [responses (chan)]
+   (let [responses (chan)
+         processing-done (chan)]
      (go (doseq [command commands]
            (>! in command))
+         (>! in [:nop])
+         (close! processing-done)
          (when close?
            (close! in)))
      (go (>! responses (loop [a accu]
                          (if-let [v (first (alts! [out
+                                                   processing-done
                                                    (timeout 500)]))]
                              (recur (conj a v))
                            a))))
-     (let [updates (first (alts!! [responses
-                                   (timeout 2000)]))]
+     (let [updates (<!! responses)]
        (close! responses)
        [in out updates]))))
 
@@ -164,7 +167,6 @@
   []
   (let [[in out a] (with-redefs [rand (fn [] 0.98)]
                      (run-game-logic (commands-move-on-testmap 1 1 :up) false))]
-    (log/info a)
     (with-redefs [rand (fn [] 0.3)]
       (summarize-responses (nth (run-game-logic [[:attack]] true a in out)
                               2)))))

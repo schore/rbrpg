@@ -75,6 +75,7 @@
                                    [[:game/key :right] [{:keyCode 108}]];;l
                                    [[:game/key :down] [{:keyCode 106}]];;k
                                    [[:game/key :up] [{:keyCode 107}]];;j
+                                   [[:game/key :confirm] [{:keyCode 32}]];;space
                                    ]}]]
          [:dispatch [::rp/add-keyboard-event-listener "keypress"]]]
     :db (-> db
@@ -83,36 +84,22 @@
             (assoc :npc [{:x 10 :y 15}
                          {:x 10 :y 16}]))}))
 
-;; (defn player-move [board xp yp direction]
-;;   (let [[x y] (case direction
-;;                       :left [(dec xp) yp]
-;;                       :right [(inc xp) yp]
-;;                       :up [xp (dec yp)]
-;;                       :down [xp (inc yp)]
-;;                       [xp yp direction])]
-;;     (if (= :wall (:type (maputil/get-tile board x y)))
-;;       [xp yp]
-;;       [x y])))
-
-;; (rf/reg-event-fx
-;;  :game/key
-;;  (fn [{:keys [db]} [_ direction]]
-;;    {:db (let [x (get-in db [:position :x])
-;;               y (get-in db [:position :y])
-;;               board (:board db)
-;;               [x y] (player-move board x y direction)]
-;;           (-> db
-;;               (assoc-in [:position :x] x)
-;;               (assoc-in [:position :y] y)
-;;               (assoc-in [:position :direction] direction)))
-;;     :game/send-message {:type :player-move
-;;                         :direction direction}
-;;     }))
-
 (rf/reg-event-fx
  :game/key
- (fn [_ [_ direction]]
-   {:game/send-message [:move direction]}))
+ (fn [{:keys [db]} [_ action]]
+   (merge
+    (when (and (not (:fight? db))
+               (some #{action} [:up :down :left :right] ))
+      {:game/send-message [:move action]})
+    (when (and (:fight? db)
+               (some #{action} [:up :down]))
+      (let [{:keys [entries active]} (:action db)
+            n (count entries)]
+        (println entries active n)
+        {:db (assoc-in db [:action :active]
+                       (mod (if (= action :down)
+                              (inc active)
+                              (dec active)) n))})))))
 
 
 ;; (rf/reg-event-fx
@@ -134,7 +121,10 @@
 (rf/reg-event-db
  :game/fight
  (fn [db [_ fight?]]
-   (assoc db :fight? fight?)))
+   (merge db
+          {:fight? fight?}
+          (when fight? {:action {:entries ["Attack" "Magic" "Run"]
+                                 :active 0}}))))
 
 (rf/reg-event-fx
  :game/get-new-map
@@ -145,7 +135,6 @@
  :game/load-map
  (fn [_ _]
    {:game/send-message [:load-map "docs/test.txt"]}))
-
 
 (rf/reg-event-db
  :game/set-board
@@ -180,6 +169,11 @@
  :game/fight?
  (fn [db _]
    (:fight? db)))
+
+(rf/reg-sub
+ :game/action
+ (fn [db _]
+   (:action db)))
 
 (defn position-css [x y]
   {:width "15px"
@@ -237,17 +231,26 @@
            :defaultValue "Load map"
            :on-click (fn [] (rf/dispatch [:game/load-map]))}])
 
-
+(defn fight-screen
+  []
+  (let [actions (rf/subscribe [:game/action])]
+    (fn []
+      (let [{:keys [entries active]} @actions]
+        [:<>
+         [:h1 "FIGHT"]
+         (for [entry entries]
+           ^{:key (str"fightscreen" entry)}
+           [:p
+            (when (= entry (nth entries active))
+              {:style {:font-weight "bold"}})
+            entry])]))))
 
 (defn picture-game []
   (let [fight? (rf/subscribe [:game/fight?])]
     (fn []
       [:section.section>div.container>div.content
        (if @fight?
-         [:<>
-          [:h1 "FIGHT"]
-          [:p "a:" "Attack"]
-          [:p "r:" "Run"]]
+         [fight-screen]
          [:div.grid-container
           [board]
           [player]])

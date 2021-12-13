@@ -78,12 +78,18 @@
     (assoc data :fight? true)
     data))
 
+(defn attack
+  [data _]
+  (assoc data :fight? false))
+
 (def calc-new-state-functions
   {:initialize [initialize]
    :load-map [load-map]
    :move [move check-fight]
    :set-position [set-position]
-   :new-board [new-board]})
+   :new-board [new-board]
+   :attack [attack]})
+
 
 
 (defn calc-new-state

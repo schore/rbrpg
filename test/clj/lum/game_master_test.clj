@@ -16,9 +16,11 @@
 
 (defn run-game-logic
   ([commands]
+     (run-game-logic commands true))
+  ([commands close?]
    (let [[in out] (create-game-maser)]
-     (run-game-logic in out commands true [])))
-  ([in out commands close? accu]
+     (run-game-logic commands close? [] in out)))
+  ([commands close? accu in out]
    (let [responses (chan)]
      (go (doseq [command commands]
            (>! in command))
@@ -158,13 +160,19 @@
   (with-redefs [rand (fn [] 0.98)]
     (commands-to-state (commands-move-on-testmap 1 1 :up))))
 
-(defn attack-and-kill
+(defn start-fight-and-kill
   []
-  (commands-to-state (conj (commands-move-on-testmap 1 1 :up)
-                           [:attack])))
+  (let [[in out a] (with-redefs [rand (fn [] 0.98)]
+                     (run-game-logic (commands-move-on-testmap 1 1 :up) false))]
+    (log/info a)
+    (with-redefs [rand (fn [] 0.3)]
+      (summarize-responses (nth (run-game-logic [[:attack]] true a in out)
+                              2)))))
 
 (deftest fight
   (testing "Starting a fight"
     (let [state (start-fight)]
       (is (:fight? state))))
-  (testing "attack and kill"))
+  (testing "attack and kill"
+    (let [state (start-fight-and-kill)]
+      (is (false? (:fight? state))))))

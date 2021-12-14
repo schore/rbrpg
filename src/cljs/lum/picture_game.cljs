@@ -99,7 +99,13 @@
         {:db (assoc-in db [:action :active]
                        (mod (if (= action :down)
                               (inc active)
-                              (dec active)) n))})))))
+                              (dec active)) n))}))
+    (when (and (:fight? db)
+               (= action :confirm))
+      {:game/send-message (let [{:keys [entries active]} (:action db)
+                                action (nth entries active)]
+                            (case action
+                              "Attack" [:attack]))}))))
 
 
 ;; (rf/reg-event-fx

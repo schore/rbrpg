@@ -15,8 +15,7 @@
       (f))))
 
 (defn open [driver]
-  (doto driver
-    (e/go "http://localhost:3000/#/game")))
+    (e/go driver "http://localhost:3000/#/game"))
 
 (defn navigate-to-test [driver]
   (e/click-visible driver {:class "navbar-item" :href "#/test"}))
@@ -31,6 +30,10 @@
 
 (defn open-website [f]
   (open *driver*)
+  (f))
+
+(defn refresh [f]
+  (e/refresh *driver*)
   (f))
 
 (defn navigate-to-game
@@ -73,17 +76,17 @@
                             :up "k"
                             :down "j"
                             :left "h"
-                            :right "l"))))
-
-  (e/wait driver 1))
+                            :right "l")))))
 
 (defn game-screen
   [f]
   (navigate-to-game *driver*)
   (f))
 
+(t/use-fixtures :once fixture-driver open-website)
+
 (t/use-fixtures
-  :each fixture-driver open-website game-screen)
+  :each refresh game-screen)
 
 (deftest game-load
     ;;(navigate-to-game *driver*)

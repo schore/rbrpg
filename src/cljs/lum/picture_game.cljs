@@ -227,6 +227,14 @@
             (tile-to-graphic (get (maputil/get-tile board i)
                                   :type))])]))))
 
+(defn button
+  [value event]
+  [:input {:type "Button"
+           :defaultValue value
+           :on-click (fn [e]
+                       (-> e .-target .blur)
+                       (rf/dispatch event))}])
+
 (defn new-map-button []
   [:input {:type "Button"
            :defaultValue "New map"
@@ -235,7 +243,9 @@
 (defn load-map-button []
   [:input {:type "Button"
            :defaultValue "Load map"
-           :on-click (fn [] (rf/dispatch [:game/load-map]))}])
+           :on-click (fn [e]
+                       (-> e .-target .blur)
+                       (rf/dispatch [:game/load-map]))}])
 
 (defn fight-screen
   []
@@ -260,5 +270,5 @@
          [:div.grid-container
           [board]
           [player]])
-       [new-map-button]
-       [load-map-button]])))
+       [button "New map" [:game/get-new-map]]
+       [button "Load map" [:game/load-map]]])))

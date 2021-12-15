@@ -16,7 +16,7 @@
 
 (defn open [driver]
   (doto driver
-    (e/go "http://localhost:3000")))
+    (e/go "http://localhost:3000/#/game")))
 
 (defn navigate-to-test [driver]
   (e/click-visible driver {:class "navbar-item" :href "#/test"}))
@@ -35,8 +35,10 @@
 
 (defn navigate-to-game
   [driver]
-  (e/click-visible driver {:class "navbar-item" :href "#/game"})
-  (e/wait-exists driver {:class "grid-container"}))
+  ;; (e/click-visible driver {:class "navbar-item" :href "#/game"})
+  (e/click-visible driver {:tag :input :value "Load map"})
+  ;; (e/wait-exists driver {:class "grid-container"})
+                 )
 
 ;; (testing "Test application"
 ;;   (deftest inital-value

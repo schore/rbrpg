@@ -1,9 +1,8 @@
-(ns lum.integration-test
-  (:require  [clojure.test :as t :refer [deftest
-                                         testing
-                                         is]]
-             [etaoin.api :as e]
-             [clojure.tools.logging :as log]))
+(ns e2e.common
+  (:require
+   [etaoin.api :as e]
+   [clojure.tools.logging :as log]))
+
 
 (def ^:dynamic *driver*)
 
@@ -82,28 +81,3 @@
   [f]
   (navigate-to-game *driver*)
   (f))
-
-(t/use-fixtures :once fixture-driver open-website)
-
-(t/use-fixtures
-  :each refresh game-screen)
-
-(deftest game-load
-    ;;(navigate-to-game *driver*)
-  (is (= [10 10] (get-player-position *driver*))))
-
-(deftest navigate-left
-  (move *driver* :left)
-  (is (= [9 10] (get-player-position *driver*))))
-
-(deftest navigate-right
-  (move *driver* :right)
-  (is (= [11 10] (get-player-position *driver*))))
-
-(deftest navigate-up
-  (move *driver* :down)
-  (is (= [10 11] (get-player-position *driver*))))
-
-(deftest navigate-down
-  (move *driver* :up)
-  (is (= [10 9] (get-player-position *driver*))))

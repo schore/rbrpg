@@ -46,7 +46,7 @@
   :min-lein-version "2.0.0"
 
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
-  :test-paths ["test/clj"]
+  :test-paths ["test/clj" "test/e2e"]
   :test-selectors {:default (complement :integration)
                    :integration :integration}
   :resource-paths ["resources" "target/cljsbuild"]

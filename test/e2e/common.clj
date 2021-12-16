@@ -68,8 +68,7 @@
 
 (defn move
   [driver direction]
-  (e/wait driver 1)
-  (e/perform-actions *driver*
+  (e/perform-actions driver
    (-> (e/make-key-input)
        (e/add-key-press (case direction
                             :up "k"

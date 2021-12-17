@@ -3,7 +3,6 @@
    [etaoin.api :as e]
    [clojure.tools.logging :as log]))
 
-
 (def ^:dynamic *driver*)
 
 (defn fixture-driver
@@ -14,7 +13,7 @@
       (f))))
 
 (defn open [driver]
-    (e/go driver "http://localhost:3000/#/game"))
+  (e/go driver "http://localhost:3000/#/game"))
 
 (defn navigate-to-test [driver]
   (e/click-visible driver {:class "navbar-item" :href "#/test"}))
@@ -40,7 +39,7 @@
   ;; (e/click-visible driver {:class "navbar-item" :href "#/game"})
   (e/click-visible driver {:tag :input :value "Load map"})
   ;; (e/wait-exists driver {:class "grid-container"})
-                 )
+  )
 
 ;; (testing "Test application"
 ;;   (deftest inital-value
@@ -56,6 +55,22 @@
 ;;     (click-count *driver*)
 ;;     (is (= "8" (get-count *driver*)))))
 
+(defn map-screen?
+  [driver]
+  (e/visible? driver [{:class "grid-container"}
+                      {:tag :img}]))
+
+(defn wait-map-screen
+  [driver]
+  (e/wait-visible driver [{:class "grid-container"}
+                          {:tag :img}]))
+
+(defn fight-screen?
+  [driver]
+  (e/visible? driver [{:class "content"}
+                      {:tag :h1
+                       :fn/has-text "FIGHT"}]))
+
 (defn get-player-position
   [driver]
   (let [query  [{:class "grid-container"}
@@ -66,15 +81,19 @@
          (map #(Integer/parseInt %))
          (map #(/ % 15)))))
 
+(defn press-key
+  [driver k]
+  (e/perform-actions driver
+                     (-> (e/make-key-input)
+                         (e/add-key-press k))))
+
 (defn move
   [driver direction]
-  (e/perform-actions driver
-   (-> (e/make-key-input)
-       (e/add-key-press (case direction
-                            :up "k"
-                            :down "j"
-                            :left "h"
-                            :right "l")))))
+  (press-key driver (case direction
+                      :up "k"
+                      :down "j"
+                      :left "h"
+                      :right "l")))
 
 (defn game-screen
   [f]

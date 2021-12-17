@@ -1,4 +1,4 @@
-(ns e2e.common
+(ns lum.common
   (:require
    [etaoin.api :as e]
    [clojure.tools.logging :as log]))

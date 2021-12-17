@@ -1,12 +1,9 @@
-(ns e2e.move-test
+(ns lum.move-test
   (:require
-   [clojure.test :as t :refer [deftest
-                               testing
-                               is]]
-   [e2e.common :as c :refer [*driver*]]
+   [clojure.test :as t :refer [deftest is testing]]
+   [clojure.tools.logging :as log]
    [etaoin.api :as e]
-   [clojure.tools.logging :as log]))
-
+   [lum.common :as c :refer [*driver*]]))
 
 (t/use-fixtures :once c/fixture-driver c/open-website)
 

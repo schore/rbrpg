@@ -1,8 +1,9 @@
-(ns fight-test
-  (:require [clojure.test :as t :refer [deftest is]]
-            [e2e.common :as c :refer [*driver*]]
-            [etaoin.api :as e]
-            [etaoin.keys]))
+(ns lum.fight-test
+  (:require
+   [clojure.test :as t :refer [deftest is]]
+   [etaoin.api :as e]
+   [etaoin.keys]
+   [lum.common :as c :refer [*driver*]]))
 
 (t/use-fixtures :once c/fixture-driver c/open-website)
 

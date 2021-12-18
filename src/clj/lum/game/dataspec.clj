@@ -17,7 +17,18 @@
                              :y (fn [y] (and (nat-int? y)
                                              (< y mu/sizey)))))
 
-(s/def :game/player (s/keys :req-un [:game/position]))
+(s/def :player/xp nat-int?)
+
+(s/def :player/stat (s/and (s/cat :current nat-int? :max nat-int?)
+                           #(<= (:current %) (:max %))))
+
+(s/def :player/hp :player/stat)
+(s/def :player/mp :player/stat)
+
+(s/def :game/player (s/keys :req-un [:game/position
+                                     :player/xp
+                                     :player/hp
+                                     :player/mp]))
 
 (s/def :npc/type #{:elf
                    :monster})
@@ -27,10 +38,11 @@
 
 (s/def :game/npcs (s/coll-of :game/npc))
 
-(s/def :game/game (s/keys :req-un [:game/npcs
-                                   :game/player
+(s/def :game/game (s/keys :req-un [:game/player
                                    :game/board]))
 
-;; (s/valid? :game/game {:board (g/get-dungeon)
-;;                        :player {:position [1 1]}
-;;                        :npcs  []})
+(s/explain :game/game {:board (g/get-dungeon)
+                       :player {:position [1 1]
+                                :xp 0
+                                :hp [8 10]
+                                :mp [0 3]}})

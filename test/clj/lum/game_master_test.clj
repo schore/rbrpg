@@ -60,6 +60,22 @@
   (assoc m :fight? fight?))
 
 (defmethod summarize-response
+  :hp
+  [m [_ current max]]
+  (assoc-in m [:player :hp] [current max]))
+
+(defmethod summarize-response
+  :mp
+  [m [_ current max]]
+  (assoc-in m [:player :mp] [current max]))
+
+(defmethod summarize-response
+  :xp
+  [m [_ xp]]
+  (assoc-in m [:player :xp] xp))
+
+
+(defmethod summarize-response
   :default
   [m r]
   (log/error "Default reached " r)
@@ -105,7 +121,8 @@
       (is (some? (:board state)))
       (is (s/valid? :game/board (:board state)))
       (is (some? (get-in state [:player :position])))
-      (is (s/valid? :game/position (get-in state [:player :position]))))))
+      (is (s/valid? :game/position (get-in state [:player :position])))
+      (is (s/valid? :game/game state)))))
 
 (deftest set-player
   (let [state (commands-to-state (commands-player-in-position 50 50))]

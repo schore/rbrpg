@@ -61,7 +61,10 @@
   [_ _]
     {:board (cavegen/get-dungeon)
      :npcs []
-     :player {:position [10 10]}
+     :player {:position [10 10]
+              :xp 0
+              :hp [10 10]
+              :mp [3 3]}
      :fight? false})
 
 (defn load-map
@@ -126,10 +129,33 @@
          (:fight? new-data))
     [:fight (:fight? new-data)]))
 
+(defn hp-update
+  [data new-data]
+  (when (not= (-> data :player :hp)
+              (-> new-data :player :hp))
+    (let [[current max] (-> new-data :player :hp)]
+      [:hp current max])))
+
+(defn mp-update
+  [data new-data]
+  (when (not= (-> data :player :mp)
+              (-> new-data :player :mp))
+    (let [[current max] (-> new-data :player :mp)]
+      [:mp current max])))
+
+(defn xp-update
+  [data new-data]
+  (when (not= (-> data :player :xp)
+              (-> new-data :player :xp))
+    [:xp (-> new-data :player :xp)]))
+
 (def update-calc-functions
   [board-update
    player-move
-   fight])
+   fight
+   hp-update
+   mp-update
+   xp-update])
 
 (defn calc-updates [data new-data]
   (filter (complement nil?)

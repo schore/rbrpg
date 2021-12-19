@@ -1,4 +1,4 @@
-(ns lum.game-master-test
+(ns lum.game.gamelogic-test
   (:require
    [clojure.core.async :refer [<! <!! >! alts! alts!! chan close! go timeout]]
    [clojure.spec.alpha :as s]
@@ -122,12 +122,13 @@
       (is (s/valid? :game/board (:board state)))
       (is (some? (get-in state [:player :position])))
       (is (s/valid? :game/position (get-in state [:player :position])))
-      (is (s/valid? :game/game state)))))
+      (is (s/valid? :game/game state))
+      )))
 
 (deftest set-player
-  (let [state (commands-to-state (commands-player-in-position 50 50))]
+  (let [state (commands-to-state (commands-player-in-position 25 25))]
     (testing "Set player command"
-      (is (= [50 50] (get-in state [:player :position]))))))
+      (is (= [25 25] (get-in state [:player :position]))))))
 
 (defn move-to-position
   [startx starty direction]
@@ -160,8 +161,8 @@
   (testing "don't move out"
     (is (= [0 0] (move-to-position 0 0 :left)))
     (is (= [0 0] (move-to-position 0 0 :up)))
-    (is (= [mu/sizex mu/sizey] (move-to-position mu/sizex mu/sizey :down)))
-    (is (= [mu/sizex mu/sizey] (move-to-position mu/sizex mu/sizey :right))))
+    (is (= [(dec mu/sizex) (dec mu/sizey)] (move-to-position (dec mu/sizex) (dec mu/sizey) :down)))
+    (is (= [(dec mu/sizex) (dec mu/sizey)] (move-to-position (dec mu/sizex) (dec mu/sizey) :right))))
   (testing "don't move on walls"
     (is (= [4 1] (move-on-testmap 4 1 :up)))
     (is (= [4 1] (move-on-testmap 4 1 :up)))

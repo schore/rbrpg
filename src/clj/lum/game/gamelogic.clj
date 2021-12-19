@@ -96,6 +96,15 @@
    :nop []})
 
 
+(defn enforce-spec
+  [f]
+  (fn [data command]
+    (let [new-data (f data command)]
+      (if (s/valid? :game/game new-data)
+        new-data
+        (do
+          (log/error (s/explain-str :game/game new-data))
+          data)))))
 
 (defn calc-new-state
   [data action]
@@ -104,10 +113,11 @@
       (when (nil? (get calc-new-state-functions (keyword (first action))))
         (log/error "No entry defined " action))
       (reduce (fn [data f]
-                (f data action))
+                ((enforce-spec f) data action))
               data (get calc-new-state-functions
                         (keyword (first action)) [])))
     data))
+
 
 (defn board-update
   [data new-data]
@@ -156,6 +166,7 @@
    hp-update
    mp-update
    xp-update])
+
 
 (defn calc-updates [data new-data]
   (filter (complement nil?)

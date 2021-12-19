@@ -39,6 +39,7 @@
 (s/def :game/npcs (s/coll-of :game/npc))
 
 (s/def :game/game (s/keys :req-un [:game/player
+                                   ;;:game/npcs
                                    :game/board]))
 
 (s/explain :game/game {:board (g/get-dungeon)

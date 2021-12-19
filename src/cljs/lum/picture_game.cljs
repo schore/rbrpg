@@ -34,6 +34,22 @@
   [[_ fight?]]
   (rf/dispatch [:game/fight fight?]))
 
+
+(defmethod dispatch-ws
+  :xp
+  [[_ xp]]
+  (rf/dispatch [:player/xp xp]))
+
+(defmethod dispatch-ws
+  :hp
+  [[_ current max]]
+  (rf/dispatch [:player/hp current max]))
+
+(defmethod dispatch-ws
+  :mp
+  [[_ current max]]
+  (rf/dispatch [:player/mp current max]))
+
 (defmethod dispatch-ws
   :default
   [msg]
@@ -120,9 +136,7 @@
 (rf/reg-event-db
  :game/set-player-postion
  (fn [db [_ x y]]
-   (-> db
-       (assoc-in [:position :x] x)
-       (assoc-in [:position :y] y))))
+   (assoc-in db [:player :position] [x y])))
 
 (rf/reg-event-db
  :game/fight
@@ -149,6 +163,22 @@
                          (map clojure.walk/keywordize-keys)
                          (map (fn [m] (update m :type keyword)))))))
 
+(rf/reg-event-db
+ :player/xp
+ (fn [db [_ xp]]
+   (assoc-in db [:player :xp] xp)))
+
+(rf/reg-event-db
+ :player/hp
+ (fn [db [_ current max]]
+   (assoc-in db [:player :hp] [current max])))
+
+(rf/reg-event-db
+ :player/mp
+ (fn [db [_ current max]]
+   (assoc-in db [:player :mp] [current max])))
+
+
 (rf/reg-sub
  :game/collumns
  (fn [db _]
@@ -157,9 +187,8 @@
 (rf/reg-sub
  :game/position
  (fn [db _]
-   [(-> db :position :x)
-    (-> db :position :y)
-    (-> db :position :direction)]))
+   [(get-in db [:player :position 0])
+    (get-in db [:player :position 1])]))
 
 (rf/reg-sub
  :game/board
@@ -181,6 +210,23 @@
  (fn [db _]
    (:action db)))
 
+(rf/reg-sub
+ :player/hp
+ (fn [db _]
+   (-> db :player :hp)))
+
+(rf/reg-sub
+ :player/mp
+ (fn [db _]
+   (-> db :player :mp)))
+
+
+(rf/reg-sub
+ :player/xp
+ (fn [db _]
+   (-> db :player :xp)))
+
+
 (defn position-css [x y]
   {:width "15px"
    :height "15px"
@@ -191,13 +237,8 @@
 (defn player []
   (let [player (rf/subscribe [:game/position])]
     (fn []
-      (let [[x y direction] @player
-            rotation (case direction
-                       :left 270
-                       :up 0
-                       :right 90
-                       :down 180
-                       0)]
+      (let [[x y] @player
+            rotation 0]
         [:img {:src "img/player.gif"
                :style (assoc (position-css x y)
                              :transform (str "rotate(" rotation "deg)"))}]))))
@@ -207,14 +248,6 @@
   (get {:wall "#"
         :default "."}
        key))
-
-(defn monsters []
-  (let [mon (rf/subscribe [:game/npc])]
-    [:<>
-     (for [m @mon]
-       ^{:key (str "monster" m)}
-       [:div {:style (position-css (:x m) (:y m))}
-        "M"])]))
 
 (defn board []
   (let [board (rf/subscribe [:game/board])]
@@ -261,6 +294,20 @@
               {:style {:font-weight "bold"}})
             entry])]))))
 
+(defn stats
+  []
+  (let [hp (rf/subscribe [:player/hp])
+        mp (rf/subscribe [:player/mp])
+        xp (rf/subscribe [:player/xp])]
+    (fn []
+      (let [[hp hp-max] @hp
+            [mp mp-max] @mp
+            xp @xp]
+        [:<>
+         [:span {:style {:margin "10px"}} "xp: " xp]
+         [:span {:style {:margin "10px"}} "hp: " hp "/" hp-max]
+         [:span {:style {:margin "10px"}} "mp: " mp "/" mp-max]]))))
+
 (defn picture-game []
   (let [fight? (rf/subscribe [:game/fight?])]
     (fn []
@@ -271,4 +318,6 @@
           [board]
           [player]])
        [button "New map" [:game/get-new-map]]
-       [button "Load map" [:game/load-map]]])))
+       [button "Load map" [:game/load-map]]
+       [:br]
+       [stats]])))

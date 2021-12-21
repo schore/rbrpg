@@ -79,12 +79,15 @@
   [data _]
   (if (> (rand) 0.97)
     ;;Start a fight every 20 turns
-    (assoc data :fight? true)
+    (assoc data :fight {:enemy {:name "Bat"
+                                :hp [2 2]
+                                :mp [0 0]}
+                        :actions []})
     data))
 
 (defn attack
   [data _]
-  (assoc data :fight? false))
+  (dissoc data :fight))
 
 (def calc-new-state-functions
   {:initialize [initialize]
@@ -135,9 +138,9 @@
 
 (defn fight
   [data new-data]
-  (when (not= (:fight? data)
-         (:fight? new-data))
-    [:fight (:fight? new-data)]))
+  (when (not= (:fight data)
+              (:fight new-data))
+    [:fight (:fight new-data)]))
 
 (defn hp-update
   [data new-data]

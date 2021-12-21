@@ -56,8 +56,10 @@
 
 (defmethod summarize-response
   :fight
-  [m [_ fight?]]
-  (assoc m :fight? fight?))
+  [m [_ fight]]
+  (if (some? fight)
+    (assoc m :fight fight)
+    (dissoc m :fight)))
 
 (defmethod summarize-response
   :hp
@@ -193,7 +195,7 @@
 (deftest fight
   (testing "Starting a fight"
     (let [state (start-fight)]
-      (is (:fight? state))))
+      (is (some? (:fight state)))))
   (testing "attack and kill"
     (let [state (start-fight-and-kill)]
-      (is (false? (:fight? state))))))
+      (is (not (contains? state :fight))))))

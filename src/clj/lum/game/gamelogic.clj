@@ -80,17 +80,19 @@
                         :actions []})
     data))
 
+(defn fight-ended?
+  [data]
+  (= 0 (get-in data [:fight :enemy :hp 0])))
+
 (defn process-event
   [state {:keys [target stat n]}]
   (let [update-field (conj (case target
                              :player [:player]
                              :enemy [:fight :enemy])
                            stat 0)]
-    (log/info (:player state)
-              (:fight state)
-              update-field
-              (get-in state update-field))
-    (update-in state update-field #(+ n %))))
+    (if (not (fight-ended? state))
+      (update-in state update-field #(+ n %))
+      state)))
 
 (defn attack
   [data _]
@@ -103,9 +105,11 @@
     (reduce process-event data
             (mapcat second actions))))
 
+
+
 (defn check-fight-end
   [data _]
-  (if (= 0 (get-in data [:fight :enemy :hp 0]))
+  (if (fight-ended? data)
     (dissoc data :fight)
     data))
 

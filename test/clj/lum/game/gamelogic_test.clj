@@ -200,4 +200,4 @@
     (let [state (start-fight-and-kill)]
       (log/info state)
       (is (not (contains? state :fight)))
-      (is (= 8 (get-in state [:player :hp 0]))))))
+      (is (= 9 (get-in state [:player :hp 0]))))))

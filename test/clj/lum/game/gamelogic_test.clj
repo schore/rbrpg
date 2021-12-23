@@ -189,7 +189,7 @@
   (let [[in out a] (with-redefs [rand (fn [] 0.98)]
                      (run-game-logic (commands-move-on-testmap 1 1 :up) false))]
     (with-redefs [rand (fn [] 0.3)]
-      (summarize-responses (nth (run-game-logic [[:attack]] true a in out)
+      (summarize-responses (nth (run-game-logic [[:attack] [:attack]] true a in out)
                               2)))))
 
 (deftest fight
@@ -200,4 +200,4 @@
     (let [state (start-fight-and-kill)]
       (log/info state)
       (is (not (contains? state :fight)))
-      (is (= 9 (get-in state [:player :hp 0]))))))
+      (is (= 8 (get-in state [:player :hp 0]))))))

@@ -99,19 +99,34 @@
                             :n -1}]]
                   ["Bite" [{:target :player
                             :stat :hp
-                            :n -1}]]]
-         new-data (reduce process-event data
-                          (mapcat second actions))]
-    (dissoc new-data :fight)))
+                            :n -1}]]]]
+    (reduce process-event data
+            (mapcat second actions))))
 
-(def calc-new-state-functions
+(defn check-fight-end
+  [data _]
+  (if (= 0 (get-in data [:fight :enemy :hp 0]))
+    (dissoc data :fight)
+    data))
+
+(def fight-mode
+  {:initialize [initialize]
+   :attack [attack check-fight-end]
+   :nop []})
+
+(def move-mode
   {:initialize [initialize]
    :load-map [load-map]
    :move [move check-fight]
    :set-position [set-position]
    :new-board [new-board]
-   :attack [attack]
    :nop []})
+
+(defn get-mode-map
+  [state]
+  (cond
+    (contains? state :fight) fight-mode
+    :else move-mode))
 
 (defn enforce-spec
   [f]
@@ -127,11 +142,11 @@
   [data action]
   (if action
     (do
-      (when (nil? (get calc-new-state-functions (keyword (first action))))
+      (when (nil? (get (get-mode-map data) (keyword (first action))))
         (log/error "No entry defined " action))
       (reduce (fn [data f]
                 ((enforce-spec f) data action))
-              data (get calc-new-state-functions
+              data (get (get-mode-map data)
                         (keyword (first action)) [])))
     data))
 

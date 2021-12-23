@@ -47,4 +47,5 @@
 (deftest leave-fight
   (enter-fight-screen *driver*)
   (select-and-activate *driver* "Attack")
+  (select-and-activate *driver* "Attack")
   (c/wait-map-screen *driver*))

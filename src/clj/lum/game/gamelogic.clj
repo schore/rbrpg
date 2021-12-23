@@ -9,8 +9,6 @@
    [clojure.java.io :as io]
    [clojure.tools.logging :as log]))
 
-
-
 (defn set-position
   [data [_ x y]]
   (assoc-in data [:player :position] [x y]))
@@ -50,22 +48,19 @@
        flatten
        (pad (* mu/sizex mu/sizey) {:type :wall})))
 
-
-
 (defn new-board
   [data _]
   (assoc data :board (cavegen/get-dungeon)))
 
-
 (defn initialize
   [_ _]
-    {:board (cavegen/get-dungeon)
-     :npcs []
-     :player {:position [10 10]
-              :xp 0
-              :hp [10 10]
-              :mp [3 3]}
-     :fight? false})
+  {:board (cavegen/get-dungeon)
+   :npcs []
+   :player {:position [10 10]
+            :xp 0
+            :hp [10 10]
+            :mp [3 3]}
+   :fight? false})
 
 (defn load-map
   [data [_ file]]
@@ -85,9 +80,29 @@
                         :actions []})
     data))
 
+(defn process-event
+  [state {:keys [target stat n]}]
+  (let [update-field (conj (case target
+                             :player [:player]
+                             :enemy [:fight :enemy])
+                           stat 0)]
+    (log/info (:player state)
+              (:fight state)
+              update-field
+              (get-in state update-field))
+    (update-in state update-field #(+ n %))))
+
 (defn attack
   [data _]
-  (dissoc data :fight))
+  (let  [actions [["Beat" [{:target :enemy
+                            :stat :hp
+                            :n -1}]]
+                  ["Bite" [{:target :player
+                            :stat :hp
+                            :n -1}]]]
+         new-data (reduce process-event data
+                          (mapcat second actions))]
+    (dissoc new-data :fight)))
 
 (def calc-new-state-functions
   {:initialize [initialize]
@@ -97,7 +112,6 @@
    :new-board [new-board]
    :attack [attack]
    :nop []})
-
 
 (defn enforce-spec
   [f]
@@ -120,7 +134,6 @@
               data (get calc-new-state-functions
                         (keyword (first action)) [])))
     data))
-
 
 (defn board-update
   [data new-data]
@@ -170,7 +183,6 @@
    mp-update
    xp-update])
 
-
 (defn calc-updates [data new-data]
   (filter (complement nil?)
           (reduce (fn [r f]
@@ -178,7 +190,6 @@
                     (conj r (f data new-data)))
                   []
                   update-calc-functions)))
-
 
 (defn game-master
   [input-chan]
@@ -195,4 +206,3 @@
             (close! out)
             data))))
     out))
-

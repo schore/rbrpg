@@ -198,4 +198,6 @@
       (is (some? (:fight state)))))
   (testing "attack and kill"
     (let [state (start-fight-and-kill)]
-      (is (not (contains? state :fight))))))
+      (log/info state)
+      (is (not (contains? state :fight)))
+      (is (= 9 (get-in state [:player :hp 0]))))))

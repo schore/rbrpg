@@ -110,11 +110,16 @@
             (mapcat second actions))))
 
 
+(defn update-xp
+  [data]
+  (update-in data [:player :xp] inc))
 
 (defn check-fight-end
   [data _]
   (if (fight-ended? data)
-    (dissoc data :fight)
+    (-> data
+     update-xp
+     (dissoc :fight))
     data))
 
 (def game-over-mode

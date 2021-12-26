@@ -213,7 +213,8 @@
   (testing "attack and kill"
     (let [state (start-fight-and-kill)]
       (is (not (contains? state :fight)))
-      (is (= 9 (get-in state [:player :hp 0])))))
+      (is (= 9 (get-in state [:player :hp 0])))
+      (is (= 1 (get-in state [:player :xp])))))
   (testing "Fight until you die"
     (let [state (fight-until-game-over)]
       (is (= 0 (get-in state [:player :hp 0]))))))

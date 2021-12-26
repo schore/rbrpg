@@ -227,6 +227,12 @@
    (-> db :player :xp)))
 
 
+(rf/reg-sub
+ :game/game-over?
+ (fn [db _]
+   (= 0 (get-in db [:player :hp 0]))))
+
+
 (defn position-css [x y]
   {:width "15px"
    :height "15px"
@@ -294,6 +300,10 @@
               {:style {:font-weight "bold"}})
             entry])]))))
 
+(defn game-over
+  []
+  [:h1 "GAME OVER"])
+
 (defn stats
   []
   (let [hp (rf/subscribe [:player/hp])
@@ -308,15 +318,18 @@
          [:span {:style {:margin "10px"}} "hp: " hp "/" hp-max]
          [:span {:style {:margin "10px"}} "mp: " mp "/" mp-max]]))))
 
+
 (defn picture-game []
-  (let [fight? (rf/subscribe [:game/fight?])]
+  (let [fight? (rf/subscribe [:game/fight?])
+        game-over? (rf/subscribe [:game/game-over?])]
     (fn []
       [:section.section>div.container>div.content
-       (if @fight?
-         [fight-screen]
-         [:div.grid-container
-          [board]
-          [player]])
+       (cond
+         @game-over? [game-over]
+         @fight? [fight-screen]
+         :else  [:div.grid-container
+                 [board]
+                 [player]])
        [button "New map" [:game/get-new-map]]
        [button "Load map" [:game/load-map]]
        [:br]

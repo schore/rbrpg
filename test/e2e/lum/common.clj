@@ -57,7 +57,7 @@
 
 (defn map-screen?
   [driver]
-  (e/visible? driver [{:class "grid-container"}
+  (e/exists? driver [{:class "grid-container"}
                       {:tag :img}]))
 
 (defn wait-map-screen
@@ -67,9 +67,16 @@
 
 (defn fight-screen?
   [driver]
-  (e/visible? driver [{:class "content"}
+  (e/exists? driver [{:class "content"}
                       {:tag :h1
                        :fn/has-text "FIGHT"}]))
+
+
+(defn game-over?
+  [driver]
+  (e/exists? driver [{:class "content"}
+                     {:tag :h1
+                      :fn/has-text "GAME OVER"}]))
 
 (defn get-player-position
   [driver]
@@ -99,3 +106,4 @@
   [f]
   (navigate-to-game *driver*)
   (f))
+

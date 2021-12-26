@@ -3,7 +3,8 @@
    [clojure.test :as t :refer [deftest is]]
    [etaoin.api :as e]
    [etaoin.keys]
-   [lum.common :as c :refer [*driver*]]))
+   [lum.common :as c :refer [*driver*]]
+   [clojure.tools.logging :as log]))
 
 (t/use-fixtures :once c/fixture-driver c/open-website)
 
@@ -17,25 +18,24 @@
       (c/move driver :left)
       (recur (inc i)))))
 
-
-
 (defn select-and-activate
   [driver action]
+  (is (c/fight-screen? driver))
   (let [bold "700"]
     (loop [i 0]
       (when (and (< i 20)
                  (not (= bold (e/get-element-css driver
-                                                   [{:class "content"}
-                                                    {:tag :p
-                                                     :fn/has-text action}]
-                                                   "font-weight"))))
+                                                 [{:class "content"}
+                                                  {:tag :p
+                                                   :fn/has-text action}]
+                                                 "font-weight"))))
         (c/press-key driver "j")
         (recur (inc i))))
     (is (= bold (e/get-element-css driver
-                                     [{:class "content"}
-                                      {:tag :p
-                                       :fn/has-text action}]
-                                     "font-weight")))
+                                   [{:class "content"}
+                                    {:tag :p
+                                     :fn/has-text action}]
+                                   "font-weight")))
     (c/press-key driver etaoin.keys/space)))
 
 (deftest start-fight
@@ -49,3 +49,21 @@
   (select-and-activate *driver* "Attack")
   (select-and-activate *driver* "Attack")
   (c/wait-map-screen *driver*))
+
+(defn fight
+  [driver]
+  (enter-fight-screen driver)
+  (is (c/fight-screen? driver))
+  (when (c/fight-screen? driver) (select-and-activate driver "Attack"))
+  (e/wait driver 0.1)
+  (when (c/fight-screen? driver) (select-and-activate driver "Attack")))
+
+
+(deftest fight-until-end
+  (loop [i 0]
+    (when (and (not (c/game-over? *driver*))
+               (< i 100))
+      (fight *driver*)
+      (recur (inc i))))
+  (log/info (c/game-over? *driver*))
+  (is (c/game-over? *driver*)))

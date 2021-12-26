@@ -84,6 +84,10 @@
   [data]
   (= 0 (get-in data [:fight :enemy :hp 0])))
 
+(defn game-over?
+  [data]
+  (= 0 (get-in data [:palyer :hp])))
+
 (defn process-event
   [state {:keys [target stat n]}]
   (let [update-field (conj (case target
@@ -113,6 +117,11 @@
     (dissoc data :fight)
     data))
 
+(def game-over-mode
+  {:initialize [initialize]
+   :nop []})
+
+
 (def fight-mode
   {:initialize [initialize]
    :attack [attack check-fight-end]
@@ -129,6 +138,7 @@
 (defn get-mode-map
   [state]
   (cond
+    (game-over? state) game-over-mode
     (contains? state :fight) fight-mode
     :else move-mode))
 

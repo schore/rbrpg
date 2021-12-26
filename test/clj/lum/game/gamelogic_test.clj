@@ -6,7 +6,8 @@
    [clojure.tools.logging :as log]
    [lum.game.gamelogic :as gm]
    [lum.game.dataspec]
-   [lum.maputil :as mu]))
+   [lum.maputil :as mu]
+   [clojure.core.async :as a]))
 
 (defn create-game-maser
   []
@@ -14,14 +15,12 @@
         out (gm/game-master in)]
     [in out]))
 
-
 (defn run-game-logic
   ([commands]
-     (run-game-logic commands true))
-  ([commands close?]
    (let [[in out] (create-game-maser)]
-     (run-game-logic commands close? [] in out)))
+     (run-game-logic commands true [] in out)))
   ([commands close? accu in out]
+;;   (log/info commands accu)
    (let [responses (chan)
          processing-done (chan)]
      (go (doseq [command commands]
@@ -34,11 +33,14 @@
                          (if-let [v (first (alts! [out
                                                    processing-done
                                                    (timeout 500)]))]
-                             (recur (conj a v))
+                           (do
+                             ;;(log/info a v)
+                             (recur (conj a v)))
                            a))))
      (let [updates (<!! responses)]
        (close! responses)
-       [in out updates]))))
+ ;;      (log/info updates)
+       updates))))
 
 (defmulti summarize-response
   (fn [_ response]
@@ -76,7 +78,6 @@
   [m [_ xp]]
   (assoc-in m [:player :xp] xp))
 
-
 (defmethod summarize-response
   :default
   [m r]
@@ -89,17 +90,15 @@
             (summarize-response r response))
           {} responses))
 
-(defn commands-to-state [commands] (summarize-responses (nth (run-game-logic commands) 2)))
+(defn commands-to-state [commands] (summarize-responses (run-game-logic commands)))
 
 (def commands-initialized
   [[:initialize]])
-
 
 (defn commands-loadmap
   [file]
   (conj commands-initialized
         [:load-map file]))
-
 
 (defn commands-player-in-position
   [x y]
@@ -124,8 +123,7 @@
       (is (s/valid? :game/board (:board state)))
       (is (some? (get-in state [:player :position])))
       (is (s/valid? :game/position (get-in state [:player :position])))
-      (is (s/valid? :game/game state))
-      )))
+      (is (s/valid? :game/game state)))))
 
 (deftest set-player
   (let [state (commands-to-state (commands-player-in-position 25 25))]
@@ -177,20 +175,36 @@
       (is (= :ground (:type (first m))))
       (is (s/valid? :game/board m))
       (is (= :wall (:type (mu/get-tile m 3 5))))
-      (is (= :ground ( :type (mu/get-tile m 0 2)))))))
+      (is (= :ground (:type (mu/get-tile m 0 2)))))))
 
 (defn start-fight
   []
   (with-redefs [rand (fn [] 0.98)]
     (commands-to-state (commands-move-on-testmap 1 1 :up))))
-
 (defn start-fight-and-kill
+  ([]
+   (let [[in out] (create-game-maser)
+         a (start-fight-and-kill in out
+                                 (run-game-logic [[:initialize]] false [] in out))]
+     (a/close! in)
+     (summarize-responses a)))
+  ([in out a]
+   (with-redefs [rand (fn [] 0.98)]
+     (run-game-logic (concat [[:move :up]]
+                             [[:attack] [:attack]])
+                     false a in out))))
+
+(defn fight-until-game-over
   []
-  (let [[in out a] (with-redefs [rand (fn [] 0.98)]
-                     (run-game-logic (commands-move-on-testmap 1 1 :up) false))]
-    (with-redefs [rand (fn [] 0.3)]
-      (summarize-responses (nth (run-game-logic [[:attack] [:attack]] true a in out)
-                              2)))))
+  (let [[in out] (create-game-maser)
+        a (run-game-logic [[:initialize]] false [] in out)
+        a (loop [i 0 a a]
+            (if (< i 10)
+              (recur (inc i) (start-fight-and-kill in out a))
+              a))]
+    (a/close! in)
+    (summarize-responses a)))
+
 
 (deftest fight
   (testing "Starting a fight"
@@ -198,6 +212,8 @@
       (is (some? (:fight state)))))
   (testing "attack and kill"
     (let [state (start-fight-and-kill)]
-      (log/info state)
       (is (not (contains? state :fight)))
-      (is (= 9 (get-in state [:player :hp 0]))))))
+      (is (= 9 (get-in state [:player :hp 0])))))
+  (testing "Fight until you die"
+    (let [state (fight-until-game-over)]
+      (is (= 0 (get-in state [:player :hp 0]))))))

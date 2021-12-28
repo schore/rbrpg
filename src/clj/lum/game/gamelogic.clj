@@ -3,6 +3,7 @@
    [lum.game.cavegen :as cavegen]
    [lum.maputil :as mu]
    [lum.game.dataspec]
+   [lum.game.update-data]
    [clojure.string]
    [clojure.spec.alpha :as s]
    [clojure.core.async :as a :refer [chan go go-loop <! >! close!]]
@@ -157,7 +158,7 @@
           (log/error (s/explain-str :game/game new-data))
           data)))))
 
-(defn calc-new-state
+(defn process-actions
   [data action]
   (if action
     (do
@@ -183,55 +184,13 @@
     (let [[x y] (get-in new-data [:player :position])]
       [:player-move x y])))
 
-(defn fight
-  [data new-data]
-  (when (not= (:fight data)
-              (:fight new-data))
-    [:fight (:fight new-data)]))
-
-(defn hp-update
-  [data new-data]
-  (when (not= (-> data :player :hp)
-              (-> new-data :player :hp))
-    (let [[current max] (-> new-data :player :hp)]
-      [:hp current max])))
-
-(defn mp-update
-  [data new-data]
-  (when (not= (-> data :player :mp)
-              (-> new-data :player :mp))
-    (let [[current max] (-> new-data :player :mp)]
-      [:mp current max])))
-
-(defn xp-update
-  [data new-data]
-  (when (not= (-> data :player :xp)
-              (-> new-data :player :xp))
-    [:xp (-> new-data :player :xp)]))
-
-(def update-calc-functions
-  [board-update
-   player-move
-   fight
-   hp-update
-   mp-update
-   xp-update])
-
-(defn calc-updates [data new-data]
-  (filter (complement nil?)
-          (reduce (fn [r f]
-                    ;;(log/info (f data new-data))
-                    (conj r (f data new-data)))
-                  []
-                  update-calc-functions)))
-
 (defn game-master
   [input-chan]
   (let [out (chan)]
     (go-loop [data {}]
       (let [action (<! input-chan)
-            new-data (calc-new-state data action)
-            updates (calc-updates data new-data)]
+            new-data (process-actions data action)
+            updates (lum.game.update-data/calc-updates data new-data)]
         (if (some? action)
           (do
             (doseq [update updates] (>! out update))

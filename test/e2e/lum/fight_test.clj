@@ -53,7 +53,6 @@
 (defn fight
   [driver]
   (enter-fight-screen driver)
-  (is (c/fight-screen? driver))
   (when (c/fight-screen? driver) (select-and-activate driver "Attack"))
   (e/wait driver 0.1)
   (when (c/fight-screen? driver) (select-and-activate driver "Attack")))

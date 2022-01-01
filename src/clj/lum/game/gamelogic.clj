@@ -99,11 +99,31 @@
       (update-in state update-field #(+ n %))
       state)))
 
+(defn roll
+  [n s]
+  (reduce + (take n
+                  (map #(%) (repeat #(inc (rand-int s)))))))
+
+(defn damage-role
+  [_ attack_role]
+  (case attack_role
+    1 0
+    20 (roll 2 3)
+    (roll 1 3)))
+
+(defn attack-beat
+  [data]
+  (let [attack-role (roll 1 20)
+        enemy-ac 10]
+      {:target :enemy
+       :stat :hp
+       :n (if (> attack-role enemy-ac)
+            (* -1 (damage-role data attack-role))
+            0)}))
+
 (defn attack
   [data _]
-  (let  [actions [["Beat" [{:target :enemy
-                            :stat :hp
-                            :n -1}]]
+  (let  [actions [["Beat" [(attack-beat data)]]
                   ["Bite" [{:target :player
                             :stat :hp
                             :n -1}]]]]

@@ -44,24 +44,26 @@
                             {:tag :h1
                              :fn/has-text "FIGHT"}])))
 
-(deftest leave-fight
-  (enter-fight-screen *driver*)
-  (select-and-activate *driver* "Attack")
-  (select-and-activate *driver* "Attack")
-  (c/wait-map-screen *driver*))
-
 (defn fight
   [driver]
-  (enter-fight-screen driver)
-  (when (c/fight-screen? driver) (select-and-activate driver "Attack"))
-  (e/wait driver 0.1)
-  (when (c/fight-screen? driver) (select-and-activate driver "Attack")))
+  (loop [i 0]
+    (when (and (< i 20)
+               (c/fight-screen? driver))
+        (select-and-activate driver "Attack")
+        (e/wait driver 0.1)
+        (recur (inc i)))))
+
+(deftest leave-fight
+  (enter-fight-screen *driver*)
+  (fight *driver*)
+  (is (c/map-screen? *driver*)))
 
 
 (deftest fight-until-end
   (loop [i 0]
     (when (and (not (c/game-over? *driver*))
                (< i 100))
+      (enter-fight-screen *driver*)
       (fight *driver*)
       (recur (inc i))))
   (log/info (c/game-over? *driver*))

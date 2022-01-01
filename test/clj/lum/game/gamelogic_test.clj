@@ -110,11 +110,6 @@
   (conj (commands-player-in-position startx starty)
         [:move direction]))
 
-(deftest calc-updates
-  (testing "New board"
-    (let [[action data] (first (gm/calc-updates  {:board "old val"} {:board "new val"}))]
-      (is (= action :new-board))
-      (is (= data "new val")))))
 
 (deftest initalize-tests
   (testing "Initializing"
@@ -189,7 +184,10 @@
      (a/close! in)
      (summarize-responses a)))
   ([in out a]
-   (with-redefs [rand (fn [] 0.98)]
+   (with-redefs [rand (fn [] 0.98)
+                 gm/attack-beat (fn [_] {:target :enemy
+                                         :stat :hp
+                                         :n -1})]
      (run-game-logic (concat [[:move :up]]
                              [[:attack] [:attack]])
                      false a in out))))

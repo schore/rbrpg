@@ -185,9 +185,9 @@
      (summarize-responses a)))
   ([in out a]
    (with-redefs [rand (fn [] 0.98)
-                 gm/attack-beat (fn [_] {:target :enemy
-                                         :stat :hp
-                                         :n -1})]
+                 gm/player-attacks (fn [_]  ["Beat" [{:target :enemy
+                                                       :stat :hp
+                                                       :n -1}]])]
      (run-game-logic (concat [[:move :up]]
                              [[:attack] [:attack]])
                      false a in out))))

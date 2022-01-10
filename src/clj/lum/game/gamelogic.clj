@@ -94,9 +94,15 @@
   (let [update-field (conj (case target
                              :player [:player]
                              :enemy [:fight :enemy])
-                           stat 0)]
+                           stat)]
     (if (not (fight-ended? state))
-      (update-in state update-field #(+ n %))
+      (update-in state update-field (fn [[v max]]
+                                      (let [nv (+ v n)
+                                            cv (cond
+                                                 (< nv 0) 0
+                                                 (> nv max) max
+                                                 :else nv)]
+                                        [cv max])))
       state)))
 
 (defn roll
@@ -111,25 +117,25 @@
     20 (roll 2 3)
     (roll 1 3)))
 
-(defn attack-beat
+(defn player-attacks
   [data]
-  (let [attack-role (roll 1 20)
-        enemy-ac 10]
+  ["Beat"
+   [(let [attack-role (roll 1 20)
+          enemy-ac 10]
       {:target :enemy
        :stat :hp
        :n (if (> attack-role enemy-ac)
             (* -1 (damage-role data attack-role))
-            0)}))
+            0)})]])
 
 (defn attack
   [data _]
-  (let  [actions [["Beat" [(attack-beat data)]]
+  (let  [actions [(player-attacks data)
                   ["Bite" [{:target :player
                             :stat :hp
                             :n -1}]]]]
     (reduce process-event data
             (mapcat second actions))))
-
 
 (defn update-xp
   [data]
@@ -139,14 +145,13 @@
   [data _]
   (if (fight-ended? data)
     (-> data
-     update-xp
-     (dissoc :fight))
+        update-xp
+        (dissoc :fight))
     data))
 
 (def game-over-mode
   {:initialize [initialize]
    :nop []})
-
 
 (def fight-mode
   {:initialize [initialize]

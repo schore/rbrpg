@@ -76,6 +76,7 @@
   (if (> (rand) 0.97)
     ;;Start a fight every 20 turns
     (assoc data :fight {:enemy {:name "Bat"
+                                :ac 5
                                 :hp [2 2]
                                 :mp [0 0]}
                         :actions []})
@@ -107,8 +108,7 @@
 
 (defn roll
   [n s]
-  (reduce + (take n
-                  (map #(%) (repeat #(inc (rand-int s)))))))
+  (reduce + (take n (map #(%) (repeat #(inc (rand-int s)))))))
 
 (defn damage-role
   [_ attack_role]
@@ -121,10 +121,11 @@
   [data]
   ["Beat"
    [(let [attack-role (roll 1 20)
-          enemy-ac 10]
+          enemy-ac (get-in data [:fight :enemy :ac])]
       {:target :enemy
        :stat :hp
-       :n (if (> attack-role enemy-ac)
+       :n (if (or (> attack-role enemy-ac)
+                  (= 20 attack-role))
             (* -1 (damage-role data attack-role))
             0)})]])
 

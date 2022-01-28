@@ -13,7 +13,7 @@
       (g/player-attacks data))))
 
 (def gamestate
-  {})
+  {:fight { :enemy {:ac 10} }})
 
 
 
@@ -28,3 +28,17 @@
     (is (= 0 (get-damage 10))))
   (testing "Regular hit"
     (is (= -1 (get-damage 11 1 2)))))
+
+
+(deftest check-hit
+  (defn hit? [ac roll]
+    (> 0
+       (get-in (attack {:fight {:enemy {:ac ac}}}
+                       roll 1 1 1 1 1 1 1 1 1 1 1 1)
+               [1 0 :n])))
+  (is (hit? 50 20))
+  (is (hit? 20 20))
+  (is (hit? 5 6))
+  (is (not (hit? 10 10)))
+  (is (not (hit? -1 1)))
+  (is (not (hit? 10 1))))

@@ -33,10 +33,12 @@
 (s/def :enemy/name string?)
 (s/def :enemy/hp :game/stat)
 (s/def :enemy/mp :game/stat)
+(s/def :enemy/ac pos-int?)
 
 (s/def :fight/enemy (s/keys :req-un [:enemy/name
                                      :enemy/hp
-                                     :enemy/mp]))
+                                     :enemy/mp
+                                     :enemy/ac]))
 
 
 

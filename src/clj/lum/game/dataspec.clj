@@ -24,8 +24,10 @@
 
 (s/def :player/hp :game/stat)
 (s/def :player/mp :game/stat)
+(s/def :player/ac pos-int?)
 
 (s/def :game/player (s/keys :req-un [:game/position
+                                     :player/ac
                                      :player/xp
                                      :player/hp
                                      :player/mp]))
@@ -68,9 +70,13 @@
 (s/explain :game/game {:board (g/get-dungeon)
                        :player {:position [1 1]
                                 :xp 0
+                                :ac 10
                                 :hp [8 10]
                                 :mp [0 3]}
-                       :fight {:enemy {:hp [20 20]
+                       :fight {:enemy {
+                                       :name "bat"
+                                       :ac 1
+                                       :hp [20 20]
                                        :mp [0 0]}
                                :actions [["Heal" [{:target :player
                                                    :stat :hp

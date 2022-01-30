@@ -26,6 +26,13 @@
               (-> new-data :player :xp))
     [:xp (-> new-data :player :xp)]))
 
+(defn ac-update
+  [data new-data]
+  (when (not= (-> data :player :ac)
+              (-> new-data :player :ac))
+    [:ac (-> new-data :player :ac)]))
+
+
 (defn board-update
   [data new-data]
   (if (not= (:board data)
@@ -47,7 +54,8 @@
    fight
    hp-update
    mp-update
-   xp-update])
+   xp-update
+   ac-update])
 
 (defn calc-updates [data new-data]
   (filter (complement nil?)

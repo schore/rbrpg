@@ -79,6 +79,11 @@
   (assoc-in m [:player :xp] xp))
 
 (defmethod summarize-response
+  :ac
+  [m [_ ac]]
+  (assoc-in m [:player :ac] ac))
+
+(defmethod summarize-response
   :default
   [m r]
   (log/error "Default reached " r)
@@ -177,20 +182,23 @@
   (with-redefs [rand (fn [] 0.98)]
     (commands-to-state (commands-move-on-testmap 1 1 :up))))
 (defn start-fight-and-kill
-  ([]
+  ([rolls]
    (let [[in out] (create-game-maser)
          a (start-fight-and-kill in out
-                                 (run-game-logic [[:initialize]] false [] in out))]
+                                 (run-game-logic [[:initialize]] false [] in out)
+                                 rolls)]
      (a/close! in)
      (summarize-responses a)))
-  ([in out a]
-   (with-redefs [rand (fn [] 0.98)
-                 gm/player-attacks (fn [_]  ["Beat" [{:target :enemy
-                                                       :stat :hp
-                                                       :n -1}]])]
-     (run-game-logic (concat [[:move :up]]
-                             [[:attack] [:attack]])
-                     false a in out))))
+  ([in out a rolls]
+   (let [r (atom (map dec rolls))]
+     (with-redefs [rand (fn [] 0.98)
+                   rand-int (fn [_]
+                              (let [f (first @r)]
+                                (swap! r rest)
+                                f))]
+       (run-game-logic (concat [[:move :up]]
+                               [[:attack] [:attack]])
+                       false a in out)))))
 
 (defn fight-until-game-over
   []
@@ -198,7 +206,7 @@
         a (run-game-logic [[:initialize]] false [] in out)
         a (loop [i 0 a a]
             (if (< i 10)
-              (recur (inc i) (start-fight-and-kill in out a))
+              (recur (inc i) (start-fight-and-kill in out a [1 20 2 2 2 2 2 2 2]))
               a))]
     (a/close! in)
     (summarize-responses a)))
@@ -209,7 +217,7 @@
     (let [state (start-fight)]
       (is (some? (:fight state)))))
   (testing "attack and kill"
-    (let [state (start-fight-and-kill)]
+    (let [state (start-fight-and-kill [1 12 1 20 3 3 1 1 1 1 1 1 1])]
       (is (not (contains? state :fight)))
       (is (= 9 (get-in state [:player :hp 0])))
       (is (= 1 (get-in state [:player :xp])))))

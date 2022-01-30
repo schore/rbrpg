@@ -58,6 +58,7 @@
   {:board (cavegen/get-dungeon)
    :npcs []
    :player {:position [10 10]
+            :ac 10
             :xp 0
             :hp [10 10]
             :mp [3 3]}
@@ -117,24 +118,40 @@
     20 (roll 2 3)
     (roll 1 3)))
 
+
+(defn attack-calc
+  [ac n dice]
+  (let [hit-roll (roll 1 20)
+        hit? (case hit-roll
+               1 false
+               20 true
+               (> hit-roll ac))
+        n (if (= 20 hit-roll)
+            (inc n)
+            n)]
+    (if hit?
+      (roll n dice)
+      0)))
+
 (defn player-attacks
   [data]
   ["Beat"
-   [(let [attack-role (roll 1 20)
-          enemy-ac (get-in data [:fight :enemy :ac])]
+   [(let [enemy-ac (get-in data [:fight :enemy :ac])]
       {:target :enemy
        :stat :hp
-       :n (if (or (> attack-role enemy-ac)
-                  (= 20 attack-role))
-            (* -1 (damage-role data attack-role))
-            0)})]])
+       :n (* -1 (attack-calc enemy-ac 1 3))})]])
+
+(defn enemy-attacks
+  [data]
+  (let [player-ac (get-in data [:player :ac])]
+    ["Bite" [{:target :player
+              :stat :hp
+              :n (* -1 (attack-calc player-ac 1 2))}]]))
 
 (defn attack
   [data _]
   (let  [actions [(player-attacks data)
-                  ["Bite" [{:target :player
-                            :stat :hp
-                            :n -1}]]]]
+                  (enemy-attacks data)]]
     (reduce process-event data
             (mapcat second actions))))
 

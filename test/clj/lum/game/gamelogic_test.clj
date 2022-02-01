@@ -42,58 +42,9 @@
  ;;      (log/info updates)
        updates))))
 
-(defmulti summarize-response
-  (fn [_ response]
-    (first response)))
-
-(defmethod summarize-response
-  :new-board
-  [m [_ board]]
-  (assoc m :board board))
-
-(defmethod summarize-response
-  :player-move
-  [m [_ x y]]
-  (assoc-in m [:player :position] [x y]))
-
-(defmethod summarize-response
-  :fight
-  [m [_ fight]]
-  (if (some? fight)
-    (assoc m :fight fight)
-    (dissoc m :fight)))
-
-(defmethod summarize-response
-  :hp
-  [m [_ current max]]
-  (assoc-in m [:player :hp] [current max]))
-
-(defmethod summarize-response
-  :mp
-  [m [_ current max]]
-  (assoc-in m [:player :mp] [current max]))
-
-(defmethod summarize-response
-  :xp
-  [m [_ xp]]
-  (assoc-in m [:player :xp] xp))
-
-(defmethod summarize-response
-  :ac
-  [m [_ ac]]
-  (assoc-in m [:player :ac] ac))
-
-(defmethod summarize-response
-  :default
-  [m r]
-  (log/error "Default reached " r)
-  m)
-
 (defn summarize-responses
   [responses]
-  (reduce (fn [r response]
-            (summarize-response r response))
-          {} responses))
+  (last responses))
 
 (defn commands-to-state [commands] (summarize-responses (run-game-logic commands)))
 

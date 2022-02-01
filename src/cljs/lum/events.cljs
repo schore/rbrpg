@@ -48,14 +48,15 @@
 (rf/reg-event-fx
   :page/init-home
   (fn [_ _]
-    {:dispatch [:fetch-docs]}))
+    {}))
 
 (rf/reg-event-fx
  :initialize
  (fn [_ _]
-   {:dispatch-n (list [:test/initialize-plus]
+   {:dispatch-n (list ;;[:test/initialize-plus]
                       [:game/initialize]
-                      [:fetch-docs])}))
+                      ;; [:fetch-docs]
+                      )}))
 
 (rf/reg-event-db
  :test/initialize-plus

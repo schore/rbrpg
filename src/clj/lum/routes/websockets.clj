@@ -21,6 +21,7 @@
                               (a/put! in [:initialize])
                               (a/go-loop []
                                 (when-let [msg (a/<! out)]
+                                  ;;(log/info msg)
                                   (send! chan (json/generate-string msg))
                                   (recur))))
                    :on-close (fn [_ status]

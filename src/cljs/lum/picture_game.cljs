@@ -13,65 +13,25 @@
    [clojure.walk]
    [cljs.core.async :as a :refer [<! >! go-loop go]]))
 
-;; websocket connection
 
-(defmulti dispatch-ws
-  (fn [msg]
-    (keyword (first msg))))
-
-(defmethod dispatch-ws
-  :player-move
-  [[_ x y]]
-  (rf/dispatch [:game/set-player-postion x y]))
-
-(defmethod dispatch-ws
-  :new-board
-  [[_ board]]
-  (rf/dispatch [:game/set-board board]))
-
-(defmethod dispatch-ws
-  :fight
-  [[_ fight?]]
-  (rf/dispatch [:game/fight fight?]))
-
-
-(defmethod dispatch-ws
-  :xp
-  [[_ xp]]
-  (rf/dispatch [:player/xp xp]))
-
-(defmethod dispatch-ws
-  :hp
-  [[_ current max]]
-  (rf/dispatch [:player/hp current max]))
-
-(defmethod dispatch-ws
-  :mp
-  [[_ current max]]
-  (rf/dispatch [:player/mp current max]))
-
-(defmethod dispatch-ws
-  :default
-  [msg]
-  (println "Default handler" (str msg)))
 
 (defn keyify-ws
   [msg]
-  (dispatch-ws (clojure.walk/keywordize-keys msg)))
+  (rf/dispatch [:game/update (clojure.walk/keywordize-keys msg)]))
 
 (defn create-ws
-  [rx]
+  []
   (let [stream  (ws/connect "ws://localhost:3000/game/ws"
                             {:format fmt/json})
         send-message (fn [msg] (go (>! (:sink (<! stream)) msg)))]
 
     (go (while (ws/connected? (<! stream))
           (let [message (<! (:source (<! stream)))]
-            (rx message))))
+            (keyify-ws message))))
     {:stream stream
      :send-message send-message}))
 
-(defonce wsconn (create-ws keyify-ws))
+(defonce wsconn (create-ws))
 
 (rf/reg-fx
  :game/send-message
@@ -80,8 +40,6 @@
 (def sizex 50)
 (def sizey 30)
 
-(def board-data
-  (repeat (* sizex sizey) [:wall]))
 
 (rf/reg-event-fx
  :game/initialize
@@ -93,21 +51,21 @@
                                    [[:game/key :up] [{:keyCode 107}]];;j
                                    [[:game/key :confirm] [{:keyCode 32}]];;space
                                    ]}]]
-         [:dispatch [::rp/add-keyboard-event-listener "keypress"]]]
-    :db (-> db
-            (assoc :position {:x 0 :y 0})
-            (assoc :board board-data)
-            (assoc :npc [{:x 10 :y 15}
-                         {:x 10 :y 16}]))}))
+         [:dispatch [::rp/add-keyboard-event-listener "keypress"]]]}))
+
+
+(defn fight?
+  [db]
+  (some? (get-in db [:game :fight])))
 
 (rf/reg-event-fx
  :game/key
  (fn [{:keys [db]} [_ action]]
    (merge
-    (when (and (not (:fight? db))
+    (when (and (not (fight? db))
                (some #{action} [:up :down :left :right] ))
       {:game/send-message [:move action]})
-    (when (and (:fight? db)
+    (when (and (fight? db)
                (some #{action} [:up :down]))
       (let [{:keys [entries active]} (:action db)
             n (count entries)]
@@ -116,35 +74,13 @@
                        (mod (if (= action :down)
                               (inc active)
                               (dec active)) n))}))
-    (when (and (:fight? db)
+    (when (and (fight? db)
                (= action :confirm))
       {:game/send-message (let [{:keys [entries active]} (:action db)
                                 action (nth entries active)]
                             (case action
                               "Attack" [:attack]))}))))
 
-
-;; (rf/reg-event-fx
-;;  :game/get-new-map
-;;  (fn [_ _]
-;;    {:http-xhrio {:method :get
-;;                  :uri "game/dungeon"
-;;                  :response-format (ajax/json-response-format {:keywords? false})
-;;                  :on-success [:game/set-new-map]
-;;                  :on-failure [:game/error]}}))
-
-(rf/reg-event-db
- :game/set-player-postion
- (fn [db [_ x y]]
-   (assoc-in db [:player :position] [x y])))
-
-(rf/reg-event-db
- :game/fight
- (fn [db [_ fight?]]
-   (merge db
-          {:fight? fight?}
-          (when fight? {:action {:entries ["Attack" "Magic" "Run"]
-                                 :active 0}}))))
 
 (rf/reg-event-fx
  :game/get-new-map
@@ -157,53 +93,39 @@
    {:game/send-message [:load-map "docs/test.txt"]}))
 
 (rf/reg-event-db
- :game/set-board
- (fn [db [_ request]]
-   (assoc db :board (->> request
-                         (map clojure.walk/keywordize-keys)
-                         (map (fn [m] (update m :type keyword)))))))
-
-(rf/reg-event-db
- :player/xp
- (fn [db [_ xp]]
-   (assoc-in db [:player :xp] xp)))
-
-(rf/reg-event-db
- :player/hp
- (fn [db [_ current max]]
-   (assoc-in db [:player :hp] [current max])))
-
-(rf/reg-event-db
- :player/mp
- (fn [db [_ current max]]
-   (assoc-in db [:player :mp] [current max])))
+ :game/update
+ (fn [db [_ game]]
+   (let [db (assoc db :game game)]
+     (if (fight? db)
+       (assoc db :action{:entries ["Attack" "Magic" "Run"]
+                           :active 0})
+       (dissoc db :action))
 
 
-(rf/reg-sub
- :game/collumns
- (fn [db _]
-   (-> db :game/data :collumns)))
+     )))
+
+
+;; (rf/reg-sub
+;;  :game/collumns
+;;  (fn [db _]
+;;    (-> db :game/data :collumns)))
 
 (rf/reg-sub
  :game/position
  (fn [db _]
-   [(get-in db [:player :position 0])
-    (get-in db [:player :position 1])]))
+   [(get-in db [:game :player :position 0])
+    (get-in db [:game :player :position 1])]))
 
 (rf/reg-sub
  :game/board
  (fn [db _]
-   (:board db)))
+   (get-in db [:game :board])))
 
-(rf/reg-sub
- :game/npc
- (fn [db _]
-   (:npc db)))
 
 (rf/reg-sub
  :game/fight?
  (fn [db _]
-   (:fight? db)))
+   (fight? db)))
 
 (rf/reg-sub
  :game/action
@@ -213,24 +135,24 @@
 (rf/reg-sub
  :player/hp
  (fn [db _]
-   (-> db :player :hp)))
+   (get-in db [:game :player :hp])))
 
 (rf/reg-sub
  :player/mp
  (fn [db _]
-   (-> db :player :mp)))
+   (get-in db [:game :player :mp])))
 
 
 (rf/reg-sub
  :player/xp
  (fn [db _]
-   (-> db :player :xp)))
+   (get-in db [:game :player :xp])))
 
 
 (rf/reg-sub
  :game/game-over?
  (fn [db _]
-   (= 0 (get-in db [:player :hp 0]))))
+   (= 0 (get-in db [:game :player :hp 0]))))
 
 
 (defn position-css [x y]
@@ -251,9 +173,7 @@
 
 (defn tile-to-graphic
   [key]
-  (get {:wall "#"
-        :default "."}
-       key))
+  (get {:wall "#"} key " "))
 
 (defn board []
   (let [board (rf/subscribe [:game/board])]
@@ -263,8 +183,7 @@
          (for [i (range (* sizex sizey))]
            ^{:key (str "grid" i)}
            [:div.grid-item
-            (tile-to-graphic (get (maputil/get-tile board i)
-                                  :type))])]))))
+            (tile-to-graphic (keyword (get (maputil/get-tile board i) :type)))])]))))
 
 (defn button
   [value event]

@@ -58,11 +58,10 @@
   {:board (cavegen/get-dungeon)
    :npcs []
    :player {:position [10 10]
-            :ac 10
+            :ac 5
             :xp 0
             :hp [10 10]
-            :mp [3 3]}
-   :fight? false})
+            :mp [3 3]}})
 
 (defn load-map
   [data [_ file]]
@@ -77,7 +76,7 @@
   (if (> (rand) 0.97)
     ;;Start a fight every 20 turns
     (assoc data :fight {:enemy {:name "Bat"
-                                :ac 5
+                                :ac 10
                                 :hp [2 2]
                                 :mp [0 0]}
                         :actions []})
@@ -236,7 +235,8 @@
             updates (lum.game.update-data/calc-updates data new-data)]
         (if (some? action)
           (do
-            (doseq [update updates] (>! out update))
+            ;;(doseq [update updates] (>! out update))
+            (>! out new-data)
             (recur new-data))
           (do
             (close! out)

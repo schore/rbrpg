@@ -56,7 +56,7 @@
 (defn initialize
   [_ _]
   {:board (cavegen/get-dungeon)
-   :npcs []
+   :messages '("Hello adventurer")
    :player {:position [10 10]
             :ac 5
             :xp 0
@@ -90,7 +90,7 @@
   [data]
   (= 0 (get-in data [:palyer :hp])))
 
-(defn process-event
+(defn process-effect
   [state {:keys [target stat n]}]
   (let [update-field (conj (case target
                              :player [:player]
@@ -105,6 +105,12 @@
                                                  :else nv)]
                                         [cv max])))
       state)))
+
+(defn process-event
+  [data [action-name effects]]
+  (update (reduce process-effect data effects)
+          :messages
+          #(conj % action-name)))
 
 (defn roll
   [n s]
@@ -151,8 +157,7 @@
   [data _]
   (let  [actions [(player-attacks data)
                   (enemy-attacks data)]]
-    (reduce process-event data
-            (mapcat second actions))))
+    (reduce process-event data actions)))
 
 (defn update-xp
   [data]
@@ -231,8 +236,8 @@
   (let [out (chan)]
     (go-loop [data {}]
       (let [action (<! input-chan)
-            new-data (process-actions data action)
-            updates (lum.game.update-data/calc-updates data new-data)]
+            new-data (process-actions data action)]
+        ;    updates (lum.game.update-data/calc-updates data new-data)]
         (if (some? action)
           (do
             ;;(doseq [update updates] (>! out update))

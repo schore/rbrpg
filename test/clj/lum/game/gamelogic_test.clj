@@ -44,6 +44,8 @@
 
 (defn summarize-responses
   [responses]
+  (doseq [response responses]
+    (is (s/valid? :game/game response)))
   (last responses))
 
 (defn commands-to-state [commands] (summarize-responses (run-game-logic commands)))

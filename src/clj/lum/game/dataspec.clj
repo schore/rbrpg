@@ -58,9 +58,11 @@
 (s/def :game/fight (s/keys :req-un [:fight/enemy
                                     :fight/actions]))
 
+(s/def :game/messages (s/coll-of string?))
 
 (s/def :game/game (s/keys :req-un [:game/player
-                                   :game/board]
+                                   :game/board
+                                   :game/messages]
                           :opt-un [:game/fight]))
 
 
@@ -73,6 +75,7 @@
                                 :ac 10
                                 :hp [8 10]
                                 :mp [0 3]}
+                       :messages ["Hello World"]
                        :fight {:enemy {
                                        :name "bat"
                                        :ac 1

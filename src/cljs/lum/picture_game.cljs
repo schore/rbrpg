@@ -105,11 +105,6 @@
      )))
 
 
-;; (rf/reg-sub
-;;  :game/collumns
-;;  (fn [db _]
-;;    (-> db :game/data :collumns)))
-
 (rf/reg-sub
  :game/position
  (fn [db _]
@@ -154,6 +149,10 @@
  (fn [db _]
    (= 0 (get-in db [:game :player :hp 0]))))
 
+(rf/reg-sub
+ :game/messages
+ (fn [db _]
+   (get-in db [:game :messages])))
 
 (defn position-css [x y]
   {:width "15px"
@@ -237,6 +236,17 @@
          [:span {:style {:margin "10px"}} "hp: " hp "/" hp-max]
          [:span {:style {:margin "10px"}} "mp: " mp "/" mp-max]]))))
 
+(defn show-messages
+  []
+  (let [messages (rf/subscribe [:game/messages])]
+    (fn []
+        [:p
+         (for [[i message] (map (fn [a b] [a b])
+                                (range 10)
+                                (take 10 @messages))]
+           ^{:key (str "messsages_" i)}
+           [:<> message
+            [:br]])])))
 
 (defn picture-game []
   (let [fight? (rf/subscribe [:game/fight?])
@@ -252,4 +262,5 @@
        [button "New map" [:game/get-new-map]]
        [button "Load map" [:game/load-map]]
        [:br]
-       [stats]])))
+       [stats]
+       [show-messages]])))

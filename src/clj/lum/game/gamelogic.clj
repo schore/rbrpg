@@ -91,26 +91,27 @@
   (= 0 (get-in data [:palyer :hp])))
 
 (defn process-effect
-  [state {:keys [target stat n]}]
-  (let [update-field (conj (case target
-                             :player [:player]
-                             :enemy [:fight :enemy])
-                           stat)]
-    (if (not (fight-ended? state))
-      (update-in state update-field (fn [[v max]]
+  [action-name]
+  (fn [state {:keys [target stat n]}]
+    (let [update-field (conj (case target
+                               :player [:player]
+                               :enemy [:fight :enemy])
+                             stat)]
+      (if (not (fight-ended? state))
+        (-> state
+            (update :messages #(conj % (str action-name ": " (* -1 n) " " (str stat))))
+            (update-in update-field (fn [[v max]]
                                       (let [nv (+ v n)
                                             cv (cond
                                                  (< nv 0) 0
                                                  (> nv max) max
                                                  :else nv)]
-                                        [cv max])))
-      state)))
+                                        [cv max]))))
+        state))))
 
 (defn process-event
   [data [action-name effects]]
-  (update (reduce process-effect data effects)
-          :messages
-          #(conj % action-name)))
+  (reduce (process-effect action-name) data effects))
 
 (defn roll
   [n s]
@@ -122,7 +123,6 @@
     1 0
     20 (roll 2 3)
     (roll 1 3)))
-
 
 (defn attack-calc
   [ac n dice]

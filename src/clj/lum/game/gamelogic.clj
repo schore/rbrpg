@@ -75,11 +75,13 @@
   [data _]
   (if (> (rand) 0.97)
     ;;Start a fight every 20 turns
-    (assoc data :fight {:enemy {:name "Bat"
-                                :ac 10
-                                :hp [2 2]
-                                :mp [0 0]}
-                        :actions []})
+    (-> data
+        (assoc :fight {:enemy {:name "Bat"
+                               :ac 10
+                               :hp [2 2]
+                               :mp [0 0]}
+                       :actions []})
+        (update :messages #(conj % "You got attacked by a Bat")))
     data))
 
 (defn fight-ended?

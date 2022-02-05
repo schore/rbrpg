@@ -1,13 +1,14 @@
 (ns lum.game.gamelogic-test
   (:require
-   [clojure.core.async :refer [<! <!! >! alts! alts!! chan close! go timeout]]
+   [clojure.core.async :as a :refer [<! <!! >! alts! alts!! chan close! go timeout]]
    [clojure.spec.alpha :as s]
    [clojure.test :as t :refer [deftest is testing]]
-   [clojure.tools.logging :as log]
+   [clojure.string]
+   ;;[clojure.tools.logging :as log]
    [lum.game.gamelogic :as gm]
    [lum.game.dataspec]
    [lum.maputil :as mu]
-   [clojure.core.async :as a]))
+   ))
 
 (defn create-game-maser
   []
@@ -168,7 +169,9 @@
 (deftest fight
   (testing "Starting a fight"
     (let [state (start-fight)]
-      (is (some? (:fight state)))))
+      (is (some? (:fight state)))
+      (is (clojure.string/starts-with? (first (:messages state))
+                                      "You got attacked"))))
   (testing "attack and kill"
     (let [state (start-fight-and-kill [1 12 1 20 3 3 1 1 1 1 1 1 1])]
       (is (not (contains? state :fight)))

@@ -214,7 +214,7 @@
       (when (nil? (get (get-mode-map data) (keyword (first action))))
         (log/error "No entry defined " action))
       (reduce (fn [data f]
-                ((enforce-spec f) data action))
+                (f data action))
               data (get (get-mode-map data)
                         (keyword (first action)) [])))
     data))
@@ -238,7 +238,9 @@
   (let [out (chan)]
     (go-loop [data {}]
       (let [action (<! input-chan)
-            new-data (process-actions data action)]
+            new-data (-> data
+                         (process-actions action)
+                         (update :messages #(take 10 %)))]
         ;    updates (lum.game.update-data/calc-updates data new-data)]
         (if (some? action)
           (do

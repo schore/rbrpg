@@ -58,7 +58,8 @@
 (s/def :game/fight (s/keys :req-un [:fight/enemy
                                     :fight/actions]))
 
-(s/def :game/messages (s/coll-of string?))
+(s/def :game/messages (s/coll-of string?
+                                 :max-count 10))
 
 (s/def :game/game (s/keys :req-un [:game/player
                                    :game/board

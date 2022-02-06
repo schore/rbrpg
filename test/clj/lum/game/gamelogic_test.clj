@@ -4,11 +4,11 @@
    [clojure.spec.alpha :as s]
    [clojure.test :as t :refer [deftest is testing]]
    [clojure.string]
+   [lum.game.cavegen :as cavegen]
    ;;[clojure.tools.logging :as log]
    [lum.game.gamelogic :as gm]
    [lum.game.dataspec]
-   [lum.maputil :as mu]
-   ))
+   [lum.maputil :as mu]))
 
 (defn create-game-maser
   []
@@ -69,7 +69,6 @@
   (conj (commands-player-in-position startx starty)
         [:move direction]))
 
-
 (deftest initalize-tests
   (testing "Initializing"
     (let [state (commands-to-state commands-initialized)]
@@ -77,6 +76,21 @@
       (is (s/valid? :game/board (:board state)))
       (is (some? (get-in state [:player :position])))
       (is (s/valid? :game/position (get-in state [:player :position])))
+      (is (s/valid? :game/game state)))))
+
+(deftest load-game
+  (testing "Load a game"
+    (let [game-state {:board (cavegen/get-dungeon)
+                      :messages '("")
+                      :player {:position [12 12]
+                               :ac 5
+                               :xp 0
+                               :hp [10 10]
+                               :mp [3 3]}}
+          state (commands-to-state [[:initialize] [:load game-state]])]
+      (is (= game-state state))))
+  (testing "Valid state after invalid load-file"
+    (let [state (commands-to-state [[:initialize] [:load {}]])]
       (is (s/valid? :game/game state)))))
 
 (deftest set-player
@@ -165,13 +179,12 @@
     (a/close! in)
     (summarize-responses a)))
 
-
 (deftest fight
   (testing "Starting a fight"
     (let [state (start-fight)]
       (is (some? (:fight state)))
       (is (clojure.string/starts-with? (first (:messages state))
-                                      "You got attacked"))))
+                                       "You got attacked"))))
   (testing "attack and kill"
     (let [state (start-fight-and-kill [1 12 1 20 3 3 1 1 1 1 1 1 1])]
       (is (not (contains? state :fight)))

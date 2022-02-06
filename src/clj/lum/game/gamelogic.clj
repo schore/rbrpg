@@ -173,17 +173,26 @@
         (dissoc :fight))
     data))
 
+(defn load
+  [state [_ new-data]]
+  (if (s/valid? :game/game new-data)
+    new-data
+    state))
+
 (def game-over-mode
   {:initialize [initialize]
+   :load [load]
    :nop []})
 
 (def fight-mode
   {:initialize [initialize]
+   :load [load]
    :attack [attack check-fight-end]
    :nop []})
 
 (def move-mode
   {:initialize [initialize]
+   :load [load]
    :load-map [load-map]
    :move [move check-fight]
    :set-position [set-position]

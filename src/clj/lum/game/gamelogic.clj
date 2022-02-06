@@ -179,25 +179,28 @@
     new-data
     state))
 
-(def game-over-mode
+(def basic-mode
   {:initialize [initialize]
    :load [load]
    :nop []})
+
+
+(def game-over-mode
+  (merge basic-mode
+         {}))
+
+
 
 (def fight-mode
-  {:initialize [initialize]
-   :load [load]
-   :attack [attack check-fight-end]
-   :nop []})
+  (merge basic-mode
+         {:attack [attack check-fight-end]}))
 
 (def move-mode
-  {:initialize [initialize]
-   :load [load]
-   :load-map [load-map]
-   :move [move check-fight]
-   :set-position [set-position]
-   :new-board [new-board]
-   :nop []})
+  (merge basic-mode
+         {:load-map [load-map]
+          :move [move check-fight]
+          :set-position [set-position]
+          :new-board [new-board]}))
 
 (defn get-mode-map
   [state]

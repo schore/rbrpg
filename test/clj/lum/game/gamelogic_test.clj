@@ -5,7 +5,7 @@
    [clojure.test :as t :refer [deftest is testing]]
    [clojure.string]
    [lum.game.cavegen :as cavegen]
-   ;;[clojure.tools.logging :as log]
+   [clojure.tools.logging :as log]
    [lum.game.gamelogic :as gm]
    [lum.game.dataspec]
    [lum.maputil :as mu]))
@@ -149,6 +149,8 @@
   []
   (with-redefs [rand (fn [] 0.98)]
     (commands-to-state (commands-move-on-testmap 1 1 :up))))
+
+
 (defn start-fight-and-kill
   ([rolls]
    (let [[in out] (create-game-maser)
@@ -165,7 +167,7 @@
                                 (swap! r rest)
                                 f))]
        (run-game-logic (concat [[:move :up]]
-                               [[:attack] [:attack]])
+                               [[:attack]])
                        false a in out)))))
 
 (defn fight-until-game-over
@@ -186,11 +188,11 @@
       (is (clojure.string/starts-with? (first (:messages state))
                                        "You got attacked"))))
   (testing "attack and kill"
-    (let [state (start-fight-and-kill [1 12 1 20 3 3 1 1 1 1 1 1 1])]
+    (let [state (start-fight-and-kill [20 2 2 12 1 20 3 3 1 1 1 1 1 1 1])]
       (is (not (contains? state :fight)))
-      (is (= 9 (get-in state [:player :hp 0])))
+      (is (= 10 (get-in state [:player :hp 0])))
       (is (= 1 (get-in state [:player :xp])))
-      (is (= "Beat: 6 :hp" (first (get-in state [:messages]))))))
+      (is (= "Beat: 4 :hp" (first (get-in state [:messages]))))))
   (testing "Fight until you die"
     (let [state (fight-until-game-over)]
       (is (= 0 (get-in state [:player :hp 0]))))))

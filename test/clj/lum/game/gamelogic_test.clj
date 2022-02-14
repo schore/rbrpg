@@ -150,7 +150,6 @@
   (with-redefs [rand (fn [] 0.98)]
     (commands-to-state (commands-move-on-testmap 1 1 :up))))
 
-
 (defn start-fight-and-kill
   ([rolls]
    (let [[in out] (create-game-maser)
@@ -196,3 +195,36 @@
   (testing "Fight until you die"
     (let [state (fight-until-game-over)]
       (is (= 0 (get-in state [:player :hp 0]))))))
+
+(defprotocol IGame
+  (exec [this command])
+  (close [this]))
+
+(deftype Game [in out]
+  IGame
+  (exec [_ command]
+    (log/info "Execute command" command)
+    (a/>!! in command)
+    (a/<!! out))
+  (close [_]
+    (log/info "Close Test")
+    (a/close! in)))
+
+(def ^:dynamic *game*)
+
+(defn create-game
+  ([]
+   (let [[in out] (create-game-maser)]
+     (Game. in out)))
+  ([f]
+   (binding [*game* (create-game)]
+     (f)
+     (close *game*))))
+
+(t/use-fixtures
+  :each create-game)
+
+(deftest Initalize-works
+  (testing "I win a fight"
+    (is (contains? (exec *game* [:initialize]) :board)))
+  (testing "Bla"))

@@ -22,10 +22,11 @@
 
 (deftype Game [in out]
   IGame
-  (exec [_ command]
-    (log/info "Execute command" command)
-    (a/>!! in command)
-    (a/<!! out))
+
+  (exec [_ command ]
+      (log/info "Execute command" command)
+      (a/>!! in command)
+      (a/<!! out))
 
   (close [_]
     (log/info "Close Test")
@@ -46,61 +47,6 @@
   :each create-game)
 
 
-
-;; (defn run-game-logic
-;;   ([commands]
-;;    (let [[in out] (create-game-maser)]
-;;      (run-game-logic commands true [] in out)))
-;;   ([commands close? accu in out]
-;; ;;   (log/info commands accu)
-;;    (let [responses (chan)
-;;          processing-done (chan)]
-;;      (go (doseq [command commands]
-;;            (>! in command))
-;;          (>! in [:nop])
-;;          (close! processing-done)
-;;          (when close?
-;;            (close! in)))
-;;      (go (>! responses (loop [a accu]
-;;                          (if-let [v (first (alts! [out
-;;                                                    processing-done
-;;                                                    (timeout 500)]))]
-;;                            (do
-;;                              ;;(log/info a v)
-;;                              (recur (conj a v)))
-;;                            a))))
-;;      (let [updates (<!! responses)]
-;;        (close! responses)
-;;  ;;      (log/info updates)
-;;        updates))))
-
-;; (defn summarize-responses
-;;   [responses]
-;;   (doseq [response responses]
-;;     (is (s/valid? :game/game response)))
-;;   (last responses))
-
-;; (defn commands-to-state [commands] (summarize-responses (run-game-logic commands)))
-
-;; (def commands-initialized
-;;   [[:initialize]])
-
-;; (defn commands-loadmap
-;;   [file]
-;;   (conj commands-initialized
-;;         [:load-map file]))
-
-;; (defn commands-player-in-position
-;;   [x y]
-;;   (conj (commands-loadmap "docs/test.txt")
-;;         [:set-position x y]))
-
-;; (defn commands-player-move
-;;   [startx starty direction]
-;;   (conj (commands-player-in-position startx starty)
-;;         [:move direction]))
-;;
-;;
 (defn game-is-initialized
   []
   (exec *game* [:initialize]))
@@ -125,6 +71,22 @@
   []
   (:board (get-state)))
 
+(defn get-hp
+  []
+  (get-in (get-state) [:player :hp 0]))
+
+(defn get-xp
+  []
+  (get-in (get-state) [:player :xp]))
+
+(defn in-fight?
+  []
+  (some? (:fight (get-state))))
+
+(defn game-over?
+  []
+  (= 0 (get-hp)))
+
 (defn load-map
   [file]
   (exec *game* [:load-map file]))
@@ -141,6 +103,37 @@
 (defn move
   [dir]
   (exec *game* [:move dir]))
+
+(defn move-and-get-attacked
+  [dir]
+  (with-redefs [rand (fn [] 0.98)]
+    (move dir)))
+
+
+(defn in-a-fight
+  []
+  (game-is-initialized)
+  (move-and-get-attacked :up))
+
+(defn exec-with-rolls
+  [f rolls]
+  (let [r (atom (map dec rolls))]
+    (with-redefs [rand-int (fn [_]
+                             (let [next-roll (first @r)]
+                               (swap! r rest)
+                               next-roll))]
+      (f))))
+
+(defn attack
+  ([]
+   (log/info "attack")
+   (exec *game* [:attack]))
+  ([& rolls]
+   ;;(attack)
+   (exec-with-rolls attack rolls)
+   ))
+
+
 
 (deftest initalize-tests
   (is (s/valid? :game/game (game-is-initialized))))
@@ -172,22 +165,6 @@
   (is (= [25 27]
          (get-in (get-state) [:player :position]))))
 
-
-;; (defn move-to-position
-;;   [startx starty direction]
-;;   (get-in (commands-to-state (commands-player-move startx starty direction))
-;;           [:player :position]))
-
-;; (defn commands-move-on-testmap
-;;   [x y direction]
-;;   (conj (commands-loadmap "docs/test.txt")
-;;         [:set-position x y]
-;;         [:move direction]))
-
-;; (defn move-on-testmap
-;;   [x y direction]
-;;   (get-in (commands-to-state (commands-move-on-testmap x y direction))
-;;           [:player :position]))
 
 (deftest move-test
   (doseq [[[x y] direction end-pos] [;;Move with strings
@@ -225,58 +202,25 @@
       (is (= :wall (:type (mu/get-tile m 3 5))))
       (is (= :ground (:type (mu/get-tile m 0 2)))))))
 
-;; (defn start-fight
-;;   []
-;;   (with-redefs [rand (fn [] 0.98)]
-;;     (commands-to-state (commands-move-on-testmap 1 1 :up))))
 
-;; (defn start-fight-and-kill
-;;   ([rolls]
-;;    (let [[in out] (create-game-maser)
-;;          a (start-fight-and-kill in out
-;;                                  (run-game-logic [[:initialize]] false [] in out)
-;;                                  rolls)]
-;;      (a/close! in)
-;;      (summarize-responses a)))
-;;   ([in out a rolls]
-;;    (let [r (atom (map dec rolls))]
-;;      (with-redefs [rand (fn [] 0.98)
-;;                    rand-int (fn [_]
-;;                               (let [f (first @r)]
-;;                                 (swap! r rest)
-;;                                 f))]
-;;        (run-game-logic (concat [[:move :up]]
-;;                                [[:attack]])
-;;                        false a in out)))))
 
-;; (defn fight-until-game-over
-;;   []
-;;   (let [[in out] (create-game-maser)
-;;         a (run-game-logic [[:initialize]] false [] in out)
-;;         a (loop [i 0 a a]
-;;             (if (< i 10)
-;;               (recur (inc i) (start-fight-and-kill in out a [1 20 2 2 2 2 2 2 2]))
-;;               a))]
-;;     (a/close! in)
-;;     (summarize-responses a)))
+(deftest get-in-a-fight
+  (game-is-initialized)
+  (move-and-get-attacked :down)
+  (is (in-fight?)))
 
-;; (deftest fight
-;;   (testing "Starting a fight"
-;;     (let [state (start-fight)]
-;;       (is (some? (:fight state)))
-;;       (is (clojure.string/starts-with? (first (:messages state))
-;;                                        "You got attacked"))))
-;;   (testing "attack and kill"
-;;     (let [state (start-fight-and-kill [20 2 2 12 1 20 3 3 1 1 1 1 1 1 1])]
-;;       (is (not (contains? state :fight)))
-;;       (is (= 10 (get-in state [:player :hp 0])))
-;;       (is (= 1 (get-in state [:player :xp])))
-;;       (is (= "Beat: 4 :hp" (first (get-in state [:messages]))))))
-;;   (testing "Fight until you die"
-;;     (let [state (fight-until-game-over)]
-;;       (is (= 0 (get-in state [:player :hp 0]))))))
+(deftest kill-it
+  (in-a-fight)
+  ;; You kill it with the first strike
+  (attack 20 3 3 1 1 1 1 1)
+  (is (= 10 (get-hp)))
+  (is (= 1 (get-xp)))
+  (is (not (in-fight?))))
 
-;; (deftest Initalize-works
-;;   (testing "I win a fight"
-;;     (is (contains? (exec *game* [:initialize]) :board)))
-;;   (testing "Bla"))
+
+(deftest get-killed-by-enemy
+  (in-a-fight)
+  (attack 1 20 5 5)
+  (is (= 0 (get-hp)))
+  (is (game-over?)))
+

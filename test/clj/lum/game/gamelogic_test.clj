@@ -75,6 +75,10 @@
   []
   (get-in (get-state) [:player :hp 0]))
 
+(defn get-enemy-hp
+  []
+  (get-in (get-state) [:fight :enemy :hp 0]))
+
 (defn get-xp
   []
   (get-in (get-state) [:player :xp]))
@@ -212,7 +216,7 @@
 (deftest kill-it
   (in-a-fight)
   ;; You kill it with the first strike
-  (attack 20 3 3 1 1 1 1 1)
+  (attack 20 3 3 1)
   (is (= 10 (get-hp)))
   (is (= 1 (get-xp)))
   (is (not (in-fight?))))
@@ -224,3 +228,8 @@
   (is (= 0 (get-hp)))
   (is (game-over?)))
 
+(deftest hit-by-enemy
+  (in-a-fight)
+  (attack 15 1 15 2)
+  (is (= 8 (get-hp)))
+  (is (= 1 (get-enemy-hp))))

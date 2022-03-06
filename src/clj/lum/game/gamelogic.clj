@@ -253,10 +253,8 @@
             new-data (-> data
                          (process-actions action)
                          (update :messages #(take 10 %)))]
-        ;    updates (lum.game.update-data/calc-updates data new-data)]
         (if (some? action)
           (do
-            ;;(doseq [update updates] (>! out update))
             (>! out new-data)
             (recur new-data))
           (do

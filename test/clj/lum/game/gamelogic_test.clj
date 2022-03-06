@@ -221,7 +221,6 @@
   (is (= 1 (get-xp)))
   (is (not (in-fight?))))
 
-
 (deftest get-killed-by-enemy
   (in-a-fight)
   (attack 1 20 5 5)
@@ -233,3 +232,45 @@
   (attack 15 1 15 2)
   (is (= 8 (get-hp)))
   (is (= 1 (get-enemy-hp))))
+
+
+(deftest enemy-always-hit-with-20
+  (in-a-fight)
+  (attack 1 20 2 2)
+  (is (> 10 (get-hp))))
+
+(deftest enemy-ac<roll-no-hit
+  (in-a-fight)
+  (attack 1 15 2 2)
+  (is (> 10 (get-hp))))
+
+(deftest enemy-ac>roll-no-hit
+  (in-a-fight)
+  (attack 1 2 2)
+  (is (= 10 (get-hp))))
+
+(deftest enemy-ac=roll-no-hit
+  (in-a-fight)
+  (attack 1 5 2)
+  (is (= 10 (get-hp))))
+
+
+(deftest player-always-hit-with-20
+  (in-a-fight)
+  (attack 20 0 1 1)
+  (is (> 2 (get-enemy-hp))))
+
+(deftest player-ac<roll-hit
+  (in-a-fight)
+  (attack 15 1 0)
+  (is (> 2 (get-enemy-hp))))
+
+(deftest player-ac>roll-no-hit
+  (in-a-fight)
+  (attack 9 2 2)
+  (is (= 2 (get-enemy-hp))))
+
+(deftest player-ac=roll-no-hit
+  (in-a-fight)
+  (attack 10 5 2)
+  (is (= 2 (get-enemy-hp))))

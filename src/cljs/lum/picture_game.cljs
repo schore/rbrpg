@@ -13,8 +13,6 @@
    [clojure.walk]
    [cljs.core.async :as a :refer [<! >! go-loop go]]))
 
-
-
 (defn keyify-ws
   [msg]
   (rf/dispatch [:game/update (clojure.walk/keywordize-keys msg)]))
@@ -40,7 +38,6 @@
 (def sizex 50)
 (def sizey 30)
 
-
 (rf/reg-event-fx
  :game/initialize
  (fn [{:keys [db]} _]
@@ -53,7 +50,6 @@
                                    ]}]]
          [:dispatch [::rp/add-keyboard-event-listener "keypress"]]]}))
 
-
 (defn fight?
   [db]
   (some? (get-in db [:game :fight])))
@@ -63,7 +59,7 @@
  (fn [{:keys [db]} [_ action]]
    (merge
     (when (and (not (fight? db))
-               (some #{action} [:up :down :left :right] ))
+               (some #{action} [:up :down :left :right]))
       {:game/send-message [:move action]})
     (when (and (fight? db)
                (some #{action} [:up :down]))
@@ -81,7 +77,6 @@
                             (case action
                               "Attack" [:attack]))}))))
 
-
 (rf/reg-event-fx
  :game/get-new-map
  (fn [_ _]
@@ -97,13 +92,9 @@
  (fn [db [_ game]]
    (let [db (assoc db :game game)]
      (if (fight? db)
-       (assoc db :action{:entries ["Attack" "Magic" "Run"]
-                           :active 0})
-       (dissoc db :action))
-
-
-     )))
-
+       (assoc db :action {:entries ["Attack" "Magic" "Run"]
+                          :active 0})
+       (dissoc db :action)))))
 
 (rf/reg-sub
  :game/position
@@ -115,7 +106,6 @@
  :game/board
  (fn [db _]
    (get-in db [:game :board])))
-
 
 (rf/reg-sub
  :game/fight?
@@ -137,12 +127,10 @@
  (fn [db _]
    (get-in db [:game :player :mp])))
 
-
 (rf/reg-sub
  :player/xp
  (fn [db _]
    (get-in db [:game :player :xp])))
-
 
 (rf/reg-sub
  :game/game-over?
@@ -153,6 +141,11 @@
  :game/messages
  (fn [db _]
    (get-in db [:game :messages])))
+
+(rf/reg-sub
+ :game/enemy
+ (fn [db _]
+   (get-in db [:game :fight :enemy])))
 
 (defn position-css [x y]
   {:width "15px"
@@ -204,6 +197,25 @@
                        (-> e .-target .blur)
                        (rf/dispatch [:game/load-map]))}])
 
+(defn stat-style
+  ([[hp hp-max] [mp mp-max]]
+   [:<>
+    [:span {:style {:margin "10px"}} "hp: " hp "/" hp-max]
+    [:span {:style {:margin "10px"}} "mp: " mp "/" mp-max]])
+  ([xp hp mp]
+   [:<>
+    [:span {:style {:margin "10px"}} "xp: " xp]
+    [stat-style hp mp]]))
+
+(defn enemy-stat
+  []
+  (let [enemy (rf/subscribe [:game/enemy])]
+    (fn []
+      (let [enemy @enemy
+            name (get enemy :name)]
+        [:<> [:p name]
+         [:p [stat-style (:hp enemy) (:mp enemy)]]]))))
+
 (defn fight-screen
   []
   (let [actions (rf/subscribe [:game/action])]
@@ -211,8 +223,10 @@
       (let [{:keys [entries active]} @actions]
         [:<>
          [:h1 "FIGHT"]
+         [:p>b "Enemy"]
+         [enemy-stat]
          (for [entry entries]
-           ^{:key (str"fightscreen" entry)}
+           ^{:key (str "fightscreen" entry)}
            [:p
             (when (= entry (nth entries active))
               {:style {:font-weight "bold"}})
@@ -228,25 +242,22 @@
         mp (rf/subscribe [:player/mp])
         xp (rf/subscribe [:player/xp])]
     (fn []
-      (let [[hp hp-max] @hp
-            [mp mp-max] @mp
+      (let [hp @hp
+            mp @mp
             xp @xp]
-        [:<>
-         [:span {:style {:margin "10px"}} "xp: " xp]
-         [:span {:style {:margin "10px"}} "hp: " hp "/" hp-max]
-         [:span {:style {:margin "10px"}} "mp: " mp "/" mp-max]]))))
+        [stat-style xp hp mp]))))
 
 (defn show-messages
   []
   (let [messages (rf/subscribe [:game/messages])]
     (fn []
-        [:p
-         (for [[i message] (map (fn [a b] [a b])
-                                (range 10)
-                                (take 10 @messages))]
-           ^{:key (str "messsages_" i)}
-           [:<> message
-            [:br]])])))
+      [:p
+       (for [[i message] (map (fn [a b] [a b])
+                              (range 10)
+                              (take 10 @messages))]
+         ^{:key (str "messsages_" i)}
+         [:<> message
+          [:br]])])))
 
 (defn picture-game []
   (let [fight? (rf/subscribe [:game/fight?])

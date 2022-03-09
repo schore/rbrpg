@@ -254,7 +254,6 @@
   (attack 1 5 2)
   (is (= 10 (get-hp))))
 
-
 (deftest player-always-hit-with-20
   (in-a-fight)
   (attack 20 0 1 1)

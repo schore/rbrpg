@@ -4,6 +4,7 @@
    [lum.maputil :as mu]
    [lum.game.dataspec]
    [lum.game.update-data]
+   [lum.game.enemy-database :refer [enemies]]
    [clojure.string]
    [clojure.spec.alpha :as s]
    [clojure.core.async :as a :refer [chan go go-loop <! >! close!]]
@@ -71,15 +72,20 @@
     (assoc data :board (load-map-from-string mf))
     data))
 
+(defn get-enemy
+  [k]
+  (let [enemy (get enemies k)]
+    {:name (:name enemy)
+     :ac (:ac enemy)
+     :hp [(:hp enemy) (:hp enemy)]
+     :mp [(:mp enemy) (:mp enemy)]}))
+
 (defn check-fight
   [data _]
   (if (> (rand) 0.97)
     ;;Start a fight every 20 turns
     (-> data
-        (assoc :fight {:enemy {:name "Bat"
-                               :ac 10
-                               :hp [2 2]
-                               :mp [0 0]}
+        (assoc :fight {:enemy (get-enemy :bat)
                        :actions []})
         (update :messages #(conj % "You got attacked by a Bat")))
     data))

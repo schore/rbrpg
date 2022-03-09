@@ -1,0 +1,7 @@
+(ns lum.game.enemy-database)
+
+(def enemies {:bat {:name "Bat"
+                    :ac 10
+                    :hp 2
+                    :mp 0
+                    :xp 1}})

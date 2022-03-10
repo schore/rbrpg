@@ -6,6 +6,7 @@
    [lum.game.update-data]
    [lum.game.enemy-database :refer [enemies]]
    [clojure.string]
+   [clojure.test :as t]
    [clojure.spec.alpha :as s]
    [clojure.core.async :as a :refer [chan go go-loop <! >! close!]]
    [clojure.java.io :as io]
@@ -75,7 +76,7 @@
 (defn get-enemy
   [k]
   (let [enemy (get enemies k)]
-    {:name (:name enemy)
+    {:name k
      :ac (:ac enemy)
      :hp [(:hp enemy) (:hp enemy)]
      :mp [(:mp enemy) (:mp enemy)]}))
@@ -85,7 +86,7 @@
   (if (> (rand) 0.97)
     ;;Start a fight every 20 turns
     (-> data
-        (assoc :fight {:enemy (get-enemy :bat)
+        (assoc :fight {:enemy (get-enemy "Bat")
                        :actions []})
         (update :messages #(conj % "You got attacked by a Bat")))
     data))
@@ -169,7 +170,13 @@
 
 (defn update-xp
   [data]
-  (update-in data [:player :xp] inc))
+  (log/info (get-in data [:fight :enemy]))
+  (update-in data [:player :xp]
+             #(+ % (get-in enemies [(get-in data [:fight :enemy :name]) :xp]))))
+
+(update-xp {:player {:xp 0}
+            :fight {:enemy {:name "Bat"}}})
+
 
 (defn check-fight-end
   [data _]
@@ -194,7 +201,6 @@
 (def game-over-mode
   (merge basic-mode
          {}))
-
 
 
 (def fight-mode

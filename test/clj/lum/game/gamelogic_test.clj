@@ -26,7 +26,7 @@
   (exec [_ command ]
       (log/info "Execute command" command)
       (a/>!! in command)
-      (a/<!! out))
+    (first (a/alts!! [out (a/timeout 1000)])))
 
   (close [_]
     (log/info "Close Test")

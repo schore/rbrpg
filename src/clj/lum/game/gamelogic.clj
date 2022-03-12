@@ -6,9 +6,8 @@
    [lum.game.update-data]
    [lum.game.enemy-database :refer [enemies]]
    [clojure.string]
-   [clojure.test :as t]
    [clojure.spec.alpha :as s]
-   [clojure.core.async :as a :refer [chan go go-loop <! >! close!]]
+   [clojure.core.async :as a :refer [chan go-loop <! >! close!]]
    [clojure.java.io :as io]
    [clojure.tools.logging :as log]))
 

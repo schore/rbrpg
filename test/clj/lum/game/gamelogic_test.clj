@@ -1,20 +1,19 @@
 (ns lum.game.gamelogic-test
   (:require
-   [clojure.core.async :as a :refer [<! <!! >! alts! alts!! chan close! go timeout]]
+   [clojure.core.async :as a]
    [clojure.spec.alpha :as s]
    [clojure.test :as t :refer [deftest is testing]]
    [clojure.string]
    [lum.game.cavegen :as cavegen]
    [clojure.tools.logging :as log]
-   [lum.game.gamelogic :as gm]
    [lum.game.dataspec]
    [lum.maputil :as mu]
    [lum.game.gamelogic :as gamelogic]))
 
 (defn create-game-maser
   []
-  (let [in (chan)
-        out (gm/game-master in)]
+  (let [in (a/chan)
+        out (gamelogic/game-master in)]
     [in out]))
 
 (defprotocol IGame

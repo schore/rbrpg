@@ -61,7 +61,9 @@
 
 (defn get-state
   []
-  (exec *game* [:nop]))
+  (let [state (exec *game* [:nop])]
+    (is (s/valid? :game/game state))
+    state))
 
 (defn get-position
   []
@@ -82,6 +84,10 @@
 (defn get-xp
   []
   (get-in (get-state) [:player :xp]))
+
+(defn get-items
+  []
+  (get-in (get-state) [:player :items]))
 
 (defn in-fight?
   []
@@ -151,7 +157,8 @@
                                :ac 5
                                :xp 0
                                :hp [10 10]
-                               :mp [3 3]}}]
+                               :mp [3 3]
+                               :items []}}]
       (game-is-initialized)
       (game-loaded game-state)
       (is (= game-state (get-state))))))
@@ -273,3 +280,9 @@
   (in-a-fight)
   (attack 10 5 2)
   (is (= 2 (get-enemy-hp))))
+
+(deftest get-item-after-fight
+  (in-a-fight)
+  (attack 20 2 1 1 1)
+  (is (some #{"batblood"} (get-items)))
+  (is (some #{"batwing"} (get-items))))

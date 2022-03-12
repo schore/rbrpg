@@ -63,7 +63,8 @@
             :ac 5
             :xp 0
             :hp [10 10]
-            :mp [3 3]}})
+            :mp [3 3]
+            :items []}})
 
 (defn load-map
   [data [_ file]]
@@ -73,7 +74,7 @@
     (assoc data :board (load-map-from-string mf))
     data))
 
-(defn get-enemy
+(defn get-enemy-stat
   [k]
   (let [enemy (get enemies k)]
     {:name k
@@ -86,7 +87,7 @@
   (if (> (rand) 0.97)
     ;;Start a fight every 20 turns
     (-> data
-        (assoc :fight {:enemy (get-enemy "Bat")
+        (assoc :fight {:enemy (get-enemy-stat "Bat")
                        :actions []})
         (update :messages #(conj % "You got attacked by a Bat")))
     data))
@@ -168,14 +169,19 @@
                   (enemy-attacks data)]]
     (reduce process-event data actions)))
 
+(defn get-enemy
+  [data]
+  (get enemies (get-in data [:fight :enemy :name])))
+
 (defn update-xp
   [data]
-  (log/info (get-in data [:fight :enemy]))
   (update-in data [:player :xp]
-             #(+ % (get-in enemies [(get-in data [:fight :enemy :name]) :xp]))))
+             #(+ % (:xp (get-enemy data)))))
 
-(update-xp {:player {:xp 0}
-            :fight {:enemy {:name "Bat"}}})
+(defn update-items
+  [data]
+  (update-in data [:player :items]
+             #(concat % (:items (get-enemy data)))))
 
 
 (defn check-fight-end
@@ -183,6 +189,7 @@
   (if (fight-ended? data)
     (-> data
         update-xp
+        update-items
         (dissoc :fight))
     data))
 

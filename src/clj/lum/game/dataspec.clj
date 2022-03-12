@@ -19,18 +19,23 @@
 
 (s/def :player/xp nat-int?)
 
+(s/def :game/item #{"batwing"
+                    "batblood"})
+
 (s/def :game/stat (s/and (s/cat :current nat-int? :max nat-int?)
                            #(<= (:current %) (:max %))))
 
 (s/def :player/hp :game/stat)
 (s/def :player/mp :game/stat)
 (s/def :player/ac pos-int?)
+(s/def :player/items (s/coll-of :game/item))
 
 (s/def :game/player (s/keys :req-un [:game/position
                                      :player/ac
                                      :player/xp
                                      :player/hp
-                                     :player/mp]))
+                                     :player/mp
+                                     :player/items]))
 
 (s/def :enemy/name string?)
 (s/def :enemy/hp :game/stat)
@@ -75,7 +80,8 @@
                                 :xp 0
                                 :ac 10
                                 :hp [8 10]
-                                :mp [0 3]}
+                                :mp [0 3]
+                                :items ["batwing" "batblood"]}
                        :messages ["Hello World"]
                        :fight {:enemy {
                                        :name "bat"

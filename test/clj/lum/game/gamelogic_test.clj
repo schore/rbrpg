@@ -8,7 +8,8 @@
    [clojure.tools.logging :as log]
    [lum.game.gamelogic :as gm]
    [lum.game.dataspec]
-   [lum.maputil :as mu]))
+   [lum.maputil :as mu]
+   [lum.game.gamelogic :as gamelogic]))
 
 (defn create-game-maser
   []
@@ -65,6 +66,10 @@
     (is (s/valid? :game/game state))
     state))
 
+(defn get-messages
+  []
+  (:messages (get-state)))
+
 (defn get-position
   []
   (get-in (get-state) [:player :position]))
@@ -80,6 +85,10 @@
 (defn get-enemy-hp
   []
   (get-in (get-state) [:fight :enemy :hp 0]))
+
+(defn get-enemy-name
+  []
+  (get-in (get-state) [:fight :enemy :name]))
 
 (defn get-xp
   []
@@ -115,15 +124,17 @@
   (exec *game* [:move dir]))
 
 (defn move-and-get-attacked
-  [dir]
-  (with-redefs [rand (fn [] 0.98)]
-    (move dir)))
+  ([] (move-and-get-attacked "Bat"))
+  ([name]
+   (with-redefs [rand (fn [] 0.98)
+                 gamelogic/choose-enemy (fn [] name)]
+     (move :down))))
 
 
 (defn in-a-fight
   []
   (game-is-initialized)
-  (move-and-get-attacked :up))
+  (move-and-get-attacked))
 
 (defn exec-with-rolls
   [f rolls]
@@ -217,10 +228,9 @@
       (is (= :ground (:type (mu/get-tile m 0 2)))))))
 
 
-
 (deftest get-in-a-fight
   (game-is-initialized)
-  (move-and-get-attacked :down)
+  (move-and-get-attacked)
   (is (in-fight?)))
 
 (deftest kill-it
@@ -289,3 +299,9 @@
   (killed-the-enemy)
   (is (some #{"batblood"} (get-items)))
   (is (some #{"batwing"} (get-items))))
+
+(deftest in-fight-with-a-rat
+  (game-is-initialized)
+  (move-and-get-attacked "Rat")
+  (is (= "Rat" (get-enemy-name)))
+  (is (clojure.string/includes? (first (get-messages)) "Rat")))

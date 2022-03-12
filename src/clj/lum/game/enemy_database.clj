@@ -4,4 +4,9 @@
                      :hp 2
                      :mp 0
                      :xp 1
-                     :items ["batblood" "batwing"]}})
+                     :items ["batblood" "batwing"]}
+              "Rat" {:ac 3
+                     :hp 1
+                     :mp 0
+                     :xp 1
+                     :items ["ratmeet"]}})

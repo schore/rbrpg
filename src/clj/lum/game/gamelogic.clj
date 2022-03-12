@@ -82,14 +82,20 @@
      :hp [(:hp enemy) (:hp enemy)]
      :mp [(:mp enemy) (:mp enemy)]}))
 
+(defn choose-enemy
+  []
+  (let [enemies (map first enemies)]
+    (rand-nth enemies)))
+
 (defn check-fight
   [data _]
   (if (> (rand) 0.97)
     ;;Start a fight every 20 turns
-    (-> data
-        (assoc :fight {:enemy (get-enemy-stat "Bat")
-                       :actions []})
-        (update :messages #(conj % "You got attacked by a Bat")))
+    (let [enemy (choose-enemy)]
+      (-> data
+          (assoc :fight {:enemy (get-enemy-stat enemy)
+                         :actions []})
+          (update :messages #(conj % (str "You got attacked by a " enemy)))))
     data))
 
 (defn fight-ended?
@@ -173,6 +179,7 @@
   [data]
   (get enemies (get-in data [:fight :enemy :name])))
 
+
 (defn update-xp
   [data]
   (update-in data [:player :xp]
@@ -193,7 +200,7 @@
         (dissoc :fight))
     data))
 
-(defn load
+(defn load-game
   [state [_ new-data]]
   (if (s/valid? :game/game new-data)
     new-data
@@ -201,7 +208,7 @@
 
 (def basic-mode
   {:initialize [initialize]
-   :load [load]
+   :load [load-game]
    :nop []})
 
 

@@ -144,6 +144,9 @@
    ))
 
 
+(defn killed-the-enemy
+  []
+  (attack 20 2 1 1 1))
 
 (deftest initalize-tests
   (is (s/valid? :game/game (game-is-initialized))))
@@ -283,6 +286,6 @@
 
 (deftest get-item-after-fight
   (in-a-fight)
-  (attack 20 2 1 1 1)
+  (killed-the-enemy)
   (is (some #{"batblood"} (get-items)))
   (is (some #{"batwing"} (get-items))))

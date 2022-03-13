@@ -147,6 +147,11 @@
  (fn [db _]
    (get-in db [:game :fight :enemy])))
 
+(rf/reg-sub
+ :game/items
+ (fn [db _]
+   (get-in db [:game :player :items])))
+
 (defn position-css [x y]
   {:width "15px"
    :height "15px"
@@ -259,6 +264,13 @@
          [:<> message
           [:br]])])))
 
+(defn items
+  []
+  (let [items (rf/subscribe [:game/items])]
+    (fn []
+      (let [items (frequencies @items)]
+         [:ul (for [[k v] items] [:li v ": " k])]))))
+
 (defn picture-game []
   (let [fight? (rf/subscribe [:game/fight?])
         game-over? (rf/subscribe [:game/game-over?])]
@@ -274,4 +286,5 @@
        [button "Load map" [:game/load-map]]
        [:br]
        [stats]
+       [items]
        [show-messages]])))

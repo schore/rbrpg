@@ -20,7 +20,8 @@
 (s/def :player/xp nat-int?)
 
 (s/def :game/item #{"batwing"
-                    "batblood"})
+                    "batblood"
+                    "ratmeet"})
 
 (s/def :game/stat (s/and (s/cat :current nat-int? :max nat-int?)
                            #(<= (:current %) (:max %))))

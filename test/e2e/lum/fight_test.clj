@@ -50,13 +50,15 @@
     (when (and (< i 20)
                (c/fight-screen? driver))
         (select-and-activate driver "Attack")
-        (e/wait driver 0.1)
+        (e/wait driver 0.3)
         (recur (inc i)))))
 
 (deftest leave-fight
   (enter-fight-screen *driver*)
   (fight *driver*)
-  (is (c/map-screen? *driver*)))
+  (is (c/map-screen? *driver*))
+  (log/info (c/get-items *driver*))
+  (is (seq (c/get-items *driver*))))
 
 
 (deftest fight-until-end

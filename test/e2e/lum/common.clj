@@ -88,6 +88,22 @@
          (map #(Integer/parseInt %))
          (map #(/ % 15)))))
 
+(defn parse-item-str
+  [str]
+  (let [[_ v k] (re-matches #"([\d+]*): (.*)" str)]
+    [k  (Integer/parseInt v)]))
+
+(defn get-items
+  [driver]
+  (let [query [{:class "content"}
+               {:tag :ul}
+               {:tag :li}]]
+        (->> (e/query-all driver query)
+             (map #(e/get-element-text-el driver %))
+             (map parse-item-str)
+             (into {}))))
+
+
 (defn press-key
   [driver k]
   (e/perform-actions driver

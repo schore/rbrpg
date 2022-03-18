@@ -15,6 +15,7 @@
   [data [_ x y]]
   (assoc-in data [:player :position] [x y]))
 
+
 (defn move
   [data [_ direction]]
   (let [new-data (case (keyword direction)
@@ -64,6 +65,19 @@
             :hp [10 10]
             :mp [3 3]
             :items []}})
+
+(def recepies {{"batblood" 2} "healing potion"})
+
+(defn combine
+  [data used-items]
+  (let [used-items (frequencies (rest used-items))
+        items (reduce (fn [items [k v]]
+                        (update items k #(- % v)))
+                      (frequencies (get-in data [:player :items]))
+                      used-items)
+        items (reduce (fn [i [k v]] (concat i (repeat v k))) [] items)
+        new-item (get recepies used-items)]
+    (assoc-in data [:player :items] (filter some? (conj items new-item)))))
 
 (defn load-map
   [data [_ file]]
@@ -225,7 +239,8 @@
          {:load-map [load-map]
           :move [move check-fight]
           :set-position [set-position]
-          :new-board [new-board]}))
+          :new-board [new-board]
+          :combine [combine]}))
 
 (defn get-mode-map
   [state]

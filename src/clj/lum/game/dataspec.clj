@@ -21,7 +21,8 @@
 
 (s/def :game/item #{"batwing"
                     "batblood"
-                    "ratmeet"})
+                    "ratmeet"
+                    "healing potion"})
 
 (s/def :game/stat (s/and (s/cat :current nat-int? :max nat-int?)
                            #(<= (:current %) (:max %))))

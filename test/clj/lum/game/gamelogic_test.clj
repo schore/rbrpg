@@ -65,6 +65,10 @@
     (is (s/valid? :game/game state))
     state))
 
+(defn combine
+  [& s]
+  (exec *game* (into [:combine] s)))
+
 (defn get-messages
   []
   (:messages (get-state)))
@@ -157,6 +161,12 @@
 (defn killed-the-enemy
   []
   (attack 20 2 1 1 1))
+
+(defn player-has-items
+  [& items]
+  (let [state (game-is-initialized)]
+    (game-loaded (assoc-in state [:player :items] items)))
+)
 
 (deftest initalize-tests
   (is (s/valid? :game/game (game-is-initialized))))
@@ -304,3 +314,14 @@
   (move-and-get-attacked "Rat")
   (is (= "Rat" (get-enemy-name)))
   (is (clojure.string/includes? (first (get-messages)) "Rat")))
+
+(deftest combine-items
+  (player-has-items "batblood" "batblood")
+  (combine "batblood" "batblood")
+  (is (not (some #{"batblood"} (get-items))))
+  (is (some #{"healing potion"} (get-items))))
+
+(deftest combine-wrong-items
+  (player-has-items "batblood" "batwing")
+  (combine "batblood" "batwing")
+  (is (empty? (get-items))))

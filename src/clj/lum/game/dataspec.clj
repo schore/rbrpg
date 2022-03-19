@@ -30,7 +30,7 @@
 (s/def :player/hp :game/stat)
 (s/def :player/mp :game/stat)
 (s/def :player/ac pos-int?)
-(s/def :player/items (s/coll-of :game/item))
+(s/def :player/items (s/map-of :game/item nat-int?))
 
 (s/def :game/player (s/keys :req-un [:game/position
                                      :player/ac
@@ -83,7 +83,8 @@
                                 :ac 10
                                 :hp [8 10]
                                 :mp [0 3]
-                                :items ["batwing" "batblood"]}
+                                :items {"batwing" 2
+                                        "batblood" 2}}
                        :messages ["Hello World"]
                        :fight {:enemy {
                                        :name "bat"

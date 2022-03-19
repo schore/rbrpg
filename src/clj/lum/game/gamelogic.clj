@@ -15,7 +15,6 @@
   [data [_ x y]]
   (assoc-in data [:player :position] [x y]))
 
-
 (defn move
   [data [_ direction]]
   (let [new-data (case (keyword direction)
@@ -64,7 +63,7 @@
             :xp 0
             :hp [10 10]
             :mp [3 3]
-            :items []}})
+            :items {}}})
 
 (def recepies {{"batblood" 2} "healing potion"})
 
@@ -73,11 +72,14 @@
   (let [used-items (frequencies (rest used-items))
         items (reduce (fn [items [k v]]
                         (update items k #(- % v)))
-                      (frequencies (get-in data [:player :items]))
+                      (get-in data [:player :items])
                       used-items)
-        items (reduce (fn [i [k v]] (concat i (repeat v k))) [] items)
         new-item (get recepies used-items)]
-    (assoc-in data [:player :items] (filter some? (conj items new-item)))))
+    (assoc-in data [:player :items] (into {} (filter (fn [[_ v]] (pos-int? v))
+                                                     (if (some? new-item)
+                                                       (assoc items new-item
+                                                              (inc (get items new-item 0)))
+                                                       items))))))
 
 (defn load-map
   [data [_ file]]
@@ -192,7 +194,6 @@
   [data]
   (get enemies (get-in data [:fight :enemy :name])))
 
-
 (defn update-xp
   [data]
   (update-in data [:player :xp]
@@ -201,8 +202,13 @@
 (defn update-items
   [data]
   (update-in data [:player :items]
-             #(concat % (:items (get-enemy data)))))
-
+             (fn [items]
+               (log/info items)
+               (let [loot (:items (get-enemy data))]
+                 (log/info loot)
+                 (reduce (fn [acc item]
+                           (assoc acc item (inc (get acc item 0))))
+                         items loot)))))
 
 (defn check-fight-end
   [data _]
@@ -224,11 +230,9 @@
    :load [load-game]
    :nop []})
 
-
 (def game-over-mode
   (merge basic-mode
          {}))
-
 
 (def fight-mode
   (merge basic-mode

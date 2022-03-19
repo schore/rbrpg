@@ -163,7 +163,7 @@
   (attack 20 2 1 1 1))
 
 (defn player-has-items
-  [& items]
+  [items]
   (let [state (game-is-initialized)]
     (game-loaded (assoc-in state [:player :items] items)))
 )
@@ -181,7 +181,7 @@
                                :xp 0
                                :hp [10 10]
                                :mp [3 3]
-                               :items []}}]
+                               :items {}}}]
       (game-is-initialized)
       (game-loaded game-state)
       (is (= game-state (get-state))))))
@@ -306,8 +306,8 @@
 (deftest get-item-after-fight
   (in-a-fight)
   (killed-the-enemy)
-  (is (some #{"batblood"} (get-items)))
-  (is (some #{"batwing"} (get-items))))
+  (is (= 1 (get (get-items) "batblood")))
+  (is (= 1 (get (get-items) "batwing"))))
 
 (deftest in-fight-with-a-rat
   (game-is-initialized)
@@ -316,12 +316,23 @@
   (is (clojure.string/includes? (first (get-messages)) "Rat")))
 
 (deftest combine-items
-  (player-has-items "batblood" "batblood")
+  (player-has-items {"batblood" 2})
   (combine "batblood" "batblood")
-  (is (not (some #{"batblood"} (get-items))))
-  (is (some #{"healing potion"} (get-items))))
+  (log/info (get-items))
+  (is (nil? (get (get-items) "batblood")))
+  (is (= 1 (get (get-items) "healing potion"))))
+
+(deftest combine-items-already-some-in-stock
+  (player-has-items {"batblood" 2
+                     "healing potion" 1})
+  (combine "batblood" "batblood")
+  (log/info (get-items))
+  (is (nil? (get (get-items) "batblood")))
+  (is (= 2 (get (get-items) "healing potion"))))
+
 
 (deftest combine-wrong-items
-  (player-has-items "batblood" "batwing")
+  (player-has-items {"batblood" 1
+                     "batwing" 1})
   (combine "batblood" "batwing")
   (is (empty? (get-items))))

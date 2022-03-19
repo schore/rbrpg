@@ -268,7 +268,7 @@
   []
   (let [items (rf/subscribe [:game/items])]
     (fn []
-      (let [items (frequencies @items)]
+      (let [items @items]
          [:ul (for [[k v] items] [:li v ": " k])]))))
 
 (defn picture-game []

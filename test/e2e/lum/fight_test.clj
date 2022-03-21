@@ -57,7 +57,6 @@
   (enter-fight-screen *driver*)
   (fight *driver*)
   (is (c/map-screen? *driver*))
-  (log/info (c/get-items *driver*))
   (is (seq (c/get-items *driver*))))
 
 

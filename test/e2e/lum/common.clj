@@ -90,14 +90,15 @@
 
 (defn parse-item-str
   [str]
-  (let [[_ v k] (re-matches #"([\d+]*): (.*)" str)]
+  (log/info str)
+  (let [[_ k v] (re-matches #"(.*) ([\d+]*) [\d+]*" str)]
     [k  (Integer/parseInt v)]))
 
 (defn get-items
   [driver]
   (let [query [{:class "content"}
-               {:tag :ul}
-               {:tag :li}]]
+               {:tag :table}
+               {:tag :tr}]]
         (->> (e/query-all driver query)
              (map #(e/get-element-text-el driver %))
              (map parse-item-str)

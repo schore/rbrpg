@@ -83,6 +83,13 @@
    {:game/send-message [:new-board]}))
 
 (rf/reg-event-fx
+ :game/combine
+ (fn [_ [_ items]]
+   (let [message (reduce (fn [acc [k v]] (concat acc (repeat v k))) [:combine] items)]
+     (println items message)
+     {:game/send-message message})))
+
+(rf/reg-event-fx
  :game/load-map
  (fn [_ _]
    {:game/send-message [:load-map "docs/test.txt"]}))
@@ -264,12 +271,37 @@
          [:<> message
           [:br]])])))
 
-(defn items
+(defn plus-minus-counter
+  [selected-items k v]
+  [:<>
+   [:input {:type "button"
+            :value "-"
+            :on-click (fn [] (swap! selected-items #(update % k dec)))}]
+   v
+   [:input {:type "button"
+            :value "+"
+            :on-click (fn [] (swap! selected-items #(update % k inc)))}]])
+
+(defn show-items
   []
-  (let [items (rf/subscribe [:game/items])]
+  (let [items (rf/subscribe [:game/items])
+        selected-items (r/atom {})]
     (fn []
-      (let [items @items]
-         [:ul (for [[k v] items] [:li v ": " k])]))))
+      (when (not= (into #{} (map first @items))
+                  (into #{} (map first @selected-items)))
+        (reset! selected-items (into {} (for [[k _] @items] [k 0]))))
+      (let [items @items
+            sitems @selected-items]
+        [:<>
+         [:p (str sitems)]
+         [:table.tbody (for [[k v] items]
+                         [:tr
+                          [:td k]
+                          [:td v]
+                          [:td [plus-minus-counter selected-items k (get sitems k)]]])]
+         [:input {:type "button"
+                  :value "combine"
+                  :on-click (fn [] (rf/dispatch [:game/combine sitems]))}]]))))
 
 (defn picture-game []
   (let [fight? (rf/subscribe [:game/fight?])
@@ -286,5 +318,5 @@
        [button "Load map" [:game/load-map]]
        [:br]
        [stats]
-       [items]
+       [show-items]
        [show-messages]])))

@@ -293,7 +293,6 @@
       (let [items @items
             sitems @selected-items]
         [:<>
-         [:p (str sitems)]
          [:table.tbody (for [[k v] items]
                          [:tr
                           [:td k]

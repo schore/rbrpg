@@ -58,7 +58,7 @@
 (defn map-screen?
   [driver]
   (e/exists? driver [{:class "grid-container"}
-                      {:tag :img}]))
+                     {:tag :img}]))
 
 (defn wait-map-screen
   [driver]
@@ -68,9 +68,8 @@
 (defn fight-screen?
   [driver]
   (e/exists? driver [{:class "content"}
-                      {:tag :h1
-                       :fn/has-text "FIGHT"}]))
-
+                     {:tag :h1
+                      :fn/has-text "FIGHT"}]))
 
 (defn game-over?
   [driver]
@@ -90,7 +89,6 @@
 
 (defn parse-item-str
   [str]
-  (log/info str)
   (let [[_ k v] (re-matches #"(.*) ([\d+]*) [\d+]*" str)]
     [k  (Integer/parseInt v)]))
 
@@ -99,11 +97,37 @@
   (let [query [{:class "content"}
                {:tag :table}
                {:tag :tr}]]
-        (->> (e/query-all driver query)
-             (map #(e/get-element-text-el driver %))
-             (map parse-item-str)
-             (into {}))))
+    (->> (e/query-all driver query)
+         (map #(e/get-element-text-el driver %))
+         (map parse-item-str)
+         (into {}))))
 
+(defn get-plus-el
+  [driver item]
+  (->> (e/query-all driver
+                    [{:class "content"}
+                     {:tag :table}
+                     {:tag :tr}])
+       (filter (fn [el]
+                 (let [x (e/get-element-text-el driver
+                                                (e/child driver el
+                                                         {:tag :td
+                                                          :index 1}))]
+                               (log/info x item )
+                               (= x item))))
+       (map (fn [el] (e/child driver el
+                              {:tag :input
+                               :value "+"})))
+       first))
+
+(defn combine
+  [driver n item]
+  (let [el (get-plus-el driver item)]
+    (dotimes [_ n]
+      (e/click-el driver el)))
+  (e/click driver {:tag :input
+                   :type "button"
+                   :value "combine"}))
 
 (defn press-key
   [driver k]
@@ -124,4 +148,3 @@
   [f]
   (navigate-to-game *driver*)
   (f))
-

@@ -69,3 +69,20 @@
       (recur (inc i))))
   (log/info (c/game-over? *driver*))
   (is (c/game-over? *driver*)))
+
+(defn fight-until-you-get
+  [n item]
+ (loop [i 0]
+    (when (and (not (c/game-over? *driver*))
+               (< i 100)
+               (< (get (c/get-items *driver*) item 0) n))
+      (enter-fight-screen *driver*)
+      (fight *driver*)
+      (recur (inc i)))))
+
+
+(deftest combine-item
+  (fight-until-you-get 2 "batblood")
+  (is (= 2 (get (c/get-items *driver*) "batblood")))
+  (c/combine *driver* 2 "batblood")
+  (is (= 1 (get (c/get-items *driver*) "healing potion"))))

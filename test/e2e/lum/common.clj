@@ -120,11 +120,15 @@
                                :value "+"})))
        first))
 
-(defn combine
-  [driver n item]
+(defn select-items
+  [driver item n]
   (let [el (get-plus-el driver item)]
     (dotimes [_ n]
-      (e/click-el driver el)))
+      (e/click-el driver el))))
+
+(defn combine
+  [driver n item]
+  (select-items driver item n)
   (e/click driver {:tag :input
                    :type "button"
                    :value "combine"}))

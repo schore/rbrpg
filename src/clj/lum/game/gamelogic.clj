@@ -67,19 +67,33 @@
 
 (def recepies {{"batblood" 2} "healing potion"})
 
+(defn apply-items
+  [data used-items]
+  (log/info (get-in data [:player :items]) used-items)
+  (reduce (fn [items [k v]]
+            (log/info k v)
+            ;; nil is passed in case the k is not in the list
+            (update items k #(- (if % % 0) v)))
+          (get-in data [:player :items])
+          used-items))
+
+(defn inc-items
+  [new-item items]
+  (if (some? new-item)
+    (assoc items new-item
+           (inc (get items new-item 0)))
+    items))
+
 (defn combine
   [data used-items]
   (let [used-items (frequencies (rest used-items))
-        items (reduce (fn [items [k v]]
-                        (update items k #(- % v)))
-                      (get-in data [:player :items])
-                      used-items)
+        items (apply-items data used-items)
+        valid? (every? (fn [[_ v]] (>= v 0)) items)
         new-item (get recepies used-items)]
-    (assoc-in data [:player :items] (into {} (filter (fn [[_ v]] (pos-int? v))
-                                                     (if (some? new-item)
-                                                       (assoc items new-item
-                                                              (inc (get items new-item 0)))
-                                                       items))))))
+    (if valid?
+      (assoc-in data [:player :items] (into {} (filter (fn [[_ v]] (pos-int? v))
+                                                       (inc-items new-item items))))
+      data)))
 
 (defn load-map
   [data [_ file]]

@@ -25,7 +25,7 @@
 
   (exec [_ command ]
       (log/info "Execute command" command)
-      (a/>!! in command)
+    (a/put! in command)
     (first (a/alts!! [out (a/timeout 1000)])))
 
   (close [_]
@@ -330,9 +330,18 @@
   (is (nil? (get (get-items) "batblood")))
   (is (= 2 (get (get-items) "healing potion"))))
 
-
 (deftest combine-wrong-items
   (player-has-items {"batblood" 1
                      "batwing" 1})
   (combine "batblood" "batwing")
   (is (empty? (get-items))))
+
+(deftest combine-items-not-in-inventory
+  (player-has-items {})
+  (combine "batblood" "batblood")
+  (is (empty? (get-items))))
+
+(deftest combine-items-not-enough-inventory
+  (player-has-items { "batblood" 1})
+  (combine "batblood" "batblood")
+  (is (= { "batblood" 1 } (get-items))))

@@ -1,15 +1,15 @@
 (ns lum.game.gamelogic
   (:require
-   [lum.game.cavegen :as cavegen]
-   [lum.maputil :as mu]
-   [lum.game.dataspec]
-   [lum.game.update-data]
-   [lum.game.enemy-database :refer [enemies]]
-   [clojure.string]
-   [clojure.spec.alpha :as s]
-   [clojure.core.async :as a :refer [chan go-loop <! >! close!]]
+   [clojure.core.async :as a :refer [<! >! chan close! go-loop]]
    [clojure.java.io :as io]
-   [clojure.tools.logging :as log]))
+   [clojure.spec.alpha :as s]
+   [clojure.string]
+   [clojure.tools.logging :as log]
+   [lum.game.cavegen :as cavegen]
+   [lum.game.dataspec]
+   [lum.game.game-database :refer [enemies recipies]]
+   [lum.game.update-data]
+   [lum.maputil :as mu]))
 
 (defn set-position
   [data [_ x y]]
@@ -65,7 +65,6 @@
             :mp [3 3]
             :items {}}})
 
-(def recepies {{"batblood" 2} "healing potion"})
 
 (defn apply-items
   [data used-items]
@@ -89,7 +88,7 @@
   (let [used-items (frequencies (rest used-items))
         items (apply-items data used-items)
         valid? (every? (fn [[_ v]] (>= v 0)) items)
-        new-item (get recepies used-items)]
+        new-item (get recipies used-items)]
     (if valid?
       (assoc-in data [:player :items] (into {} (filter (fn [[_ v]] (pos-int? v))
                                                        (add-item-to-inventory new-item items))))

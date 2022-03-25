@@ -1,4 +1,4 @@
-(ns lum.game.enemy-database
+(ns lum.game.game-database
   (:require [clojure.spec.alpha :as s]
             [lum.game.dataspec]
             [clojure.test :as t]))
@@ -15,6 +15,10 @@
                      :items ["ratmeet"]}})
 
 
+(def recipies {{"batblood" 2} "healing potion"})
+
+
+;;enemie database
 (s/def ::ac int?)
 (s/def ::hp pos-int?)
 (s/def ::mp nat-int?)
@@ -23,5 +27,14 @@
 (s/def ::enemy (s/keys :req-un [::ac ::hp ::mp ::xp ::items]))
 (s/def ::enemies (s/map-of string? ::enemy))
 
+;;recipie database
+
+(s/def ::recipie (s/map-of :game/item pos-int?))
+(s/def ::recipies (s/map-of ::recipie :game/item))
+
+
 (t/deftest valid-enemy-database
   (t/is (s/valid? ::enemies enemies)))
+
+(t/deftest valid-recipie-database
+  (t/is (s/valid? ::recipies recipies)))

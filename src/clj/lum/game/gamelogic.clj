@@ -77,7 +77,7 @@
           (get-in data [:player :items])
           used-items))
 
-(defn inc-items
+(defn add-item-to-inventory
   [new-item items]
   (if (some? new-item)
     (assoc items new-item
@@ -92,7 +92,7 @@
         new-item (get recepies used-items)]
     (if valid?
       (assoc-in data [:player :items] (into {} (filter (fn [[_ v]] (pos-int? v))
-                                                       (inc-items new-item items))))
+                                                       (add-item-to-inventory new-item items))))
       data)))
 
 (defn load-map

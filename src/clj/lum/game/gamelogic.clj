@@ -66,32 +66,49 @@
             :items {}}})
 
 
-(defn apply-items
+(defn filter-map
+  [f m]
+  (into {} (filter f m)))
+
+(defn remove-empty-items
+  [data]
+  (update-in data [:player :items]
+             (fn [items] (filter-map (fn [[_ v]] (pos-int? v)) items))))
+
+(defn change-item
+  [data item n]
+  ;; nil is passed in case the k is not in the list
+  (update-in data [:player :items item] #(+ (if % % 0) n)))
+
+(defn change-items
   [data used-items]
   (log/info (get-in data [:player :items]) used-items)
-  (reduce (fn [items [k v]]
-            (log/info k v)
-            ;; nil is passed in case the k is not in the list
-            (update items k #(- (if % % 0) v)))
-          (get-in data [:player :items])
-          used-items))
+  (remove-empty-items (reduce (fn [a [item n]] (change-item a item n))
+                              data
+                              used-items)))
 
-(defn add-item-to-inventory
-  [new-item items]
-  (if (some? new-item)
-    (assoc items new-item
-           (inc (get items new-item 0)))
-    items))
+
+(defn enough-items?
+  [data required-items]
+  (let [items (get-in data [:player :items])]
+    (every? (fn [[k v]] (<= v (get-in data [:player :items k] 0))) required-items)))
+
+(defn map-map
+  [f m]
+  (into {} (map f m)))
+
 
 (defn combine
-  [data used-items]
-  (let [used-items (frequencies (rest used-items))
-        items (apply-items data used-items)
-        valid? (every? (fn [[_ v]] (>= v 0)) items)
+  [data [_ used-items]]
+  (log/info (get-in [:player :items] used-items))
+  (let [used-items (filter-map (fn [[_ v]] (pos-int? v)) used-items)
         new-item (get recipies used-items)]
-    (if valid?
-      (assoc-in data [:player :items] (into {} (filter (fn [[_ v]] (pos-int? v))
-                                                       (add-item-to-inventory new-item items))))
+    (if (enough-items? data used-items)
+      (-> data
+          (change-items (map-map (fn [[k v]] [k (* -1 v)]) used-items))
+          (change-items (if new-item
+                          {new-item 1}
+                          {})))
       data)))
 
 (defn load-map

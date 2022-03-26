@@ -86,8 +86,8 @@
  :game/combine
  (fn [_ [_ items]]
    (let [message (reduce (fn [acc [k v]] (concat acc (repeat v k))) [:combine] items)]
-     (println items message)
-     {:game/send-message message})))
+     (println items [:combine items])
+     {:game/send-message [:combine items]})))
 
 (rf/reg-event-fx
  :game/load-map

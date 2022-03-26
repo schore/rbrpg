@@ -67,7 +67,7 @@
 
 (defn combine
   [& s]
-  (exec *game* (into [:combine] s)))
+  (exec *game* [:combine (frequencies s)]))
 
 (defn get-messages
   []

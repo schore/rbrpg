@@ -46,10 +46,16 @@
 (t/use-fixtures
   :each create-game)
 
+(defn get-state-unchecked
+  []
+  (exec *game* [:nop]))
 
 (defn game-is-initialized
   []
-  (exec *game* [:initialize]))
+  (let [state (get-state-unchecked)]
+    (if (not (s/valid? :game/game state))
+      (exec *game* [:initialize])
+      state)))
 
 (defn game-loaded
   [new-sate]
@@ -173,7 +179,8 @@
 
 (defn player-has-hp
   [hp]
-  (let [state (get-state)]
+  (let [state (game-is-initialized)]
+    (log/info (:player state))
     (game-loaded (assoc-in state [:player :hp 0] hp))))
 
 (deftest initalize-tests
@@ -361,3 +368,8 @@
   (use-item "healing potion")
   (is (= 8 (get-hp)))
   (is (nil? (get (get-items) "healing potion"))))
+
+(deftest apply-item-not-in-inventory
+  (player-has-hp 5)
+  (use-item "healing potion")
+  (is (= 5 (get-hp))))

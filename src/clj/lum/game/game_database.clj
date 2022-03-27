@@ -18,6 +18,10 @@
 (def recipies {{"batblood" 2} "healing potion"})
 
 
+(def item-effects {"healing potion" [{:target :player
+                                      :stat :hp
+                                      :n 3}]})
+
 ;;enemie database
 (s/def ::ac int?)
 (s/def ::hp pos-int?)

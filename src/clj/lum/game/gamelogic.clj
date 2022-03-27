@@ -7,7 +7,7 @@
    [clojure.tools.logging :as log]
    [lum.game.cavegen :as cavegen]
    [lum.game.dataspec]
-   [lum.game.game-database :refer [enemies recipies]]
+   [lum.game.game-database :refer [enemies recipies item-effects]]
    [lum.game.update-data]
    [lum.maputil :as mu]))
 
@@ -65,6 +65,13 @@
             :mp [3 3]
             :items {}}})
 
+(defn fight-ended?
+  [data]
+  (= 0 (get-in data [:fight :enemy :hp 0])))
+
+(defn game-over?
+  [data]
+  (= 0 (get-in data [:palyer :hp])))
 
 (defn filter-map
   [f m]
@@ -88,6 +95,29 @@
                               used-items)))
 
 
+(defn process-effect
+  [action-name]
+  (fn [state {:keys [target stat n]}]
+    (let [update-field (conj (case target
+                               :player [:player]
+                               :enemy [:fight :enemy])
+                             stat)]
+      (if (not (fight-ended? state))
+        (-> state
+            (update :messages #(conj % (str action-name ": " (* -1 n) " " (str stat))))
+            (update-in update-field (fn [[v max]]
+                                      (let [nv (+ v n)
+                                            cv (cond
+                                                 (< nv 0) 0
+                                                 (> nv max) max
+                                                 :else nv)]
+                                        [cv max]))))
+        state))))
+
+(defn process-event
+  [data [action-name effects]]
+  (reduce (process-effect action-name) data effects))
+
 (defn enough-items?
   [data required-items]
   (let [items (get-in data [:player :items])]
@@ -110,6 +140,15 @@
                           {new-item 1}
                           {})))
       data)))
+
+(defn use-item
+  [data [_ item]]
+  (log/info "use item " item)
+  (if (enough-items? data {item 1})
+    (-> data
+        (change-items {item -1})
+        (process-event [(str "Use item: " item) (get item-effects item {})]))
+    data))
 
 (defn load-map
   [data [_ file]]
@@ -143,36 +182,7 @@
           (update :messages #(conj % (str "You got attacked by a " enemy)))))
     data))
 
-(defn fight-ended?
-  [data]
-  (= 0 (get-in data [:fight :enemy :hp 0])))
 
-(defn game-over?
-  [data]
-  (= 0 (get-in data [:palyer :hp])))
-
-(defn process-effect
-  [action-name]
-  (fn [state {:keys [target stat n]}]
-    (let [update-field (conj (case target
-                               :player [:player]
-                               :enemy [:fight :enemy])
-                             stat)]
-      (if (not (fight-ended? state))
-        (-> state
-            (update :messages #(conj % (str action-name ": " (* -1 n) " " (str stat))))
-            (update-in update-field (fn [[v max]]
-                                      (let [nv (+ v n)
-                                            cv (cond
-                                                 (< nv 0) 0
-                                                 (> nv max) max
-                                                 :else nv)]
-                                        [cv max]))))
-        state))))
-
-(defn process-event
-  [data [action-name effects]]
-  (reduce (process-effect action-name) data effects))
 
 (defn roll
   [n s]
@@ -258,6 +268,7 @@
 (def basic-mode
   {:initialize [initialize]
    :load [load-game]
+   :use-item [use-item]
    :nop []})
 
 (def game-over-mode

@@ -157,6 +157,10 @@
    (exec-with-rolls attack rolls)
    ))
 
+(defn use-item
+  [item]
+  (exec *game* [:use-item item]))
+
 
 (defn killed-the-enemy
   []
@@ -165,8 +169,12 @@
 (defn player-has-items
   [items]
   (let [state (game-is-initialized)]
-    (game-loaded (assoc-in state [:player :items] items)))
-)
+    (game-loaded (assoc-in state [:player :items] items))))
+
+(defn player-has-hp
+  [hp]
+  (let [state (get-state)]
+    (game-loaded (assoc-in state [:player :hp 0] hp))))
 
 (deftest initalize-tests
   (is (s/valid? :game/game (game-is-initialized))))
@@ -345,3 +353,11 @@
   (player-has-items { "batblood" 1})
   (combine "batblood" "batblood")
   (is (= { "batblood" 1 } (get-items))))
+
+
+(deftest apply-item
+  (player-has-items {"healing potion" 1})
+  (player-has-hp 5)
+  (use-item "healing potion")
+  (is (= 8 (get-hp)))
+  (is (nil? (get (get-items) "healing potion"))))

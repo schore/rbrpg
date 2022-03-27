@@ -36,9 +36,20 @@
 (s/def ::recipie (s/map-of :game/item pos-int?))
 (s/def ::recipies (s/map-of ::recipie :game/item))
 
+;;item-effects
+(s/def ::target #{:player :enemy})
+(s/def ::stat #{:hp :mp})
+(s/def ::n int?)
+(s/def ::effect (s/keys :req-un [::target ::stat ::n]))
+(s/def ::effects (s/coll-of ::effect))
+(s/def ::item-effects (s/map-of :game/item ::effects))
+
 
 (t/deftest valid-enemy-database
   (t/is (s/valid? ::enemies enemies)))
 
 (t/deftest valid-recipie-database
   (t/is (s/valid? ::recipies recipies)))
+
+(t/deftest valid-item-db
+  (t/is (s/valid? ::item-effects item-effects)))

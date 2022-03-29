@@ -86,3 +86,15 @@
   (is (= 2 (get (c/get-items *driver*) "batblood")))
   (c/combine *driver* 2 "batblood")
   (is (= 1 (get (c/get-items *driver*) "healing potion"))))
+
+(defn get-healing-potion
+  []
+  (fight-until-you-get 2 "batblood")
+  (c/combine *driver* 2 "batblood"))
+
+
+(deftest use-healing-potion
+  (get-healing-potion)
+  (let [hp (c/get-hp *driver*)]
+    (c/use-item *driver* "healing potion")
+    (is (< hp (c/get-hp *driver*)))))

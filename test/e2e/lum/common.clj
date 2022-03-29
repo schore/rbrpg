@@ -102,7 +102,14 @@
          (map parse-item-str)
          (into {}))))
 
-(defn get-plus-el
+(defn get-hp
+  [driver]
+  (Integer/parseInt (second (re-matches #"hp: (.*)/(.*)"
+                               (e/get-element-text driver [{:class "content"}
+                                                           {:tag :span
+                                                            :fn/has-text "hp:"}])))))
+
+(defn get-item-row
   [driver item]
   (->> (e/query-all driver
                     [{:class "content"}
@@ -113,12 +120,21 @@
                                                 (e/child driver el
                                                          {:tag :td
                                                           :index 1}))]
-                               (log/info x item )
-                               (= x item))))
-       (map (fn [el] (e/child driver el
-                              {:tag :input
-                               :value "+"})))
+                   (= x item))))
        first))
+
+(defn get-plus-el
+  [driver item]
+  (e/child driver (get-item-row driver item)
+           {:tag :input
+            :value "+"}))
+
+(defn use-item
+  [driver item]
+  (e/click-el driver
+              (e/child driver (get-item-row driver item)
+                       {:tag :input
+                        :value "use"})))
 
 (defn select-items
   [driver item n]

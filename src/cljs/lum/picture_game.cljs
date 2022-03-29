@@ -90,6 +90,11 @@
      {:game/send-message [:combine items]})))
 
 (rf/reg-event-fx
+ :game/use
+ (fn [_ [_ item]]
+   {:game/send-message [:use-item item]}))
+
+(rf/reg-event-fx
  :game/load-map
  (fn [_ _]
    {:game/send-message [:load-map "docs/test.txt"]}))
@@ -297,6 +302,9 @@
                          [:tr
                           [:td k]
                           [:td v]
+                          [:td [:input {:type "button"
+                                        :value "use"
+                                        :on-click (fn [] (rf/dispatch [:game/use k]))}]]
                           [:td [plus-minus-counter selected-items k (get sitems k)]]])]
          [:input {:type "button"
                   :value "combine"

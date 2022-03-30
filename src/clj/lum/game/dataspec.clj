@@ -1,6 +1,7 @@
 (ns lum.game.dataspec
   (:require [clojure.spec.alpha :as s]
             [lum.maputil :as mu]
+            [lum.game.game-database :as db]
             [lum.game.cavegen :as g]))
 
 (s/def :tile/type  #{:wall
@@ -19,10 +20,7 @@
 
 (s/def :player/xp nat-int?)
 
-(s/def :game/item #{"batwing"
-                    "batblood"
-                    "ratmeet"
-                    "healing potion"})
+
 
 (s/def :game/stat (s/and (s/cat :current nat-int? :max nat-int?)
                            #(<= (:current %) (:max %))))
@@ -30,14 +28,13 @@
 (s/def :player/hp :game/stat)
 (s/def :player/mp :game/stat)
 (s/def :player/ac pos-int?)
-(s/def :player/items (s/map-of :game/item nat-int?))
 
 (s/def :game/player (s/keys :req-un [:game/position
                                      :player/ac
                                      :player/xp
                                      :player/hp
                                      :player/mp
-                                     :player/items]))
+                                     :game-database/items]))
 
 (s/def :enemy/name string?)
 (s/def :enemy/hp :game/stat)

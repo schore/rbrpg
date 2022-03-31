@@ -294,15 +294,6 @@
     (contains? state :fight) fight-mode
     :else move-mode))
 
-(defn enforce-spec
-  [f]
-  (fn [data command]
-    (let [new-data (f data command)]
-      (if (s/valid? :game/game new-data)
-        new-data
-        (do
-          (log/error (s/explain-str :game/game new-data))
-          data)))))
 
 (defn process-actions
   [data action]
@@ -316,19 +307,6 @@
                         (keyword (first action)) [])))
     data))
 
-(defn board-update
-  [data new-data]
-  (if (not= (:board data)
-            (:board new-data))
-    [:new-board (:board new-data)]
-    nil))
-
-(defn player-move
-  [data new-data]
-  (when (not= (get-in data [:player :position])
-              (get-in new-data [:player :position]))
-    (let [[x y] (get-in new-data [:player :position])]
-      [:player-move x y])))
 
 (defn game-master
   [input-chan]

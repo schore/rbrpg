@@ -15,19 +15,18 @@
   [data [_ x y]]
   (assoc-in data [:player :position] [x y]))
 
-(defn move
-  [data [_ direction]]
-  (let [new-data (case (keyword direction)
+(defn move-unchecked
+  [data direction ]
+  (case (keyword direction)
                    :left (update-in data [:player :position 0] dec)
                    :right (update-in data [:player :position 0] inc)
                    :up (update-in data [:player :position 1] dec)
-                   :down (update-in data [:player :position 1] inc))
-        position (get-in new-data [:player :position])]
-    (if (and (s/valid? :game/position position)
-             (= :ground
-                (:type (mu/get-tile (:board new-data)
-                                    (get-in new-data [:player :position 0])
-                                    (get-in new-data [:player :position 1])))))
+                   :down (update-in data [:player :position 1] inc)))
+
+(defn move
+  [data [_ direction]]
+  (let [new-data (move-unchecked data direction)]
+    (if (s/valid? :game/game new-data)
       new-data
       data)))
 
@@ -56,14 +55,18 @@
 
 (defn initialize
   [_ _]
-  {:board (cavegen/get-dungeon)
-   :messages '("Hello adventurer")
-   :player {:position [10 10]
-            :ac 5
-            :xp 0
-            :hp [10 10]
-            :mp [3 3]
-            :items {}}})
+  (loop []
+    (let [data {:board (cavegen/get-dungeon)
+           :messages '("Hello adventurer")
+           :player {:position [10 10]
+                    :ac 5
+                    :xp 0
+                    :hp [10 10]
+                    :mp [3 3]
+                    :items {}}}]
+      (if (s/valid? :game/game data)
+        data
+        (recur)))))
 
 (defn fight-ended?
   [data]

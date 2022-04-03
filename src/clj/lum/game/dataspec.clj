@@ -2,7 +2,8 @@
   (:require [clojure.spec.alpha :as s]
             [lum.maputil :as mu]
             [lum.game.game-database :as db]
-            [lum.game.cavegen :as g]))
+            [lum.game.cavegen :as g]
+            [clojure.tools.logging :as log]))
 
 (s/def :tile/type  #{:wall
                      :ground
@@ -65,17 +66,24 @@
 (s/def :game/messages (s/coll-of string?
                                  :max-count 10))
 
-(s/def :game/game (s/keys :req-un [:game/player
-                                   :game/board
-                                   :game/messages]
-                          :opt-un [:game/fight]))
+(defn valid-position?
+  [data]
+  (let [data (s/unform :game/game data)
+        [x y] (get-in data [:player :position])
+        tile (:type (mu/get-tile (:board data) x y))]
+    (= :ground tile)))
 
-
+(s/def :game/game (s/and (s/keys :req-un [:game/player
+                                          :game/board
+                                          :game/messages]
+                                 :opt-un [:game/fight]
+                                 )
+                         valid-position?))
 
 
 
 (s/explain :game/game {:board (g/get-dungeon)
-                       :player {:position [1 1]
+                       :player {:position [10 10]
                                 :xp 0
                                 :ac 10
                                 :hp [8 10]

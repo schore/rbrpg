@@ -13,7 +13,11 @@
 
 (defn set-position
   [data [_ x y]]
-  (assoc-in data [:player :position] [x y]))
+  (let [data (assoc-in data [:player :position] [x y])]
+    (loop [data data]
+      (if (s/valid? :game/game data)
+        data
+        (recur (assoc data :board (cavegen/get-dungeon)))))))
 
 (defn move-unchecked
   [data direction ]

@@ -50,11 +50,15 @@
   []
   (exec *game* [:nop]))
 
+(defn initalize-game
+  []
+  (exec *game* [:initialize]))
+
 (defn game-is-initialized
   []
   (let [state (get-state-unchecked)]
     (if (not (s/valid? :game/game state))
-      (exec *game* [:initialize])
+      (initalize-game)
       state)))
 
 (defn game-loaded
@@ -121,7 +125,7 @@
 
 (defn test-map-loaded
   ([]
-   (game-is-initialized)
+   (initalize-game)
    (load-map "docs/test.txt"))
   ([x y]
    (test-map-loaded)
@@ -189,14 +193,17 @@
 
 (deftest load-game
   (testing "Load a game"
-    (let [game-state {:board (cavegen/get-dungeon)
-                      :messages '("")
-                      :player {:position [12 12]
-                               :ac 5
-                               :xp 0
-                               :hp [10 10]
-                               :mp [3 3]
-                               :items {}}}]
+    (let [game-state (loop [game-state nil]
+                       (if (s/valid? :game/game game-state)
+                         game-state
+                         (recur {:board (cavegen/get-dungeon)
+                                 :messages '("")
+                                 :player {:position [12 12]
+                                          :ac 5
+                                          :xp 0
+                                          :hp [10 10]
+                                          :mp [3 3]
+                                          :items {}}})))]
       (game-is-initialized)
       (game-loaded game-state)
       (is (= game-state (get-state))))))

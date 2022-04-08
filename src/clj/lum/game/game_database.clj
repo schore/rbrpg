@@ -14,12 +14,16 @@
                      :items ["ratmeet"]}})
 
 
-(def recipies {{"batblood" 2} "healing potion"})
+(def recipies {{"batblood" 2} "small healing potion"
+               {"small healing potion" 2} "medium healing potion"})
 
 
-(def item-effects {"healing potion" [{:target :player
-                                      :stat :hp
-                                      :n 3}]
+(def item-effects {"small healing potion" [{:target :player
+                                            :stat :hp
+                                            :n 3}]
+                   "medium healing potion" [{:target :player
+                                             :stat :hp
+                                             :n 30}]
                    "batblood" []
                    "batwing" []
                    "ratmeet" []})

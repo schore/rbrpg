@@ -85,16 +85,24 @@
   (fight-until-you-get 2 "batblood")
   (is (= 2 (get (c/get-items *driver*) "batblood")))
   (c/combine *driver* 2 "batblood")
-  (is (= 1 (get (c/get-items *driver*) "healing potion"))))
+  (is (= 1 (get (c/get-items *driver*) "small healing potion"))))
 
 (defn get-healing-potion
   []
   (fight-until-you-get 2 "batblood")
   (c/combine *driver* 2 "batblood"))
 
+(defn got-damage
+  []
+  (loop []
+    (when (= 10 (c/get-hp *driver*))
+        (enter-fight-screen *driver*)
+        (fight *driver*)
+        (recur))))
 
 (deftest use-healing-potion
   (get-healing-potion)
+  (got-damage)
   (let [hp (c/get-hp *driver*)]
-    (c/use-item *driver* "healing potion")
+    (c/use-item *driver* "small healing potion")
     (is (< hp (c/get-hp *driver*)))))

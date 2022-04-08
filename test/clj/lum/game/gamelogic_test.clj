@@ -342,15 +342,15 @@
   (combine "batblood" "batblood")
   (log/info (get-items))
   (is (nil? (get (get-items) "batblood")))
-  (is (= 1 (get (get-items) "healing potion"))))
+  (is (= 1 (get (get-items) "small healing potion"))))
 
 (deftest combine-items-already-some-in-stock
   (player-has-items {"batblood" 2
-                     "healing potion" 1})
+                     "small healing potion" 1})
   (combine "batblood" "batblood")
   (log/info (get-items))
   (is (nil? (get (get-items) "batblood")))
-  (is (= 2 (get (get-items) "healing potion"))))
+  (is (= 2 (get (get-items) "small healing potion"))))
 
 (deftest combine-wrong-items
   (player-has-items {"batblood" 1
@@ -370,13 +370,13 @@
 
 
 (deftest apply-item
-  (player-has-items {"healing potion" 1})
+  (player-has-items {"small healing potion" 1})
   (player-has-hp 5)
-  (use-item "healing potion")
+  (use-item "small healing potion")
   (is (= 8 (get-hp)))
-  (is (nil? (get (get-items) "healing potion"))))
+  (is (nil? (get (get-items) "small healing potion"))))
 
 (deftest apply-item-not-in-inventory
   (player-has-hp 5)
-  (use-item "healing potion")
+  (use-item "small healing potion")
   (is (= 5 (get-hp))))

@@ -78,7 +78,7 @@
 
 (defn game-over?
   [data]
-  (= 0 (get-in data [:palyer :hp])))
+  (= 0 (get-in data [:player :hp 0])))
 
 (defn filter-map
   [f m]
@@ -275,7 +275,6 @@
 (def basic-mode
   {:initialize [initialize]
    :load [load-game]
-   :use-item [use-item]
    :nop []})
 
 (def game-over-mode
@@ -284,7 +283,8 @@
 
 (def fight-mode
   (merge basic-mode
-         {:attack [attack check-fight-end]}))
+         {:attack [attack check-fight-end]
+          :use-item [use-item]}))
 
 (def move-mode
   (merge basic-mode
@@ -292,7 +292,8 @@
           :move [move check-fight]
           :set-position [set-position]
           :new-board [new-board]
-          :combine [combine]}))
+          :combine [combine]
+          :use-item [use-item]}))
 
 (defn get-mode-map
   [state]

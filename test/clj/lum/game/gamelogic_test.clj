@@ -380,3 +380,9 @@
   (player-has-hp 5)
   (use-item "small healing potion")
   (is (= 5 (get-hp))))
+
+(deftest apply-item-when-dead
+  (player-has-items {"small healing potion" 1})
+  (player-has-hp 0)
+  (use-item "small healing potion")
+  (is (= 0 (get-hp))))

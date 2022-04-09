@@ -30,11 +30,17 @@
 (s/def :player/mp :game/stat)
 (s/def :player/ac pos-int?)
 
+(s/def ::slot #{:left-hand
+                :right-hand})
+
+(s/def :player/equipment (s/map-of ::slot :game-database/item))
+
 (s/def :game/player (s/keys :req-un [:game/position
                                      :player/ac
                                      :player/xp
                                      :player/hp
                                      :player/mp
+                                     :player/equipment
                                      :game-database/items]))
 
 (s/def :enemy/name string?)
@@ -88,6 +94,7 @@
                                 :ac 10
                                 :hp [8 10]
                                 :mp [0 3]
+                                :equipment {:right-hand "sword"}
                                 :items {"batwing" 2
                                         "batblood" 2}}
                        :messages ["Hello World"]

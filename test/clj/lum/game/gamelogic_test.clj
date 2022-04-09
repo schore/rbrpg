@@ -203,6 +203,7 @@
                                           :xp 0
                                           :hp [10 10]
                                           :mp [3 3]
+                                          :equipment {}
                                           :items {}}})))]
       (game-is-initialized)
       (game-loaded game-state)
@@ -367,7 +368,6 @@
   (player-has-items { "batblood" 1})
   (combine "batblood" "batblood")
   (is (= { "batblood" 1 } (get-items))))
-
 
 (deftest apply-item
   (player-has-items {"small healing potion" 1})

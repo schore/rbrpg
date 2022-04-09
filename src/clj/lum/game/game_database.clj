@@ -26,10 +26,12 @@
                                              :n 30}]
                    "batblood" []
                    "batwing" []
-                   "ratmeet" []})
+                   "ratmeet" []
+                   "sword" []})
 
 
 (s/def ::item (into #{} (map first item-effects)))
+(s/def :game-database/item ::item)
 
 ;;enemie database
 (s/def ::ac int?)

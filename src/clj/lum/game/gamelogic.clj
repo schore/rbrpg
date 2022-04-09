@@ -67,6 +67,7 @@
                     :xp 0
                     :hp [10 10]
                     :mp [3 3]
+                    :equipment {}
                     :items {}}}]
       (if (s/valid? :game/game data)
         data

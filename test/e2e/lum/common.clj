@@ -15,7 +15,7 @@
 (defn fixture-driver
   "Intitalize web driver"
   [f]
-  (e/with-firefox {} driver
+  (e/with-firefox-headless {} driver
     (binding [*driver* driver]
       (f))))
 

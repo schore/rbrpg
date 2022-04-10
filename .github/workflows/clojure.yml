@@ -13,7 +13,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Install dependencies
-      run: lein deps
+    - name: Install dependencies npm
+      run: npm install .
+    - name: Install dependencies lein
+      run: npx lein deps
+    - name: Compile cljs code
+      run: npx shadow-cljs compile app
     - name: Run tests
-      run: lein test
+      run: npx lein test

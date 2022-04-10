@@ -6,7 +6,7 @@
    [lum.common :as c :refer [*driver*]]
    [clojure.tools.logging :as log]))
 
-(t/use-fixtures :once c/fixture-driver c/open-website)
+(t/use-fixtures :once c/fixture-start-server c/fixture-driver c/open-website)
 
 (t/use-fixtures :each c/refresh c/game-screen)
 

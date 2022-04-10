@@ -1,9 +1,16 @@
 (ns lum.common
   (:require
    [etaoin.api :as e]
+   [user]
    [clojure.tools.logging :as log]))
 
 (def ^:dynamic *driver*)
+
+(defn fixture-start-server
+  [f]
+  (user/start)
+  (f)
+  (user/stop))
 
 (defn fixture-driver
   "Intitalize web driver"

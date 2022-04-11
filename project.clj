@@ -91,4 +91,4 @@
                   :resource-paths ["env/test/resources"]}
 
    :profiles/dev {}
-   :profiles/test {}})
+   :profiles/test {:plugins [[lein-test-report-junit-xml "0.2.0"]]}})

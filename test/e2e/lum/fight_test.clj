@@ -38,7 +38,7 @@
                                    "font-weight")))
     (c/press-key driver etaoin.keys/space)))
 
-(deftest start-fight
+(deftest ^:integration start-fight
   (enter-fight-screen *driver*)
   (is (e/visible? *driver* [{:class "content"}
                             {:tag :h1
@@ -53,14 +53,14 @@
         (e/wait driver 0.3)
         (recur (inc i)))))
 
-(deftest leave-fight
+(deftest ^:integration leave-fight
   (enter-fight-screen *driver*)
   (fight *driver*)
   (is (c/map-screen? *driver*))
   (is (seq (c/get-items *driver*))))
 
 
-(deftest fight-until-end
+(deftest ^:integration fight-until-end
   (loop [i 0]
     (when (and (not (c/game-over? *driver*))
                (< i 100))
@@ -81,7 +81,7 @@
       (recur (inc i)))))
 
 
-(deftest combine-item
+(deftest ^:integration combine-item
   (fight-until-you-get 2 "batblood")
   (is (= 2 (get (c/get-items *driver*) "batblood")))
   (c/combine *driver* 2 "batblood")
@@ -100,7 +100,7 @@
         (fight *driver*)
         (recur))))
 
-(deftest use-healing-potion
+(deftest ^:integration use-healing-potion
   (get-healing-potion)
   (got-damage)
   (let [hp (c/get-hp *driver*)]

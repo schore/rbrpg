@@ -1,0 +1,32 @@
+pipeline {
+  agent any
+  stages {
+    stage('Prepare') {
+      steps {
+        sh 'npm install .'
+        sh 'ls -la'
+        sh 'lein deps'
+      }
+    }
+    stage('build') {
+      steps {
+        sh 'npx shadow-cljs compile app'
+      }
+    }
+    stage('unit test') {
+      steps {
+        sh 'npx --call=\'lein test :default\''
+      }
+    }
+    stage('integration test') {
+      steps {
+        sh 'npx --call=\'lein test :integration\''
+      }
+    }
+  }
+  post {
+   always {
+     junit 'target/test-reports/*.xml'
+   }
+ }
+}

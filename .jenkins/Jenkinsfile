@@ -23,6 +23,12 @@ pipeline {
         sh 'npx --call=\'lein test :integration\''
       }
     }
+    stage('create binary') {
+      steps {
+        sh 'npx --call=\'lein uberjar\''
+        archiveArtifacts artifacts: 'target/uberjar/lum.jar'
+      }
+    }
   }
   post {
    always {

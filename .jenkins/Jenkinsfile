@@ -8,31 +8,34 @@ pipeline {
         sh 'lein deps'
       }
     }
-    stage('build') {
-      steps {
-        sh 'npx shadow-cljs compile app'
-      }
-    }
     stage('unit test') {
       steps {
         sh 'npx --call=\'lein test :default\''
       }
-    }
-    stage('integration test') {
-      steps {
-        sh 'npx --call=\'lein test :integration\''
+      post {
+        always {
+          junit 'target/test-reports/*.xml'
+          sh 'rm -rf target/test-reports'
+        }
       }
     }
-    stage('create binary') {
+   // stage('integration test') {
+   //    steps {
+   //      sh 'npx --call=\'shadow-cljs compile app\''
+   //      sh 'npx --call=\'lein test :integration\''
+   //    }
+   //    post {
+   //      always {
+   //        junit 'target/test-reports/*.xml'
+   //        sh 'rm -rf target/test-reports'
+   //      }
+   //    }
+   //  }
+    stage('build') {
       steps {
         sh 'npx --call=\'lein uberjar\''
         archiveArtifacts artifacts: 'target/uberjar/lum.jar'
       }
     }
   }
-  post {
-   always {
-     junit 'target/test-reports/*.xml'
-   }
- }
 }

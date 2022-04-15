@@ -141,7 +141,8 @@
   (e/click-el driver
               (e/child driver (get-item-row driver item)
                        {:tag :input
-                        :value "use"})))
+                        :value "use"}))
+  (e/wait driver 0.1))
 
 (defn select-items
   [driver item n]

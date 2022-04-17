@@ -59,13 +59,3 @@
 (s/def ::effect (s/keys :req-un [::target ::stat ::n]))
 (s/def ::effects (s/coll-of ::effect))
 (s/def ::item-effects (s/map-of ::item ::effects))
-
-
-(t/deftest valid-enemy-database
-  (t/is (s/valid? ::enemies enemies)))
-
-(t/deftest valid-recipie-database
-  (t/is (s/valid? ::recipies recipies)))
-
-(t/deftest valid-item-db
-  (t/is (s/valid? ::item-effects item-effects)))

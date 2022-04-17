@@ -1,15 +1,14 @@
 (ns lum.game.gamelogic
   (:require
    [clojure.core.async :as a :refer [<! >! chan close! go-loop]]
-   [clojure.java.io :as io]
    [clojure.spec.alpha :as s]
    [clojure.string]
    [clojure.tools.logging :as log]
    [lum.game.cavegen :as cavegen]
+   [lum.game.load-save :as load-save]
    [lum.game.dataspec]
    [lum.game.game-database :refer [enemies recipies item-effects]]
-   [lum.game.update-data]
-   [lum.maputil :as mu]))
+   [lum.game.update-data]))
 
 (defn set-position
   [data [_ x y]]
@@ -33,25 +32,6 @@
     (if (s/valid? :game/game new-data)
       new-data
       data)))
-
-(defn pad [n pad coll]
-  (take n (concat coll (repeat pad))))
-
-(defn load-map-from-string
-  [inp]
-  (->> (clojure.string/split-lines inp)
-       (map (fn [line]
-              (->> (seq line)
-                   (map (fn [c]
-                          (case c
-                            \  {:type :ground}
-                            \. {:type :ground}
-                            \# {:type :wall}
-                            {:type :wall}))))))
-       (map (fn [line]
-              (pad mu/sizex {:type :wall} line)))
-       flatten
-       (pad (* mu/sizex mu/sizey) {:type :wall})))
 
 (defn new-board
   [data _]
@@ -158,14 +138,6 @@
         (process-event [(str "Use item: " item) (get item-effects item {})]))
     data))
 
-(defn load-map
-  [data [_ file]]
-  (if-let [mf (try
-                (slurp (io/resource file))
-                (catch Exception e (log/error "Exception thrown " (.getMessage e))))]
-    (assoc data :board (load-map-from-string mf))
-    data))
-
 (defn get-enemy-stat
   [k]
   (let [enemy (get enemies k)]
@@ -267,15 +239,10 @@
         (dissoc :fight))
     data))
 
-(defn load-game
-  [state [_ new-data]]
-  (if (s/valid? :game/game new-data)
-    new-data
-    state))
 
 (def basic-mode
   {:initialize [initialize]
-   :load [load-game]
+   :load [load-save/load-game]
    :nop []})
 
 (def game-over-mode
@@ -289,7 +256,7 @@
 
 (def move-mode
   (merge basic-mode
-         {:load-map [load-map]
+         {:load-map [load-save/load-map]
           :move [move check-fight]
           :set-position [set-position]
           :new-board [new-board]

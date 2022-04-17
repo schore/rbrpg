@@ -4,68 +4,47 @@
    [clojure.string]
    [clojure.test :as t :refer [deftest is testing]]
    [clojure.tools.logging :as log]
+   [lum.game-logic-dsl :refer [game-loaded
+                               create-game
+                               set-position
+                               move
+                               get-position
+                               test-map-loaded
+                               get-board
+                               get-state
+                               get-xp
+                               in-fight?
+                               game-over?
+                               attack
+                               get-enemy-hp
+                               in-a-fight
+                               killed-the-enemy
+                               game-is-initialized
+                               move-and-get-attacked
+                               get-enemy-name
+                               get-messages
+                               combine
+                               get-items
+                               player-has-items
+                               player-has-hp
+                               use-item
+                               get-hp]]
    [lum.game.cavegen :as cavegen]
    [lum.game.dataspec]
-   [lum.maputil :as mu]
-  [lum.game-logic-dsl :refer [game-loaded
-                              set-position
-                              move
-                              get-position
-                              test-map-loaded
-                              get-board
-                              get-state
-                              get-xp
-                              in-fight?
-                              game-over?
-                              attack
-                              get-enemy-hp
-                              in-a-fight
-                              killed-the-enemy
-                              game-is-initialized
-                              move-and-get-attacked
-                              get-enemy-name
-                              get-messages
-                              combine
-                              get-items
-                              player-has-items
-                              player-has-hp
-                              use-item
-                              get-hp]]))
+   [lum.maputil :as mu]))
+
+(t/use-fixtures
+  :each create-game)
+
 
 (deftest initalize-tests
   (is (s/valid? :game/game (game-is-initialized))))
-
-(deftest load-game
-  (testing "Load a game"
-    (let [game-state (loop [game-state nil]
-                       (if (s/valid? :game/game game-state)
-                         game-state
-                         (recur {:board (cavegen/get-dungeon)
-                                 :messages '("")
-                                 :player {:position [12 12]
-                                          :ac 5
-                                          :xp 0
-                                          :hp [10 10]
-                                          :mp [3 3]
-                                          :equipment {}
-                                          :items {}}})))]
-      (game-is-initialized)
-      (game-loaded game-state)
-      (is (= game-state (get-state))))))
-
-
-(deftest load-of-invalide-game-data-prevented
-  (game-is-initialized)
-  (game-loaded {})
-  (is (s/valid? :game/game (get-state))))
-
 
 (deftest set-player-position
   (game-is-initialized)
   (set-position 25 27)
   (is (= [25 27]
          (get-in (get-state) [:player :position]))))
-
 
 (deftest move-test
   (doseq [[[x y] direction end-pos] [;;Move with strings
@@ -84,13 +63,11 @@
                                      [[(dec mu/sizex) (dec mu/sizey)] :right [(dec mu/sizex) (dec mu/sizey)]]
                                      [[(dec mu/sizex) (dec mu/sizey)] :down [(dec mu/sizex) (dec mu/sizey)]]
                                      ;; don't move on walls
-                                     [[4 1] :up [4 1]]
-                                     ]]
+                                     [[4 1] :up [4 1]]]]
     (testing (str [x y] direction end-pos)
       (test-map-loaded x y)
       (move direction)
       (is (= end-pos (get-position))))))
-
 
 (deftest load-map-test
   (testing "load a map from file"
@@ -102,7 +79,6 @@
       (is (= :ground (:type (first m))))
       (is (= :wall (:type (mu/get-tile m 3 5))))
       (is (= :ground (:type (mu/get-tile m 0 2)))))))
-
 
 (deftest get-in-a-fight
   (game-is-initialized)
@@ -128,7 +104,6 @@
   (attack 15 1 15 2)
   (is (= 8 (get-hp)))
   (is (= 1 (get-enemy-hp))))
-
 
 (deftest enemy-always-hit-with-20
   (in-a-fight)
@@ -209,9 +184,9 @@
   (is (empty? (get-items))))
 
 (deftest combine-items-not-enough-inventory
-  (player-has-items { "batblood" 1})
+  (player-has-items {"batblood" 1})
   (combine "batblood" "batblood")
-  (is (= { "batblood" 1 } (get-items))))
+  (is (= {"batblood" 1} (get-items))))
 
 (deftest apply-item
   (player-has-items {"small healing potion" 1})

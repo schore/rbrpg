@@ -4,31 +4,31 @@
    [clojure.string]
    [clojure.test :as t :refer [deftest is testing]]
    [clojure.tools.logging :as log]
-   [lum.game-logic-dsl :refer [game-loaded
+   [lum.game-logic-dsl :refer [attack
+                               combine
                                create-game
-                               set-position
-                               move
-                               get-position
-                               test-map-loaded
+                               game-is-initialized
+                               game-loaded
+                               game-over?
                                get-board
+                               get-enemy-hp
+                               get-enemy-name
+                               get-hp
+                               get-items
+                               get-messages
+                               get-position
                                get-state
                                get-xp
-                               in-fight?
-                               game-over?
-                               attack
-                               get-enemy-hp
                                in-a-fight
+                               in-fight?
                                killed-the-enemy
-                               game-is-initialized
+                               move
                                move-and-get-attacked
-                               get-enemy-name
-                               get-messages
-                               combine
-                               get-items
-                               player-has-items
                                player-has-hp
-                               use-item
-                               get-hp]]
+                               player-has-items
+                               set-position
+                               test-map-loaded
+                               use-item]]
    [lum.game.cavegen :as cavegen]
    [lum.game.dataspec]
    [lum.maputil :as mu]))

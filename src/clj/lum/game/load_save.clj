@@ -34,9 +34,20 @@
     (assoc data :board (load-map-from-string mf))
     data))
 
+(defn load-save-game
+  [filename]
+  (read-string (slurp (io/resource filename))))
+
+(defn valid-save-game?
+  [file-name]
+  (and
+   (string? file-name)
+   (.exists (io/file (io/resource file-name)))
+   (s/valid? :game/game (load-save-game file-name))))
 
 (defn load-game
-  [state [_ new-data]]
-  (if (s/valid? :game/game new-data)
-    new-data
-    state))
+  [state [_ input]]
+  (cond
+    (s/valid? :game/game input) input
+    (valid-save-game? input) (load-save-game input)
+    :else state))

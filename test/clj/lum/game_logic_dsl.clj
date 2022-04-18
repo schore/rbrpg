@@ -58,7 +58,7 @@
       (initalize-game)
       state)))
 
-(defn game-loaded
+(defn load-game
   [new-sate]
   (exec *game* [:load new-sate]))
 
@@ -176,11 +176,10 @@
 (defn player-has-items
   [items]
   (let [state (game-is-initialized)]
-    (game-loaded (assoc-in state [:player :items] items))))
+    (load-game (assoc-in state [:player :items] items))))
 
 (defn player-has-hp
   [hp]
   (let [state (game-is-initialized)]
     (log/info (:player state))
-    (game-loaded (assoc-in state [:player :hp 0] hp))))
-
+    (load-game (assoc-in state [:player :hp 0] hp))))

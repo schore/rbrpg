@@ -8,7 +8,7 @@
                                combine
                                create-game
                                game-is-initialized
-                               game-loaded
+                               load-game
                                game-over?
                                get-board
                                get-enemy-hp

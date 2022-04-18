@@ -1,7 +1,7 @@
 (ns lum.game.load-save-test
   (:require [lum.game-logic-dsl :refer [create-game
                                         game-is-initialized
-                                        game-loaded
+                                        load-game
                                         get-state]]
             [lum.game.cavegen :as cavegen]
             [clojure.test :as t :refer [deftest testing is]]
@@ -26,10 +26,11 @@
                                           :equipment {}
                                           :items {}}})))]
       (game-is-initialized)
-      (game-loaded game-state)
+      (load-game game-state)
       (is (= game-state (get-state))))))
 
 (deftest load-of-invalide-game-data-prevented
   (game-is-initialized)
-  (game-loaded {})
+  (load-game {})
   (is (s/valid? :game/game (get-state))))
+

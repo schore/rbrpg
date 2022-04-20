@@ -97,6 +97,17 @@
  (fn [_ _]
    {:game/send-message [:load-map "docs/test.txt"]}))
 
+(rf/reg-event-fx
+ :game/load
+ (fn [_ [_ fn]]
+   {:game/send-message [:load fn]}))
+
+(rf/reg-event-fx
+ :game/save
+ (fn [_ [_ fn]]
+   {:game/send-message [:save fn]}))
+
+
 (rf/reg-event-db
  :game/update
  (fn [db [_ game]]
@@ -308,6 +319,18 @@
                   :value "combine"
                   :on-click (fn [] (rf/dispatch [:game/combine sitems]))}]]))))
 
+(defn load-save
+  []
+  (let [filename (r/atom "xxxx")]
+    (fn []
+      (let [file @filename]
+        [:div
+         [:input {:type "text"
+                  :value file
+                  :on-change (fn [e] (reset! filename (-> e .-target .-value)))}]
+         [button "load" [:game/load file]]
+         [button "save" [:game/save file]]]))))
+
 (defn picture-game []
   (let [fight? (rf/subscribe [:game/fight?])
         game-over? (rf/subscribe [:game/game-over?])]
@@ -322,6 +345,7 @@
        [button "New map" [:game/get-new-map]]
        [button "Load map" [:game/load-map]]
        [:br]
+       [load-save]
        [stats]
        [show-items]
        [show-messages]])))

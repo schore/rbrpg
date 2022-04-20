@@ -55,4 +55,5 @@
 
 (defn save-game
   [state [_ filename]]
-  (spit (str "tmp/" filename) state))
+  (spit (str "tmp/" filename) state)
+  state)

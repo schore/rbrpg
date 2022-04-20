@@ -80,3 +80,8 @@
     (save-game filename)
     (initalize-game)
     (is (= state (load-game filename)))))
+
+(deftest valid-state-after-save-game
+  (game-is-initialized)
+  (save-game "test.edn")
+  (is (s/valid? :game/game (get-state))))

@@ -39,6 +39,11 @@
   :each prepare-directory create-game)
 
 
+(defn prepare-save-game
+  [filename]
+  (spit (str "tmp/" filename)
+        (slurp (io/resource (str "savegames/" filename)))))
+
 (deftest load-game-with-state
   (testing "Load a game"
     (let [game-state (loop [game-state nil]
@@ -62,9 +67,9 @@
   (load-game {})
   (is (s/valid? :game/game (get-state))))
 
+
 (deftest load-saved-game
-  (spit "tmp/load-test.edn"
-        (slurp (io/resource "savegames/load-test.edn")))
+  (prepare-save-game "load-test.edn")
   (load-game "load-test.edn")
   (is (s/valid? :game/game (get-state)))
   (is (= 1 (get (get-items) "small healing potion" 0))))

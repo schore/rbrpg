@@ -36,13 +36,14 @@
 
 (defn load-save-game
   [filename]
-  (read-string (slurp (io/resource filename))))
+  (try
+    (read-string (slurp  (str "tmp/" filename)))
+    (catch Exception e (log/error "Exception thrown " (.getMessage e) ))))
 
 (defn valid-save-game?
   [file-name]
   (and
    (string? file-name)
-   (.exists (io/file (io/resource file-name)))
    (s/valid? :game/game (load-save-game file-name))))
 
 (defn load-game
@@ -51,3 +52,7 @@
     (s/valid? :game/game input) input
     (valid-save-game? input) (load-save-game input)
     :else state))
+
+(defn save-game
+  [state [_ filename]]
+  (spit (str "tmp/" filename) state))

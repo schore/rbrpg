@@ -62,6 +62,10 @@
   [new-sate]
   (exec *game* [:load new-sate]))
 
+(defn save-game
+  [filename]
+  (exec *game* [:save filename]))
+
 (defn set-position
   [x y]
   (exec *game* [:set-position x y]))

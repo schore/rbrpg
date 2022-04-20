@@ -243,6 +243,7 @@
 (def basic-mode
   {:initialize [initialize]
    :load [load-save/load-game]
+   :save [load-save/save-game]
    :nop []})
 
 (def game-over-mode

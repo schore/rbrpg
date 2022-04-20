@@ -205,7 +205,7 @@
 
 (defn button
   [value event]
-  [:input {:type "Button"
+  [:input {:type :button
            :defaultValue value
            :on-click (fn [e]
                        (-> e .-target .blur)

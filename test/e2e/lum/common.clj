@@ -2,7 +2,8 @@
   (:require
    [etaoin.api :as e]
    [user]
-   [clojure.tools.logging :as log]))
+   [clojure.tools.logging :as log]
+   [clojure.java.io :as io]))
 
 (def ^:dynamic *driver*)
 
@@ -18,6 +19,36 @@
   (e/with-firefox-headless {} driver
     (binding [*driver* driver]
       (f))))
+
+(defn delete-directory-recursive
+  "Recursively delete a directory."
+  [^java.io.File file]
+  ;; when `file` is a directory, list its entries and call this
+  ;; function with each entry. can't `recur` here as it's not a tail
+  ;; position, sadly. could cause a stack overflow for many entries?
+  ;; thanks to @nikolavojicic for the idea to use `run!` instead of
+  ;; `doseq` :)
+  (when (.isDirectory file)
+    (run! delete-directory-recursive (.listFiles file)))
+  ;; delete the file or directory. if it it's a file, it's easily
+  ;; deletable. if it's a directory, we already have deleted all its
+  ;; contents with the code above (remember?)
+  (io/delete-file file))
+
+(defn prepare-save-game
+  [filename]
+  (spit (str "tmp/" filename)
+        (slurp (io/resource (str "savegames/" filename)))))
+
+
+(defn fixture-prepare-directory
+  [f]
+  (.mkdir (io/file "tmp"))
+  (prepare-save-game "got-two-batblood.edn")
+  (f)
+  (delete-directory-recursive (io/file "tmp")))
+
+
 
 (defn open [driver]
   (e/go driver "http://localhost:3000/#/game"))
@@ -176,3 +207,16 @@
   [f]
   (navigate-to-game *driver*)
   (f))
+
+(defn load-game
+  [driver filename]
+  (e/clear driver [{:tag :input
+                    :type :text}])
+  (e/fill driver [{:tag :input
+                   :type :text}]
+          filename)
+  (e/wait driver 0.2)
+  (e/click driver [{:tag :input
+                    :type :button
+                    :value "load"}])
+  (e/wait driver 1))

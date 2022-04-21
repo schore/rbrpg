@@ -210,12 +210,13 @@
 
 (defn load-game
   [driver filename]
+  (e/wait-visible driver [{:tag :input
+                           :type :text}] )
   (e/clear driver [{:tag :input
                     :type :text}])
   (e/fill driver [{:tag :input
                    :type :text}]
           filename)
-  (e/wait driver 0.2)
   (e/click driver [{:tag :input
                     :type :button
                     :value "load"}])

@@ -8,7 +8,7 @@
 
 (t/use-fixtures :once c/fixture-start-server c/fixture-driver c/open-website)
 
-(t/use-fixtures :each c/refresh c/game-screen)
+(t/use-fixtures :each c/fixture-prepare-directory c/refresh)
 
 (defn enter-fight-screen
   [driver]
@@ -70,30 +70,25 @@
   (log/info (c/game-over? *driver*))
   (is (c/game-over? *driver*)))
 
-(defn fight-until-you-get
-  [n item]
- (loop [i 0]
-    (when (and (not (c/game-over? *driver*))
-               (< i 100)
-               (< (get (c/get-items *driver*) item 0) n))
-      (enter-fight-screen *driver*)
-      (fight *driver*)
-      (recur (inc i)))))
 
+(defn get-two-batblood
+  []
+  (c/load-game *driver* "got-two-batblood.edn")
+  (is (= 2 (get (c/get-items *driver*) "batblood"))))
 
 (deftest ^:integration combine-item
-  (fight-until-you-get 2 "batblood")
-  (is (= 2 (get (c/get-items *driver*) "batblood")))
+  (get-two-batblood)
   (c/combine *driver* 2 "batblood")
   (is (= 1 (get (c/get-items *driver*) "small healing potion"))))
 
 (defn get-healing-potion
   []
-  (fight-until-you-get 2 "batblood")
+  (get-two-batblood)
   (c/combine *driver* 2 "batblood"))
 
 (defn got-damage
   []
+  (is (not= 10 (c/get-hp *driver*)))
   (loop []
     (when (= 10 (c/get-hp *driver*))
         (enter-fight-screen *driver*)

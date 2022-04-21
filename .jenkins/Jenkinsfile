@@ -19,18 +19,18 @@ pipeline {
         }
       }
     }
-   // stage('integration test') {
-   //    steps {
-   //      sh 'npx --call=\'shadow-cljs compile app\''
-   //      sh 'npx --call=\'lein test :integration\''
-   //    }
-   //    post {
-   //      always {
-   //        junit 'target/test-reports/*.xml'
-   //        sh 'rm -rf target/test-reports'
-   //      }
-   //    }
-   //  }
+   stage('integration test') {
+      steps {
+        sh 'npx --call=\'shadow-cljs compile app\''
+        sh 'npx --call=\'lein test :integration\''
+      }
+      post {
+        always {
+          junit 'target/test-reports/*.xml'
+          sh 'rm -rf target/test-reports'
+        }
+      }
+    }
     stage('build') {
       steps {
         sh 'npx --call=\'lein uberjar\''

@@ -61,13 +61,8 @@
 
 
 (deftest ^:integration fight-until-end
-  (loop [i 0]
-    (when (and (not (c/game-over? *driver*))
-               (< i 100))
-      (enter-fight-screen *driver*)
-      (fight *driver*)
-      (recur (inc i))))
-  (log/info (c/game-over? *driver*))
+  (c/load-game *driver* "one-hp-left-and-fighting.edn")
+  (fight *driver*)
   (is (c/game-over? *driver*)))
 
 

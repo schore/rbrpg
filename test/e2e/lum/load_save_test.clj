@@ -1,8 +1,8 @@
-(ns e2e.lum.load-save-test
+(ns lum.load-save-test
   (:require
    [clojure.test :as t :refer [deftest is]]
-   [etaoin.api :as e]
-   [etaoin.keys]
+   ;;[etaoin.api :as e]
+   ;;[etaoin.keys]
    [lum.common :as c :refer [*driver*]]
    [clojure.tools.logging :as log]
    [clojure.java.io :as io]))

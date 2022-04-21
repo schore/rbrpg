@@ -54,7 +54,7 @@
         (recur (inc i)))))
 
 (deftest ^:integration leave-fight
-  (enter-fight-screen *driver*)
+  (c/load-game *driver* "in-a-fight.edn")
   (fight *driver*)
   (is (c/map-screen? *driver*))
   (is (seq (c/get-items *driver*))))

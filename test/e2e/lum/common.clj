@@ -46,6 +46,7 @@
   (.mkdir (io/file "tmp"))
   (prepare-save-game "got-two-batblood.edn")
   (prepare-save-game "one-hp-left-and-fighting.edn")
+  (prepare-save-game "in-a-fight.edn")
   (f)
   (delete-directory-recursive (io/file "tmp")))
 

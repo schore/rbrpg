@@ -19,15 +19,14 @@
 
 
 (def item-effects {"small healing potion" [{:target :player
-                                            :stat :hp
-                                            :n 3}]
+                                            :hp 3}]
                    "medium healing potion" [{:target :player
-                                             :stat :hp
-                                             :n 30}]
+                                             :hp 30}]
                    "batblood" []
                    "batwing" []
                    "ratmeet" []
-                   "sword" []})
+                   "sword" [{:target :player
+                             :damage [1 6]}]})
 
 
 (s/def ::item (into #{} (map first item-effects)))
@@ -54,8 +53,8 @@
 ;;
 
 (s/def ::target #{:player :enemy})
-(s/def ::stat #{:hp :mp})
-(s/def ::n int?)
-(s/def ::effect (s/keys :req-un [::target ::stat ::n]))
+(s/def ::effect (s/keys :req-un [::target]
+                        :req-op [::hp ::mp ::damage]))
+
 (s/def ::effects (s/coll-of ::effect))
 (s/def ::item-effects (s/map-of ::item ::effects))

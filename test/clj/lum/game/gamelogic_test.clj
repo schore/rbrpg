@@ -205,3 +205,6 @@
   (player-has-hp 0)
   (use-item "small healing potion")
   (is (= 0 (get-hp))))
+
+(deftest weapon-makes-damage
+  (player-has-items {"sword" 1}))

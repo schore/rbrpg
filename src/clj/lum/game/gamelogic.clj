@@ -82,28 +82,39 @@
                               data
                               used-items)))
 
+(defn get-target-keys
+  [target & ext]
+  (concat (case target
+            :player [:player]
+            :enemy [:fight :enemy])
+          ext))
+
+(defn add-with-boundaries
+  [min max & vals]
+  (let [s (reduce + vals)]
+    (cond
+      (< s min) min
+      (> s max) max
+      :else s)))
+
+(defn process-hp
+  [state action-name effect]
+  (-> state
+      (update :messages #(conj % (str action-name ": " (:hp effect) "hp")))
+      (update-in (get-target-keys (:target effect) :hp)
+                 (fn [[v max]] [(add-with-boundaries 0 max v (:hp effect)) max]))))
 
 (defn process-effect
   [action-name]
-  (fn [state {:keys [target stat n]}]
-    (let [update-field (conj (case target
-                               :player [:player]
-                               :enemy [:fight :enemy])
-                             stat)]
+  (fn [state effect]
       (if (not (fight-ended? state))
         (-> state
-            (update :messages #(conj % (str action-name ": " (* -1 n) " " (str stat))))
-            (update-in update-field (fn [[v max]]
-                                      (let [nv (+ v n)
-                                            cv (cond
-                                                 (< nv 0) 0
-                                                 (> nv max) max
-                                                 :else nv)]
-                                        [cv max]))))
-        state))))
+            (process-hp action-name effect))
+        state)))
 
 (defn process-event
   [data [action-name effects]]
+  (log/info data action-name effects)
   (reduce (process-effect action-name) data effects))
 
 (defn enough-items?
@@ -194,15 +205,13 @@
   ["Beat"
    [(let [enemy-ac (get-in data [:fight :enemy :ac])]
       {:target :enemy
-       :stat :hp
-       :n (* -1 (attack-calc enemy-ac 1 3))})]])
+       :hp (* -1 (attack-calc enemy-ac 1 3))})]])
 
 (defn enemy-attacks
   [data]
   (let [player-ac (get-in data [:player :ac])]
     ["Bite" [{:target :player
-              :stat :hp
-              :n (* -1 (attack-calc player-ac 1 2))}]]))
+              :hp (* -1 (attack-calc player-ac 1 2))}]]))
 
 (defn attack
   [data _]

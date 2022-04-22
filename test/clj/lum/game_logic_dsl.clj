@@ -153,9 +153,13 @@
 (defn exec-with-rolls
   [f rolls]
   (let [r (atom (map dec rolls))]
-    (with-redefs [rand-int (fn [_]
+    (with-redefs [rand-int (fn [m]
                              (let [next-roll (first @r)]
                                (swap! r rest)
+                               (if (< next-roll m)
+                                 next-roll
+                                 (do (log/error "You selected the wrong dice")
+                                     0))
                                next-roll))]
       (f))))
 

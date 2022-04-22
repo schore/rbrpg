@@ -19,7 +19,7 @@
 
 (deftest attack-role
   (defn get-damage [& rolls]
-    (get-in (apply attack g/player-attacks gamestate rolls) [1 0 :n]))
+    (get-in (apply attack g/player-attacks gamestate rolls) [1 0 :hp]))
   (testing "A 20 always hits and gives double roles"
     (is (> -1 (get-damage 20 1 2))))
   (testing "A 1 never hits"
@@ -36,7 +36,7 @@
        (get-in (attack g/player-attacks
                        {:fight {:enemy {:ac ac}}}
                        roll 1 1 1 1 1 1 1 1 1 1 1 1)
-               [1 0 :n ])))
+               [1 0 :hp ])))
   (is (hit? 50 20))
   (is (hit? 20 20))
   (is (hit? 5 6))
@@ -52,7 +52,7 @@
                        {:fight {:enemy {:ac 30}}
                         :player {:ac ac}}
                        roll 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-               [1 0 :n])))
+               [1 0 :hp])))
   (is (hit? 5 6))
   (is (hit? 50 20))
   (is (not (hit? -10 1)))

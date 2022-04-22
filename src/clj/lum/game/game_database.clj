@@ -34,8 +34,8 @@
 
 ;;enemie database
 (s/def ::ac int?)
-(s/def ::hp pos-int?)
-(s/def ::mp nat-int?)
+(s/def ::hp int?)
+(s/def ::mp int?)
 (s/def ::xp pos-int?)
 (s/def ::items (s/coll-of ::item))
 (s/def ::enemy (s/keys :req-un [::ac ::hp ::mp ::xp ::items]))
@@ -52,6 +52,7 @@
 ;;item-effects
 ;;
 
+(s/def ::damage (s/cat :n pos-int? :faces pos-int?))
 (s/def ::target #{:player :enemy})
 (s/def ::effect (s/keys :req-un [::target]
                         :req-op [::hp ::mp ::damage]))

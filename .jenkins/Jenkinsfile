@@ -8,21 +8,10 @@ pipeline {
         sh 'lein deps'
       }
     }
-    stage('unit test') {
-      steps {
-        sh 'npx --call=\'lein test :default\''
-      }
-      post {
-        always {
-          junit 'target/test-reports/*.xml'
-          sh 'rm -rf target/test-reports'
-        }
-      }
-    }
-   stage('integration test') {
+   stage('test') {
       steps {
         sh 'npx --call=\'shadow-cljs compile app\''
-        sh 'npx --call=\'lein test :integration\''
+        sh 'npx --call=\'lein test :all\''
       }
       post {
         always {

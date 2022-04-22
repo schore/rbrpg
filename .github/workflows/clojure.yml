@@ -20,4 +20,4 @@ jobs:
     - name: Compile cljs code
       run: npx shadow-cljs compile app
     - name: Run tests
-      run: npx lein test
+      run: npx lein test :all

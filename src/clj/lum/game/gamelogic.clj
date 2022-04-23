@@ -248,11 +248,16 @@
         (dissoc :fight))
     data))
 
+(defn equip-item
+  [state [_ slot item]]
+  (assoc-in state [:player :equipment slot] item))
+
 
 (def basic-mode
   {:initialize [initialize]
    :load [load-save/load-game]
    :save [load-save/save-game]
+   :equip [equip-item]
    :nop []})
 
 (def game-over-mode

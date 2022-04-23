@@ -191,3 +191,11 @@
   (let [state (game-is-initialized)]
     (log/info (:player state))
     (load-game (assoc-in state [:player :hp 0] hp))))
+
+(defn player-equips
+  [slot item]
+  (exec *game* [:equip slot item]))
+
+(defn get-equipped-items
+  []
+  (get-in (get-state) [:player :equipment]))

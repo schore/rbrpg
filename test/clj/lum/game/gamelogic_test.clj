@@ -8,6 +8,7 @@
                                combine
                                create-game
                                game-is-initialized
+                               get-equipped-items
                                load-game
                                game-over?
                                get-board
@@ -24,6 +25,7 @@
                                killed-the-enemy
                                move
                                move-and-get-attacked
+                               player-equips
                                player-has-hp
                                player-has-items
                                set-position
@@ -206,5 +208,15 @@
   (use-item "small healing potion")
   (is (= 0 (get-hp))))
 
-(deftest weapon-makes-damage
-  (player-has-items {"sword" 1}))
+(deftest equip-item
+  (player-has-items {"sword" 1})
+  (player-equips :right-hand "sword")
+  (is (= "sword" (:right-hand (get-equipped-items)))))
+
+;; (deftest weapon-makes-damage
+;;   (player-has-items {"sword" 1})
+;;   (player-equips "sword")
+;;   (move-and-get-attacked "Bat")
+;;   (is (in-fight?))
+;;   (attack 10 6 1 1 1)
+;;   (is (not (in-fight?))))

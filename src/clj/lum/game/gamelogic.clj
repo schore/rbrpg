@@ -250,7 +250,9 @@
 
 (defn equip-item
   [state [_ slot item]]
-  (assoc-in state [:player :equipment slot] item))
+  (if (enough-items? state {item 1})
+    (assoc-in state [:player :equipment slot] item)
+    state))
 
 
 (def basic-mode

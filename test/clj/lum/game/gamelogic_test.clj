@@ -213,6 +213,11 @@
   (player-equips :right-hand "sword")
   (is (= "sword" (:right-hand (get-equipped-items)))))
 
+(deftest equip-item-which-is-not-in-stock-fails
+  (game-is-initialized)
+  (player-equips :right-hand "sword")
+  (is (not (contains? (get-equipped-items) :right-hand))))
+
 ;; (deftest weapon-makes-damage
 ;;   (player-has-items {"sword" 1})
 ;;   (player-equips "sword")

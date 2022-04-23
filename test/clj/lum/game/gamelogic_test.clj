@@ -26,8 +26,10 @@
                                move
                                move-and-get-attacked
                                player-equips
+                               player-is-equipped
                                player-has-hp
                                player-has-items
+                               player-unequip
                                set-position
                                test-map-loaded
                                use-item]]
@@ -218,6 +220,10 @@
   (player-equips :right-hand "sword")
   (is (not (contains? (get-equipped-items) :right-hand))))
 
+(deftest unequip-item
+  (player-is-equipped :right-hand "sword")
+  (player-unequip :right-hand)
+  (is (not (contains? (get-equipped-items) :right-hand))))
 ;; (deftest weapon-makes-damage
 ;;   (player-has-items {"sword" 1})
 ;;   (player-equips "sword")

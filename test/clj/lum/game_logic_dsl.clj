@@ -219,3 +219,13 @@
 (defn get-equipped-items
   []
   (get-in (get-state) [:player :equipment]))
+
+(defn player-is-equipped
+  [slot item]
+  (player-has-items {item 1})
+  (player-equips slot item)
+  (is (= item (get (get-equipped-items) slot))))
+
+(defn player-unequip
+  [slot]
+  (exec *game* [:unequip slot]))

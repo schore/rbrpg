@@ -254,12 +254,16 @@
     (assoc-in state [:player :equipment slot] item)
     state))
 
+(defn unequip-item
+  [state [_ slot]]
+  (update-in state [:player :equipment] #(dissoc % slot)))
 
 (def basic-mode
   {:initialize [initialize]
    :load [load-save/load-game]
    :save [load-save/save-game]
    :equip [equip-item]
+   :unequip [unequip-item]
    :nop []})
 
 (def game-over-mode

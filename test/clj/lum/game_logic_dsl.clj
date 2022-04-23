@@ -29,16 +29,36 @@
     (log/info "Close Test")
     (a/close! in)))
 
+(deftype GameNoChan [state]
+  IGame
+
+  (exec [_ command]
+    (swap! state #(gamelogic/process-actions % command))
+    @state)
+
+  (close [_]))
+
 (def ^:dynamic *game*)
 
-(defn create-game
+(defn create-game-with-chan
   ([]
    (let [[in out] (create-game-maser)]
      (Game. in out)))
   ([f]
-   (binding [*game* (create-game)]
+   (binding [*game* (create-game-with-chan)]
      (f)
      (close *game*))))
+
+
+(defn create-game-without-chan
+  [f]
+  (binding [*game* (GameNoChan. (atom {}))]
+    (f)
+    (close *game*)))
+
+(defn create-game
+  [f]
+  (create-game-without-chan f))
 
 (t/use-fixtures
   :each create-game)

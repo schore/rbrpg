@@ -1,5 +1,8 @@
 pipeline {
   agent any
+  parameters {
+    booleanParam(name: 'BUILD', defaultValue: false, description: 'Build jar file')
+  }
   stages {
     stage('Prepare') {
       steps {
@@ -21,6 +24,9 @@ pipeline {
       }
     }
     stage('build') {
+      when {
+        expression{ return params.BUILD }
+      }
       steps {
         sh 'npx --call=\'lein uberjar\''
         archiveArtifacts artifacts: 'target/uberjar/lum.jar'

@@ -179,8 +179,7 @@
                                (if (< next-roll m)
                                  next-roll
                                  (do (log/error "You selected the wrong dice")
-                                     0))
-                               next-roll))]
+                                     0))))]
       (f))))
 
 (defn attack

@@ -99,7 +99,9 @@
 
 (deftest get-killed-by-enemy
   (in-a-fight)
-  (attack 1 20 5 5)
+  (attack 1 20 2 2)
+  (attack 1 20 2 2)
+  (attack 1 20 2 2)
   (is (= 0 (get-hp)))
   (is (game-over?)))
 
@@ -224,10 +226,11 @@
   (player-is-equipped :right-hand "sword")
   (player-unequip :right-hand)
   (is (not (contains? (get-equipped-items) :right-hand))))
-;; (deftest weapon-makes-damage
-;;   (player-has-items {"sword" 1})
-;;   (player-equips "sword")
-;;   (move-and-get-attacked "Bat")
-;;   (is (in-fight?))
-;;   (attack 10 6 1 1 1)
-;;   (is (not (in-fight?))))
+
+(deftest weapon-makes-damage
+  (player-is-equipped :right-hand "sword")
+  (move-and-get-attacked "Bat")
+  (is (in-fight?))
+  (attack 19 5 1 1 1)
+  (log/info (get-enemy-hp))
+  (is (not (in-fight?))))

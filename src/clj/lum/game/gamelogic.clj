@@ -8,7 +8,8 @@
    [lum.game.load-save :as load-save]
    [lum.game.dataspec]
    [lum.game.game-database :refer [enemies recipies item-effects]]
-   [lum.game.update-data]))
+   [lum.game.update-data]
+   [lum.game.game-database :as db]))
 
 (defn set-position
   [data [_ x y]]
@@ -203,9 +204,16 @@
 (defn player-attacks
   [data]
   ["Beat"
-   [(let [enemy-ac (get-in data [:fight :enemy :ac])]
+   [(let [enemy-ac (get-in data [:fight :enemy :ac])
+          weapon (get-in data [:player :equipment :right-hand])
+          [n dice] (if (some? weapon)
+                     (get (first (filter #(= :player (:target %))
+                                         (get db/item-effects weapon)))
+                          :damage [1 3])
+                     [1 3])]
+      (log/info weapon n dice)
       {:target :enemy
-       :hp (* -1 (attack-calc enemy-ac 1 3))})]])
+       :hp (* -1 (attack-calc enemy-ac n dice))})]])
 
 (defn enemy-attacks
   [data]

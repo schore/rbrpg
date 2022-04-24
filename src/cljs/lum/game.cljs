@@ -1,4 +1,4 @@
-(ns lum.picture-game
+(ns lum.game
   ;; (:require-macros
   ;;  [cljs.core.async.macros :refer [go]])
   (:require
@@ -331,7 +331,7 @@
          [button "load" [:game/load file]]
          [button "save" [:game/save file]]]))))
 
-(defn picture-game []
+(defn game []
   (let [fight? (rf/subscribe [:game/fight?])
         game-over? (rf/subscribe [:game/game-over?])]
     (fn []

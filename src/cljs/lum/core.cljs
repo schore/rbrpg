@@ -1,19 +1,20 @@
 (ns lum.core
   (:require
+   [clojure.string :as string]
    [day8.re-frame.http-fx]
-   [reagent.dom :as rdom]
-   [reagent.core :as r]
-   [re-frame.core :as rf]
    [goog.events :as events]
    [goog.history.EventType :as HistoryEventType]
-   [markdown.core :refer [md->html]]
    [lum.ajax :as ajax]
    [lum.events]
+   [lum.game :refer [game]]
+   [markdown.core :refer [md->html]]
+   [re-frame.core :as rf]
+   [reagent.core :as r]
+   [reagent.dom :as rdom]
    [reitit.core :as reitit]
-   [reitit.frontend.easy :as rfe]
-   [clojure.string :as string]
-   [lum.picture-game :refer [picture-game]])
-  (:import goog.History))
+   [reitit.frontend.easy :as rfe])
+  (:import
+   (goog History)))
 
 (defn nav-link [uri title page]
   [:a.navbar-item
@@ -35,9 +36,10 @@
       {:class (when @expanded? :is-active)}
       [:div.navbar-start
        [nav-link "#/" "Home" :home]
-       [nav-link "#/about" "About" :about]
-       [nav-link "#/test" "Test" :test]
-       [nav-link "#/game" "Game" :game]]]]))
+       ;;[nav-link "#/about" "About" :about]
+       ;;[nav-link "#/test" "Test" :test]
+       ;;[nav-link "#/game" "Game" :game]
+       ]]]))
 
 (defn about-page []
   [:section.section>div.container>div.content
@@ -71,14 +73,14 @@
 (def router
   (reitit/router
    [["/" {:name        :home
-          :view        #'home-page
+          :view        #'game
           :controllers [{:start (fn [_] (rf/dispatch [:page/init-home]))}]}]
-    ["/about" {:name :about
-               :view #'about-page}]
-    ["/test" {:name :test
-              :view #'test-page}]
+    ;; ["/about" {:name :about
+    ;;            :view #'about-page}]
+    ;; ["/test" {:name :test
+    ;;           :view #'test-page}]
     ["/game" {:name :game
-              :view #'picture-game}]]))
+              :view #'game}]]))
 
 (defn start-router! []
   (rfe/start!

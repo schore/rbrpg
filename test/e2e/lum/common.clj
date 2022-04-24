@@ -53,7 +53,7 @@
 
 
 (defn open [driver]
-  (e/go driver "http://localhost:3000/#/game"))
+  (e/go driver "http://localhost:3000/"))
 
 (defn navigate-to-test [driver]
   (e/click-visible driver {:class "navbar-item" :href "#/test"}))

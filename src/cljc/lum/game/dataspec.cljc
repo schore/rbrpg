@@ -1,9 +1,7 @@
 (ns lum.game.dataspec
   (:require [clojure.spec.alpha :as s]
             [lum.maputil :as mu]
-            [lum.game.game-database :as db]
-            [lum.game.cavegen :as g]
-            [clojure.tools.logging :as log]))
+            [lum.game.game-database :as db]))
 
 (s/def :tile/type  #{:wall
                      :ground
@@ -30,9 +28,7 @@
 (s/def :player/mp :game/stat)
 (s/def :player/ac pos-int?)
 
-(s/def ::slot #{:left-hand
-                :right-hand})
-
+(s/def ::slot db/slots)
 (s/def :player/equipment (s/map-of ::slot :game-database/item))
 
 (s/def :game/player (s/keys :req-un [:game/position
@@ -88,21 +84,21 @@
 
 
 
-(s/explain :game/game {:board (g/get-dungeon)
-                       :player {:position [10 10]
-                                :xp 0
-                                :ac 10
-                                :hp [8 10]
-                                :mp [0 3]
-                                :equipment {:right-hand "sword"}
-                                :items {"batwing" 2
-                                        "batblood" 2}}
-                       :messages ["Hello World"]
-                       :fight {:enemy {
-                                       :name "bat"
-                                       :ac 1
-                                       :hp [20 20]
-                                       :mp [0 0]}
-                               :actions [["Heal" [{:target :player
-                                                   :stat :hp
-                                                   :n 5}]]]}})
+;; (s/explain :game/game {:board (g/get-dungeon)
+;;                        :player {:position [10 10]
+;;                                 :xp 0
+;;                                 :ac 10
+;;                                 :hp [8 10]
+;;                                 :mp [0 3]
+;;                                 :equipment {:right-hand "sword"}
+;;                                 :items {"batwing" 2
+;;                                         "batblood" 2}}
+;;                        :messages ["Hello World"]
+;;                        :fight {:enemy {
+;;                                        :name "bat"
+;;                                        :ac 1
+;;                                        :hp [20 20]
+;;                                        :mp [0 0]}
+;;                                :actions [["Heal" [{:target :player
+;;                                                    :stat :hp
+;;                                                    :n 5}]]]}})

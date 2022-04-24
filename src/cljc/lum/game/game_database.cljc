@@ -26,7 +26,8 @@
                    "batwing" []
                    "ratmeet" []
                    "sword" [{:target :player
-                             :damage [1 6]}]})
+                             :damage [1 6]
+                             :slots #{:right-hand}}]})
 
 
 (s/def ::item (into #{} (map first item-effects)))
@@ -52,10 +53,15 @@
 ;;item-effects
 ;;
 
+
+(def slots #{:left-hand
+             :right-hand})
+(s/def ::slot slots)
+(s/def ::slots (s/coll-of ::slot :kind set?))
 (s/def ::damage (s/cat :n pos-int? :faces pos-int?))
 (s/def ::target #{:player :enemy})
 (s/def ::effect (s/keys :req-un [::target]
-                        :req-op [::hp ::mp ::damage]))
+                        :req-op [::hp ::mp ::damage ::slots]))
 
 (s/def ::effects (s/coll-of ::effect))
 (s/def ::item-effects (s/map-of ::item ::effects))

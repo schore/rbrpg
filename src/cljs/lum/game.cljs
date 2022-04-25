@@ -7,11 +7,14 @@
    [re-pressed.core :as rp]
    [clojure.walk]
    [lum.maputil :as maputil]
+   [lum.game.game-database :as gamedb]
+   [lum.game.dataspec :as gamedata]
    [ajax.core :as ajax]
    [haslett.client :as ws]
    [haslett.format :as fmt]
    [clojure.walk]
-   [cljs.core.async :as a :refer [<! >! go-loop go]]))
+   [cljs.core.async :as a :refer [<! >! go-loop go]]
+   [lum.game.game-database :as db]))
 
 (defn keyify-ws
   [msg]
@@ -107,6 +110,13 @@
  (fn [_ [_ fn]]
    {:game/send-message [:save fn]}))
 
+(rf/reg-event-fx
+ :game/equip
+ (fn [_ [_ slot item]]
+   {:game/send-message (if (= "none" item)
+                         [:unequip slot]
+                         [:equip slot item])}))
+
 
 (rf/reg-event-db
  :game/update
@@ -172,6 +182,11 @@
  :game/items
  (fn [db _]
    (get-in db [:game :player :items])))
+
+(rf/reg-sub
+ :game/equipment
+ (fn [db _]
+   (get-in db [:game :player :equipment])))
 
 (defn position-css [x y]
   {:width "15px"
@@ -331,6 +346,22 @@
          [button "load" [:game/load file]]
          [button "save" [:game/save file]]]))))
 
+(defn item-slots
+  []
+  (let [equipment (rf/subscribe [:game/equipment])]
+    (fn []
+      (let [equipment @equipment]
+        [:table
+         (for [slot db/slots]
+           [:tr
+            [:td slot]
+            [:td [:select
+                  {:value (get equipment slot "none")
+                   :on-change (fn [e] (rf/dispatch [:game/equip slot (-> e .-target .-value)]))}
+                  [:option "none"]
+                  (for [item (db/get-items-for-slot slot)]
+                    [:option item])]]])]))))
+
 (defn game []
   (let [fight? (rf/subscribe [:game/fight?])
         game-over? (rf/subscribe [:game/game-over?])]
@@ -348,4 +379,5 @@
        [load-save]
        [stats]
        [show-items]
+       [item-slots]
        [show-messages]])))

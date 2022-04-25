@@ -49,7 +49,7 @@
                     :hp [10 10]
                     :mp [3 3]
                     :equipment {}
-                    :items {}}}]
+                    :items { "sword" 1}}}]
       (if (s/valid? :game/game data)
         data
         (recur)))))
@@ -259,12 +259,12 @@
 (defn equip-item
   [state [_ slot item]]
   (if (enough-items? state {item 1})
-    (assoc-in state [:player :equipment slot] item)
+    (assoc-in state [:player :equipment (keyword slot)] item)
     state))
 
 (defn unequip-item
   [state [_ slot]]
-  (update-in state [:player :equipment] #(dissoc % slot)))
+  (update-in state [:player :equipment] #(dissoc % (keyword slot))))
 
 (def basic-mode
   {:initialize [initialize]

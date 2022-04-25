@@ -56,6 +56,7 @@
 
 (def slots #{:left-hand
              :right-hand})
+
 (s/def ::slot slots)
 (s/def ::slots (s/coll-of ::slot :kind set?))
 (s/def ::damage (s/cat :n pos-int? :faces pos-int?))
@@ -65,3 +66,9 @@
 
 (s/def ::effects (s/coll-of ::effect))
 (s/def ::item-effects (s/map-of ::item ::effects))
+
+
+(defn get-items-for-slot
+  [slot]
+  (map key (filter (fn [[_ v]] (contains? (:slots (first v)) slot ))
+                   item-effects)))

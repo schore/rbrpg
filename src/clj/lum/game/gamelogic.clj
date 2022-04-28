@@ -100,10 +100,12 @@
 
 (defn process-hp
   [state action-name effect]
-  (-> state
-      (update :messages #(conj % (str action-name ": " (:hp effect) "hp")))
-      (update-in (get-target-keys (:target effect) :hp)
-                 (fn [[v max]] [(add-with-boundaries 0 max v (:hp effect)) max]))))
+  (if (contains? effect :hp)
+    (-> state
+        (update :messages #(conj % (str action-name ": " (:hp effect) "hp")))
+        (update-in (get-target-keys (:target effect) :hp)
+                   (fn [[v max]] [(add-with-boundaries 0 max v (:hp effect)) max])))
+    state))
 
 (defn process-effect
   [action-name]
@@ -147,7 +149,7 @@
   (if (enough-items? data {item 1})
     (-> data
         (change-items {item -1})
-        (process-event [(str "Use item: " item) (get item-effects item {})]))
+        (process-event [(str "Use item: " item) (get item-effects item [])]))
     data))
 
 (defn get-enemy-stat

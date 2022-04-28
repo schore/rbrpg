@@ -212,6 +212,11 @@
   (use-item "small healing potion")
   (is (= 0 (get-hp))))
 
+(deftest apply-item-bug-null-pointer-exception
+  (player-has-items {"sword" 1})
+  (use-item "sword")
+  (s/valid? :game/game (get-state)))
+
 (deftest equip-item
   (player-has-items {"sword" 1})
   (player-equips :right-hand "sword")

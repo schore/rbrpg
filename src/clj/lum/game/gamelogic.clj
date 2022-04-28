@@ -143,13 +143,21 @@
                           {})))
       data)))
 
+(defn unequip-items-not-in-inventory
+  [state]
+  (let [items (get-in state [:player :items])]
+    (update-in state [:player :equipment]
+               #(into {}
+                      (filter (fn [[_ v]] (< 1 (get items v 0))) %)))))
+
 (defn use-item
   [data [_ item]]
   (log/info "use item " item)
   (if (enough-items? data {item 1})
     (-> data
         (change-items {item -1})
-        (process-event [(str "Use item: " item) (get item-effects item [])]))
+        (process-event [(str "Use item: " item) (get item-effects item [])])
+        (unequip-items-not-in-inventory))
     data))
 
 (defn get-enemy-stat

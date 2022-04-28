@@ -217,6 +217,13 @@
   (use-item "sword")
   (s/valid? :game/game (get-state)))
 
+(deftest apply-equipped-item
+  (player-has-items {"sword" 1})
+  (player-equips :right-hand "sword")
+  (use-item "sword")
+  (is (not (contains? (get-items) "sword")))
+  (is (not (contains? (get-equipped-items) :right-hand))))
+
 (deftest equip-item
   (player-has-items {"sword" 1})
   (player-equips :right-hand "sword")

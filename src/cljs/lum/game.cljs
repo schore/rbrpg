@@ -348,9 +348,11 @@
 
 (defn item-slots
   []
-  (let [equipment (rf/subscribe [:game/equipment])]
+  (let [equipment (rf/subscribe [:game/equipment])
+        items (rf/subscribe [:game/items])]
     (fn []
-      (let [equipment @equipment]
+      (let [equipment @equipment
+            items @items]
         [:table
          (for [slot db/slots]
            [:tr
@@ -359,7 +361,8 @@
                   {:value (get equipment slot "none")
                    :on-change (fn [e] (rf/dispatch [:game/equip slot (-> e .-target .-value)]))}
                   [:option "none"]
-                  (for [item (db/get-items-for-slot slot)]
+                  (for [item (filter #(>= (get items (keyword %) 0) 1)
+                                     (db/get-items-for-slot slot))]
                     [:option item])]]])]))))
 
 (defn game []

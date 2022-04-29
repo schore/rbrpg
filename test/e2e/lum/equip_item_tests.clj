@@ -1,4 +1,4 @@
-(ns e2e.lum.equip-item-tests
+(ns lum.equip-item-tests
   (:require
    [clojure.test :as t :refer [deftest is]]
    ;[etaoin.api :as e]

@@ -3,7 +3,7 @@
    [clojure.test :as t :refer [deftest is]]
    ;[etaoin.api :as e]
    [etaoin.keys]
-   [lum.common :as c :refer [*driver*]]
+   [lum.common :as c]
    ;[clojure.tools.logging :as log]
    ))
 

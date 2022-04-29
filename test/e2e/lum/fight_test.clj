@@ -11,7 +11,7 @@
 (t/use-fixtures :each c/fixture-prepare-directory c/refresh)
 
 (defn enter-fight-screen
-  [driver]
+  []
   (loop [i 0]
     (when (and (< i 1000)
                (not (c/fight-screen?)))
@@ -19,19 +19,19 @@
       (recur (inc i)))))
 
 (defn select-and-activate
-  [driver action]
+  [action]
   (is (c/fight-screen?))
   (let [bold "700"]
     (loop [i 0]
       (when (and (< i 20)
-                 (not (= bold (e/get-element-css driver
+                 (not (= bold (e/get-element-css *driver*
                                                  [{:class "content"}
                                                   {:tag :p
                                                    :fn/has-text action}]
                                                  "font-weight"))))
-        (c/press-key driver "j")
+        (c/press-key "j")
         (recur (inc i))))
-    (is (= bold (e/get-element-css driver
+    (is (= bold (e/get-element-css *driver*
                                    [{:class "content"}
                                     {:tag :p
                                      :fn/has-text action}]
@@ -39,7 +39,7 @@
     (c/press-key etaoin.keys/space)))
 
 (deftest ^:integration start-fight
-  (enter-fight-screen *driver*)
+  (enter-fight-screen)
   (is (e/visible? *driver* [{:class "content"}
                             {:tag :h1
                              :fn/has-text "FIGHT"}])))
@@ -49,9 +49,9 @@
   (loop [i 0]
     (when (and (< i 20)
                (c/fight-screen?))
-        (select-and-activate *driver* "Attack")
-        (e/wait *driver* 0.3)
-        (recur (inc i)))))
+      (select-and-activate "Attack")
+      (e/wait *driver* 0.3)
+      (recur (inc i)))))
 
 (deftest ^:integration leave-fight
   (c/load-game "in-a-fight.edn")
@@ -59,12 +59,10 @@
   (is (c/map-screen?))
   (is (seq (c/get-items))))
 
-
 (deftest ^:integration fight-until-end
   (c/load-game "one-hp-left-and-fighting.edn")
   (fight)
   (is (c/game-over?)))
-
 
 (defn get-two-batblood
   []
@@ -86,9 +84,9 @@
   (is (not= 10 (c/get-hp)))
   (loop []
     (when (= 10 (c/get-hp))
-        (enter-fight-screen)
-        (fight)
-        (recur))))
+      (enter-fight-screen)
+      (fight)
+      (recur))))
 
 (deftest ^:integration use-healing-potion
   (get-healing-potion)

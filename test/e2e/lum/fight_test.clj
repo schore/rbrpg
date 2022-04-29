@@ -38,11 +38,6 @@
                                    "font-weight")))
     (c/press-key etaoin.keys/space)))
 
-(deftest ^:integration start-fight
-  (enter-fight-screen)
-  (is (e/visible? *driver* [{:class "content"}
-                            {:tag :h1
-                             :fn/has-text "FIGHT"}])))
 
 (defn fight
   []
@@ -53,26 +48,11 @@
       (e/wait *driver* 0.3)
       (recur (inc i)))))
 
-(deftest ^:integration leave-fight
-  (c/load-game "in-a-fight.edn")
-  (fight)
-  (is (c/map-screen?))
-  (is (seq (c/get-items))))
-
-(deftest ^:integration fight-until-end
-  (c/load-game "one-hp-left-and-fighting.edn")
-  (fight)
-  (is (c/game-over?)))
 
 (defn get-two-batblood
   []
   (c/load-game "got-two-batblood.edn")
   (is (= 2 (get (c/get-items) "batblood"))))
-
-(deftest ^:integration combine-item
-  (get-two-batblood)
-  (c/combine 2 "batblood")
-  (is (= 1 (get (c/get-items) "small healing potion"))))
 
 (defn get-healing-potion
   []
@@ -94,3 +74,25 @@
   (let [hp (c/get-hp)]
     (c/use-item "small healing potion")
     (is (< hp (c/get-hp)))))
+
+(deftest ^:integration start-fight
+  (enter-fight-screen)
+  (is (e/visible? *driver* [{:class "content"}
+                            {:tag :h1
+                             :fn/has-text "FIGHT"}])))
+
+(deftest ^:integration leave-fight
+  (c/load-game "in-a-fight.edn")
+  (fight)
+  (is (c/map-screen?))
+  (is (seq (c/get-items))))
+
+(deftest ^:integration fight-until-end
+  (c/load-game "one-hp-left-and-fighting.edn")
+  (fight)
+  (is (c/game-over?)))
+
+(deftest ^:integration combine-item
+  (get-two-batblood)
+  (c/combine 2 "batblood")
+  (is (= 1 (get (c/get-items) "small healing potion"))))

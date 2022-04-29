@@ -223,3 +223,14 @@
                     :type :button
                     :value "load"}])
   (e/wait driver 1))
+
+
+(defn equip
+  [driver slot item]
+  (e/wait-visible driver [{:class "content"}
+                          {:tag :table :index 2}])
+  (e/select driver (keyword slot) item))
+
+(defn get-equipment-slot
+  [driver slot]
+  (e/get-element-value driver (keyword slot)))

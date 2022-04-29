@@ -359,6 +359,7 @@
             [:td slot]
             [:td [:select
                   {:value (get equipment slot "none")
+                   :id slot
                    :on-change (fn [e] (rf/dispatch [:game/equip slot (-> e .-target .-value)]))}
                   [:option "none"]
                   (for [item (filter #(>= (get items (keyword %) 0) 1)

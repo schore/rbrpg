@@ -52,22 +52,12 @@
 
 
 
-(defn open [driver]
-  (e/go driver "http://localhost:3000/"))
+(defn open []
+  (e/go *driver* "http://localhost:3000/"))
 
-(defn navigate-to-test [driver]
-  (e/click-visible driver {:class "navbar-item" :href "#/test"}))
-
-(defn get-count [driver]
-  (e/get-element-text driver [{:class :content}
-                              {:tag :p}]))
-
-(defn click-count [driver]
-  (e/click-visible driver [{:class :content}
-                           {:tag :input}]))
 
 (defn open-website [f]
-  (open *driver*)
+  (open)
   (f))
 
 (defn refresh [f]
@@ -75,54 +65,41 @@
   (f))
 
 (defn navigate-to-game
-  [driver]
+  []
   ;; (e/click-visible driver {:class "navbar-item" :href "#/game"})
-  (e/click-visible driver {:tag :input :value "Load map"})
+  (e/click-visible *driver* {:tag :input :value "Load map"})
   ;; (e/wait-exists driver {:class "grid-container"})
   )
 
-;; (testing "Test application"
-;;   (deftest inital-value
-;;     (is (= "1" (get-count *driver*))))
-
-;;   (deftest click-once
-;;     (click-count *driver*)
-;;     (is (= "2" (get-count *driver*))))
-
-;;   (deftest click-three-times
-;;     (click-count *driver*)
-;;     (click-count *driver*)
-;;     (click-count *driver*)
-;;     (is (= "8" (get-count *driver*)))))
 
 (defn map-screen?
-  [driver]
-  (e/exists? driver [{:class "grid-container"}
-                     {:tag :img}]))
+  []
+  (e/exists? *driver* [{:class "grid-container"}
+                       {:tag :img}]))
 
 (defn wait-map-screen
-  [driver]
-  (e/wait-visible driver [{:class "grid-container"}
-                          {:tag :img}]))
+  []
+  (e/wait-visible *driver* [{:class "grid-container"}
+                            {:tag :img}]))
 
 (defn fight-screen?
-  [driver]
-  (e/exists? driver [{:class "content"}
-                     {:tag :h1
-                      :fn/has-text "FIGHT"}]))
+  []
+  (e/exists? *driver* [{:class "content"}
+                       {:tag :h1
+                        :fn/has-text "FIGHT"}]))
 
 (defn game-over?
-  [driver]
-  (e/exists? driver [{:class "content"}
-                     {:tag :h1
-                      :fn/has-text "GAME OVER"}]))
+  []
+  (e/exists? *driver* [{:class "content"}
+                       {:tag :h1
+                        :fn/has-text "GAME OVER"}]))
 
 (defn get-player-position
-  [driver]
+  []
   (let [query  [{:class "grid-container"}
                 {:tag :img}]]
-    (e/wait-exists driver query [:timeout 5])
-    (->> (e/get-element-csss driver query  :left :top)
+    (e/wait-exists *driver* query [:timeout 5])
+    (->> (e/get-element-csss *driver* query  :left :top)
          (map (fn [inp] (apply str (filter #(Character/isDigit %) inp))))
          (map #(Integer/parseInt %))
          (map #(/ % 15)))))
@@ -133,104 +110,104 @@
     [k  (Integer/parseInt v)]))
 
 (defn get-items
-  [driver]
+  []
   (let [query [{:class "content"}
                {:tag :table}
                {:tag :tr}]]
-    (->> (e/query-all driver query)
-         (map #(e/get-element-text-el driver %))
+    (->> (e/query-all *driver* query)
+         (map #(e/get-element-text-el *driver* %))
          (map parse-item-str)
          (into {}))))
 
 (defn get-hp
-  [driver]
+  []
   (Integer/parseInt (second (re-matches #"hp: (.*)/(.*)"
-                               (e/get-element-text driver [{:class "content"}
-                                                           {:tag :span
-                                                            :fn/has-text "hp:"}])))))
+                               (e/get-element-text *driver* [{:class "content"}
+                                                             {:tag :span
+                                                              :fn/has-text "hp:"}])))))
 
 (defn get-item-row
-  [driver item]
-  (->> (e/query-all driver
+  [item]
+  (->> (e/query-all *driver*
                     [{:class "content"}
                      {:tag :table}
                      {:tag :tr}])
        (filter (fn [el]
-                 (let [x (e/get-element-text-el driver
-                                                (e/child driver el
+                 (let [x (e/get-element-text-el *driver*
+                                                (e/child *driver* el
                                                          {:tag :td
                                                           :index 1}))]
                    (= x item))))
        first))
 
 (defn get-plus-el
-  [driver item]
-  (e/child driver (get-item-row driver item)
+  [item]
+  (e/child *driver* (get-item-row item)
            {:tag :input
             :value "+"}))
 
 (defn use-item
-  [driver item]
-  (e/click-el driver
-              (e/child driver (get-item-row driver item)
+  [item]
+  (e/click-el *driver*
+              (e/child *driver* (get-item-row item)
                        {:tag :input
                         :value "use"}))
-  (e/wait driver 0.1))
+  (e/wait *driver* 0.1))
 
 (defn select-items
-  [driver item n]
-  (let [el (get-plus-el driver item)]
+  [item n]
+  (let [el (get-plus-el item)]
     (dotimes [_ n]
-      (e/click-el driver el))))
+      (e/click-el *driver* el))))
 
 (defn combine
-  [driver n item]
-  (select-items driver item n)
-  (e/click driver {:tag :input
-                   :type "button"
-                   :value "combine"}))
+  [n item]
+  (select-items item n)
+  (e/click *driver* {:tag :input
+                     :type "button"
+                     :value "combine"}))
 
 (defn press-key
-  [driver k]
-  (e/perform-actions driver
+  [k]
+  (e/perform-actions *driver*
                      (-> (e/make-key-input)
                          (e/add-key-press k))))
 
 (defn move
-  [driver direction]
-  (press-key driver (case direction
-                      :up "k"
-                      :down "j"
-                      :left "h"
-                      :right "l"))
-  (e/wait driver 0.1))
+  [direction]
+  (press-key  (case direction
+                :up "k"
+                :down "j"
+                :left "h"
+                :right "l"))
+  (e/wait *driver* 0.1))
 
 (defn game-screen
   [f]
-  (navigate-to-game *driver*)
+  (navigate-to-game)
   (f))
 
 (defn load-game
-  [driver filename]
-  (e/wait-visible driver [{:tag :input
+  [filename]
+  (e/wait-visible *driver* [{:tag :input
                            :type :text}] )
-  (e/clear driver [{:tag :input
+  (e/clear *driver* [{:tag :input
                     :type :text}])
-  (e/fill driver [{:tag :input
+  (e/fill *driver* [{:tag :input
                    :type :text}]
           filename)
-  (e/click driver [{:tag :input
+  (e/click *driver* [{:tag :input
                     :type :button
                     :value "load"}])
-  (e/wait driver 1))
+  (e/wait *driver* 1))
 
 
 (defn equip
-  [driver slot item]
-  (e/wait-visible driver [{:class "content"}
+  [slot item]
+  (e/wait-visible *driver* [{:class "content"}
                           {:tag :table :index 2}])
-  (e/select driver (keyword slot) item))
+  (e/select *driver* (keyword slot) item))
 
 (defn get-equipment-slot
-  [driver slot]
-  (e/get-element-value driver (keyword slot)))
+  [slot]
+  (e/get-element-value *driver* (keyword slot)))

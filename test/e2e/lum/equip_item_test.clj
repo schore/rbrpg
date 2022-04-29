@@ -1,4 +1,4 @@
-(ns lum.equip-item-tests
+(ns lum.equip-item-test
   (:require
    [clojure.test :as t :refer [deftest is]]
    ;[etaoin.api :as e]
@@ -15,15 +15,15 @@
 
 
 (deftest ^:integration selcet-sword
-  (c/equip *driver* "right-hand" "sword")
-  (is (= (c/get-equipment-slot *driver* "right-hand") "sword")))
+  (c/equip "right-hand" "sword")
+  (is (= (c/get-equipment-slot "right-hand") "sword")))
 
 (deftest ^:integration unselect-sword
-  (c/equip *driver* "right-hand" "sword")
-  (c/equip *driver* "right-hand" "none")
-  (is (= (c/get-equipment-slot *driver* "right-hand") "none")))
+  (c/equip "right-hand" "sword")
+  (c/equip "right-hand" "none")
+  (is (= (c/get-equipment-slot "right-hand") "none")))
 
 (deftest ^:integration use-equipped-item
-  (c/equip *driver* "right-hand" "sword")
-  (c/use-item *driver* "sword")
-  (is (= (c/get-equipment-slot *driver* "right-hand") "none")))
+  (c/equip "right-hand" "sword")
+  (c/use-item "sword")
+  (is (= (c/get-equipment-slot "right-hand") "none")))

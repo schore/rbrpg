@@ -3,7 +3,7 @@
    [clojure.test :as t :refer [deftest is testing]]
    [clojure.tools.logging :as log]
    [etaoin.api :as e]
-   [lum.common :as c :refer [*driver*]]))
+   [lum.common :as c]))
 
 (t/use-fixtures :once c/fixture-start-server c/fixture-driver c/open-website)
 
@@ -12,20 +12,20 @@
 
 (deftest ^:integration game-load
     ;;(navigate-to-game *driver*)
-  (is (= [10 10] (c/get-player-position *driver*))))
+  (is (= [10 10] (c/get-player-position))))
 
 (deftest ^:integration navigate-left
-  (c/move *driver* :left)
-  (is (= [9 10] (c/get-player-position *driver*))))
+  (c/move :left)
+  (is (= [9 10] (c/get-player-position))))
 
 (deftest ^:integration navigate-right
-  (c/move *driver* :right)
-  (is (= [11 10] (c/get-player-position *driver*))))
+  (c/move :right)
+  (is (= [11 10] (c/get-player-position))))
 
 (deftest ^:integration navigate-up
-  (c/move *driver* :down)
-  (is (= [10 11] (c/get-player-position *driver*))))
+  (c/move :down)
+  (is (= [10 11] (c/get-player-position))))
 
 (deftest ^:integration navigate-down
-  (c/move *driver* :up)
-  (is (= [10 9] (c/get-player-position *driver*))))
+  (c/move :up)
+  (is (= [10 9] (c/get-player-position))))

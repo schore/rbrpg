@@ -9,7 +9,7 @@
 
 
 (t/use-fixtures :once c/fixture-start-server c/fixture-driver c/open-website)
-(t/use-fixtures :each c/fixture-prepare-directory c/refresh c/game-screen)
+(t/use-fixtures :each c/fixture-prepare-directory c/refresh)
 
 (deftest ^:integration load-game
   (c/load-game "got-two-batblood.edn")

@@ -64,12 +64,9 @@
   (e/refresh *driver*)
   (f))
 
-(defn navigate-to-game
+(defn on-test-map
   []
-  ;; (e/click-visible driver {:class "navbar-item" :href "#/game"})
-  (e/click-visible *driver* {:tag :input :value "Load map"})
-  ;; (e/wait-exists driver {:class "grid-container"})
-  )
+  (e/click-visible *driver* {:tag :input :value "Load map"}))
 
 
 (defn map-screen?
@@ -181,11 +178,6 @@
                 :left "h"
                 :right "l"))
   (e/wait *driver* 0.1))
-
-(defn game-screen
-  [f]
-  (navigate-to-game)
-  (f))
 
 (defn load-game
   [filename]

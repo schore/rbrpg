@@ -34,7 +34,7 @@
   (defn hit? [ac roll]
     (> 0
        (get-in (attack g/player-attacks
-                       {:fight {:enemy {:ac ac}}}
+                       {:fight {:enemy {:name "Bat" :ac ac}}}
                        roll 1 1 1 1 1 1 1 1 1 1 1 1)
                [1 0 :hp ])))
   (is (hit? 50 20))
@@ -49,7 +49,7 @@
   (defn hit? [ac roll]
     (> 0
        (get-in (attack g/enemy-attacks
-                       {:fight {:enemy {:ac 30}}
+                       {:fight {:enemy {:name "Bat" :ac 30}}
                         :player {:ac ac}}
                        roll 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
                [1 0 :hp])))

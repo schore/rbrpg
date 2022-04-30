@@ -22,6 +22,7 @@
                                get-xp
                                in-a-fight
                                in-fight?
+                               initalize-game
                                killed-the-enemy
                                move
                                move-and-get-attacked
@@ -156,6 +157,16 @@
   (move-and-get-attacked "Bat")
   (attack 1 10 1)
   (is (= 10 (get-hp))))
+
+(deftest enemy-makes-correct-damage
+  (doseq [[enemy rolls hp] [["Rat" [2] 8]
+                            ["Rat" [3] 9] ;;a bad input is reduced to 1
+                            ["Bat" [3] 7]]]
+    (testing (str enemy " " rolls " " hp)
+      (initalize-game)
+      (move-and-get-attacked enemy)
+      (apply attack 1 15 rolls)
+      (is (= hp (get-hp))))))
 
 (deftest get-item-after-fight
   (in-a-fight)

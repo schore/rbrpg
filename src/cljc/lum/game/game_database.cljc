@@ -3,11 +3,13 @@
             [clojure.test :as t]))
 
 (def enemies {"Bat" {:ac 10
+                     :damage [1 3]
                      :hp 2
                      :mp 0
                      :xp 1
                      :items ["batblood" "batwing"]}
               "Rat" {:ac 3
+                     :damage [1 2]
                      :hp 1
                      :mp 0
                      :xp 1
@@ -41,8 +43,9 @@
 (s/def ::hp int?)
 (s/def ::mp int?)
 (s/def ::xp pos-int?)
+(s/def ::damage (s/cat :n pos-int? :faces pos-int?))
 (s/def ::items (s/coll-of ::item))
-(s/def ::enemy (s/keys :req-un [::ac ::hp ::mp ::xp ::items]))
+(s/def ::enemy (s/keys :req-un [::ac ::damage ::hp ::mp ::xp ::items]))
 (s/def ::enemies (s/map-of string? ::enemy))
 
 ;;recipie database
@@ -63,7 +66,6 @@
 
 (s/def ::slot slots)
 (s/def ::slots (s/coll-of ::slot :kind set?))
-(s/def ::damage (s/cat :n pos-int? :faces pos-int?))
 (s/def ::target #{:player :enemy})
 (s/def ::effect (s/keys :req-un [::target]
                         :req-op [::hp ::mp ::damage ::ac ::slots]))

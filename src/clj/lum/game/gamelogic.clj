@@ -78,7 +78,6 @@
 
 (defn change-items
   [data used-items]
-  (log/info (get-in data [:player :items]) used-items)
   (remove-empty-items (reduce (fn [a [item n]] (change-item a item n))
                               data
                               used-items)))
@@ -117,7 +116,6 @@
 
 (defn process-event
   [data [action-name effects]]
-  (log/info data action-name effects)
   (reduce (process-effect action-name) data effects))
 
 (defn enough-items?
@@ -132,7 +130,6 @@
 
 (defn combine
   [data [_ used-items]]
-  (log/info (get-in [:player :items] used-items))
   (let [used-items (filter-map (fn [[_ v]] (pos-int? v)) used-items)
         new-item (get recipies used-items)]
     (if (enough-items? data used-items)
@@ -152,7 +149,6 @@
 
 (defn use-item
   [data [_ item]]
-  (log/info "use item " item)
   (if (enough-items? data {item 1})
     (-> data
         (change-items {item -1})
@@ -221,7 +217,6 @@
                                          (get db/item-effects weapon)))
                           :damage [1 3])
                      [1 3])]
-      (log/info weapon n dice)
       {:target :enemy
        :hp (* -1 (attack-calc enemy-ac n dice))})]])
 
@@ -262,9 +257,7 @@
   [data]
   (update-in data [:player :items]
              (fn [items]
-               (log/info items)
                (let [loot (:items (get-enemy data))]
-                 (log/info loot)
                  (reduce (fn [acc item]
                            (assoc acc item (inc (get acc item 0))))
                          items loot)))))

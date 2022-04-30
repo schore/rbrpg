@@ -184,7 +184,6 @@
 
 (defn attack
   ([]
-   (log/info "attack")
    (exec *game* [:attack]))
   ([& rolls]
    ;;(attack)
@@ -208,7 +207,6 @@
 (defn player-has-hp
   [hp]
   (let [state (game-is-initialized)]
-    (log/info (:player state))
     (load-game (assoc-in state [:player :hp 0] hp))))
 
 (defn player-equips

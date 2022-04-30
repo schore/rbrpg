@@ -151,6 +151,12 @@
   (attack 10 5 2)
   (is (= 2 (get-enemy-hp))))
 
+(deftest armor-protects-from-damage
+  (player-is-equipped :body "leather armor")
+  (move-and-get-attacked "Bat")
+  (attack 1 10 1)
+  (is (= 10 (get-hp))))
+
 (deftest get-item-after-fight
   (in-a-fight)
   (killed-the-enemy)
@@ -242,7 +248,5 @@
 (deftest weapon-makes-damage
   (player-is-equipped :right-hand "sword")
   (move-and-get-attacked "Bat")
-  (is (in-fight?))
   (attack 19 5 1 1 1)
-  (log/info (get-enemy-hp))
   (is (not (in-fight?))))

@@ -225,9 +225,15 @@
       {:target :enemy
        :hp (* -1 (attack-calc enemy-ac n dice))})]])
 
+(defn get-armor-class
+  [data]
+  (let [equipment (get-in data [:player :equipment :body])]
+    (get-in db/item-effects [equipment 0 :ac]
+            (get-in data [:player :ac]))))
+
 (defn enemy-attacks
   [data]
-  (let [player-ac (get-in data [:player :ac])]
+  (let [player-ac (get-armor-class data)]
     ["Bite" [{:target :player
               :hp (* -1 (attack-calc player-ac 1 2))}]]))
 

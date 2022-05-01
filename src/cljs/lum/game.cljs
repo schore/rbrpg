@@ -206,7 +206,9 @@
 
 (defn tile-to-graphic
   [key]
-  (get {:wall "#"} key " "))
+  (get {:wall "#"
+        :stair-up ">"
+        :stair-down "<"} key " "))
 
 (defn board []
   (let [board (rf/subscribe [:game/board])]

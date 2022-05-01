@@ -1,7 +1,7 @@
 (ns lum.game.dataspec
   (:require [clojure.spec.alpha :as s]
             [lum.maputil :as mu]
-            [lum.game.cavegen :as g]
+            ;[lum.game.cavegen :as g]
             [lum.game.game-database :as db]))
 
 (s/def :tile/type  #{:wall

@@ -93,6 +93,7 @@
 (defn get-state
   []
   (let [state (exec *game* [:nop])]
+    (when (not (s/valid? :game/game state)) (log/error (s/explain :game/game state)))
     (is (s/valid? :game/game state))
     state))
 

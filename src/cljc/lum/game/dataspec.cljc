@@ -1,16 +1,27 @@
 (ns lum.game.dataspec
   (:require [clojure.spec.alpha :as s]
             [lum.maputil :as mu]
+            [lum.game.cavegen :as g]
             [lum.game.game-database :as db]))
 
 (s/def :tile/type  #{:wall
                      :ground
+                     :stair-up
+                     :stair-down
                      :tree})
 
 (s/def :game/tile (s/keys :req-un [:tile/type]))
 
-(s/def :game/board (s/coll-of :game/tile
-                              :count 1500))
+(defn board-contains-element?
+  [element board]
+  (< 0 (count (filter #(= element (:type %))
+                      (s/unform :game/board board)))))
+
+
+(s/def :game/board (s/and (s/coll-of :game/tile
+                                     :count 1500)
+                          (partial board-contains-element? :stair-up)
+                          (partial board-contains-element? :stair-down)))
 
 (s/def :game/position (s/cat :x (fn [x] (and (nat-int? x)
                                              (< x mu/sizex)))
@@ -73,7 +84,10 @@
   (let [data (s/unform :game/game data)
         [x y] (get-in data [:player :position])
         tile (:type (mu/get-tile (:board data) x y))]
-    (= :ground tile)))
+    (contains? #{:ground
+                 :stair-down
+                 :stair-up}
+               tile)))
 
 (s/def :game/game (s/and (s/keys :req-un [:game/player
                                           :game/board

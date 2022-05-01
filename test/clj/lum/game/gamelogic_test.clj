@@ -80,10 +80,22 @@
     (let [m (get-board)]
       ;; check if map is valid
       (is (s/valid? :game/board m))
+      ;;(log/info (s/explain :game/board m))
       ;;only some examples
       (is (= :ground (:type (first m))))
       (is (= :wall (:type (mu/get-tile m 3 5))))
-      (is (= :ground (:type (mu/get-tile m 0 2)))))))
+      (is (= :ground (:type (mu/get-tile m 0 2))))
+      (is (= :stair-down (:type (mu/get-tile m 10 10))))
+      (is (= :stair-up (:type (mu/get-tile m 10 11)))))))
+
+(deftest player-can-stand-on-tile
+  (doseq [[x y tile] [[0 0 :ground]
+                      [10 10 :stair-down]
+                      [10 11 :stair-up]]]
+    (testing (str x y tile)
+      (test-map-loaded x y)
+      (is (= tile (:type (mu/get-tile (get-board) x y))))
+      (is (= [x y] (get-position))))))
 
 (deftest get-in-a-fight
   (game-is-initialized)

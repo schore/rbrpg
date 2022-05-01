@@ -39,12 +39,20 @@
   (let [f (apply comp (repeat 5 populate-map))]
     (-> (random-board)
         f
-        m/to-map)))
+        m/to-map
+        vec
+        (assoc-in [0 :type] :stair-up)
+        (assoc-in [1 :type] :stair-down))))
 
 (defn print-new-map
   ([] (print-new-map (get-dungeon)))
   ([m]
-   (doseq [i (partition xsize (map #(if (= (:type %) :wall) "#" " ") m))]
+   (doseq [i (partition xsize (map #(case (:type %)
+                                      :tree "o"
+                                      :wall "#"
+                                      :stair-up ">"
+                                      :stair-down "<"
+                                      " ") m))]
      (println i))
    (println (repeat xsize "-"))))
 

@@ -18,6 +18,8 @@
                           (case c
                             \  {:type :ground}
                             \. {:type :ground}
+                            \> {:type :stair-up}
+                            \< {:type :stair-down}
                             \# {:type :wall}
                             {:type :wall}))))))
        (map (fn [line]

@@ -38,7 +38,6 @@
 
 (defn add-random-field
   [inp new-field previous-field]
-  (log/info inp)
   (loop []
     (let [n (rand-int (* xsize ysize))]
       (if (= previous-field (nth inp n))

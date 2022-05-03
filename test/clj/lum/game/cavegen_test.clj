@@ -1,4 +1,4 @@
-(ns lum.cavegen-test
+(ns lum.game.cavegen-test
   (:require
    [clojure.test :as t :refer [deftest is testing]]
    [lum.game.cavegen :as cg]

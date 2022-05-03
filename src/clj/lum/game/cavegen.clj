@@ -1,5 +1,6 @@
 (ns lum.game.cavegen
-  (:require [lum.maputil :as m]))
+  (:require [lum.maputil :as m]
+            [clojure.tools.logging :as log]))
 
 (def xsize m/sizex)
 (def ysize m/sizey)
@@ -35,14 +36,22 @@
        (map #(if (> % 4) :wall :ground))
        (into [])))
 
+(defn add-random-field
+  [inp new-field previous-field]
+  (log/info inp)
+  (loop []
+    (let [n (rand-int (* xsize ysize))]
+      (if (= previous-field (nth inp n))
+        (assoc inp n new-field)
+        (recur)))))
+
 (defn get-dungeon []
   (let [f (apply comp (repeat 5 populate-map))]
     (-> (random-board)
         f
-        m/to-map
-        vec
-        (assoc-in [0 :type] :stair-up)
-        (assoc-in [1 :type] :stair-down))))
+        (add-random-field :stair-up :ground)
+        (add-random-field :stair-down :ground)
+        m/to-map)))
 
 (defn print-new-map
   ([] (print-new-map (get-dungeon)))
@@ -55,4 +64,3 @@
                                       " ") m))]
      (println i))
    (println (repeat xsize "-"))))
-

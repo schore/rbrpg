@@ -136,7 +136,7 @@
 (rf/reg-sub
  :game/board
  (fn [db _]
-   (get-in db [:game :board])))
+   (get-in db [:game :boards (dec (get-in db [:game :level]))])))
 
 (rf/reg-sub
  :game/fight?

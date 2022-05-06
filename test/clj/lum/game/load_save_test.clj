@@ -49,7 +49,8 @@
     (let [game-state (loop [game-state nil]
                        (if (s/valid? :game/game game-state)
                          game-state
-                         (recur {:board (cavegen/get-dungeon)
+                         (recur {:boards [(cavegen/get-dungeon)]
+                                 :level 1
                                  :messages '("")
                                  :player {:position [12 12]
                                           :ac 5

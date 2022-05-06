@@ -17,7 +17,7 @@
     (loop [data data]
       (if (s/valid? :game/game data)
         data
-        (recur (assoc data :board (cavegen/get-dungeon)))))))
+        (recur (assoc-in data [:boards (dec (:level data))] (cavegen/get-dungeon)))))))
 
 (defn move-unchecked
   [data direction ]
@@ -41,7 +41,8 @@
 (defn initialize
   [_ _]
   (loop []
-    (let [data {:board (cavegen/get-dungeon)
+    (let [data {:boards [(cavegen/get-dungeon)]
+                :level 1
            :messages '("Hello adventurer")
            :player {:position [10 10]
                     :ac 5

@@ -21,7 +21,7 @@
   IGame
 
   (exec [_ command ]
-      (log/info "Execute command" command)
+    (log/info "Execute command" command)
     (a/put! in command)
     (first (a/alts!! [out (a/timeout 1000)])))
 
@@ -33,6 +33,7 @@
   IGame
 
   (exec [_ command]
+    ;(log/info "Execute command" command)
     (swap! state #(gamelogic/process-actions % command))
     @state)
 
@@ -111,7 +112,8 @@
 
 (defn get-board
   []
-  (:board (get-state)))
+  (let [state (get-state)]
+    (get-in state [:boards (dec (:level state))])))
 
 (defn get-hp
   []

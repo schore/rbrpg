@@ -2,7 +2,9 @@
   (:require [clojure.spec.alpha :as s]
             [lum.maputil :as mu]
             ;[lum.game.cavegen :as g]
-            [lum.game.game-database :as db]))
+            [lum.game.game-database :as db]
+            ;[clojure.tools.logging :as log]
+            ))
 
 (s/def :tile/type  #{:wall
                      :ground
@@ -22,6 +24,9 @@
                                      :count 1500)
                           (partial board-contains-element? :stair-up)
                           (partial board-contains-element? :stair-down)))
+
+(s/def :game/boards (s/coll-of :game/board))
+(s/def :game/level pos-int?)
 
 (s/def :game/position (s/cat :x (fn [x] (and (nat-int? x)
                                              (< x mu/sizex)))
@@ -83,22 +88,28 @@
   [data]
   (let [data (s/unform :game/game data)
         [x y] (get-in data [:player :position])
-        tile (:type (mu/get-tile (:board data) x y))]
+        tile (:type (mu/get-tile (get-in data [:boards (dec (:level data))]) x y))]
     (contains? #{:ground
                  :stair-down
                  :stair-up}
                tile)))
 
+(defn valid-level?
+  [data]
+  (>= (count (:boards data)) (:level data)))
+
 (s/def :game/game (s/and (s/keys :req-un [:game/player
-                                          :game/board
+                                          :game/boards
+                                          :game/level
                                           :game/messages]
                                  :opt-un [:game/fight]
                                  )
-                         valid-position?))
+                         valid-position?
+                         valid-level?))
 
 
-
-;; (s/explain :game/game {:board (g/get-dungeon)
+;; (s/explain :game/game {:boards [(g/get-dungeon)]
+;;                        :level 1
 ;;                        :player {:position [10 10]
 ;;                                 :xp 0
 ;;                                 :ac 10

@@ -33,7 +33,7 @@
   (if-let [mf (try
                 (slurp (io/resource file))
                 (catch Exception e (log/error "Exception thrown " (.getMessage e))))]
-    (assoc data :board (load-map-from-string mf))
+    (assoc-in data [:boards (dec (:level data))] (load-map-from-string mf))
     data))
 
 (defn load-save-game

@@ -195,7 +195,6 @@
 (deftest combine-items
   (player-has-items {"batblood" 2})
   (combine "batblood" "batblood")
-  (log/info (get-items))
   (is (nil? (get (get-items) "batblood")))
   (is (= 1 (get (get-items) "small healing potion"))))
 
@@ -203,7 +202,6 @@
   (player-has-items {"batblood" 2
                      "small healing potion" 1})
   (combine "batblood" "batblood")
-  (log/info (get-items))
   (is (nil? (get (get-items) "batblood")))
   (is (= 2 (get (get-items) "small healing potion"))))
 

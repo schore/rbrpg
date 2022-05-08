@@ -9,7 +9,8 @@
    [lum.game.dataspec]
    [lum.game.game-database :refer [enemies recipies item-effects]]
    [lum.game.update-data]
-   [lum.game.game-database :as db]))
+   [lum.game.game-database :as db]
+   [lum.maputil :as mu]))
 
 (defn set-position
   [data [_ x y]]
@@ -292,9 +293,17 @@
       (update :level inc)
       (update :boards #(conj % (cavegen/get-dungeon)))))
 
+
+(defn player-tile
+  [state]
+  (let [[x y] (get-in state [:player :position])]
+    (mu/get-tile (get-active-board state) x y)))
+
 (defn activate
   [state _]
-  (enter-next-level state))
+  (case (:type (player-tile state))
+    :stair-down (enter-next-level state)
+    state))
 
 
 (def basic-mode

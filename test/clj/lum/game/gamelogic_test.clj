@@ -279,3 +279,8 @@
   (player-is-on :stair-down)
   (activate)
   (is (= 2 (get-level))))
+
+(deftest level-2-not-entered-on-ground
+  (player-is-on :ground)
+  (activate)
+  (is (= 1 (get-level))))

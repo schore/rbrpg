@@ -282,6 +282,21 @@
   [state [_ slot]]
   (update-in state [:player :equipment] #(dissoc % (keyword slot))))
 
+(defn get-active-board
+  [state]
+  (get-in state [:boards (dec (:level state))]))
+
+(defn enter-next-level
+  [state]
+  (-> state
+      (update :level inc)
+      (update :boards #(conj % (cavegen/get-dungeon)))))
+
+(defn activate
+  [state _]
+  (enter-next-level state))
+
+
 (def basic-mode
   {:initialize [initialize]
    :load [load-save/load-game]
@@ -301,7 +316,8 @@
 
 (def move-mode
   (merge basic-mode
-         {:load-map [load-save/load-map]
+         {:activate [activate]
+          :load-map [load-save/load-map]
           :move [move check-fight]
           :set-position [set-position]
           :new-board [new-board]
@@ -318,15 +334,12 @@
 
 (defn process-actions
   [data action]
-  (if action
-    (do
-      (when (nil? (get (get-mode-map data) (keyword (first action))))
-        (log/error "No entry defined " action))
-      (reduce (fn [data f]
-                (f data action))
-              data (get (get-mode-map data)
-                        (keyword (first action)) [])))
-    data))
+  (when (nil? (get (get-mode-map data) (keyword (first action))))
+    (log/error "No entry defined " action))
+  (reduce (fn [data f]
+            (f data action))
+          data (get (get-mode-map data)
+                    (keyword (first action)) [])))
 
 
 (defn game-master

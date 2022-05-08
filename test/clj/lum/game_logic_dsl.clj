@@ -4,7 +4,8 @@
             [clojure.tools.logging :as log]
             [clojure.spec.alpha :as s]
             [lum.game.dataspec]
-            [lum.game.gamelogic :as gamelogic]))
+            [lum.game.gamelogic :as gamelogic]
+            [lum.maputil :as m]))
 
 
 (defn create-game-maser
@@ -79,6 +80,10 @@
   []
   (exec *game* [:initialize]))
 
+(defn activate
+  []
+  (exec *game* [:activate]))
+
 (defn game-is-initialized
   []
   (let [state (get-state-unchecked)]
@@ -149,6 +154,10 @@
 (defn game-over?
   []
   (= 0 (get-hp)))
+
+(defn get-level
+  []
+  (:level (get-state)))
 
 (defn load-map
   [file]
@@ -236,3 +245,15 @@
 (defn player-unequip
   [slot]
   (exec *game* [:unequip slot]))
+
+(defn get-coordinates
+  [state field]
+  (let [board (get-in state [:boards (dec (:level state))])]
+    (m/n-to-position (.indexOf board {:type field}))))
+
+(defn player-is-on
+  [field]
+  (let [state (game-is-initialized)
+        [x y] (get-coordinates state field)]
+    (log/info x y)
+    (set-position x y)))

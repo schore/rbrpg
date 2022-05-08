@@ -4,7 +4,8 @@
    [clojure.string]
    [clojure.test :as t :refer [deftest is testing]]
    [clojure.tools.logging :as log]
-   [lum.game-logic-dsl :refer [attack
+   [lum.game-logic-dsl :refer [activate
+                               attack
                                combine
                                create-game
                                game-is-initialized
@@ -16,6 +17,7 @@
                                get-enemy-name
                                get-hp
                                get-items
+                               get-level
                                get-messages
                                get-position
                                get-state
@@ -28,6 +30,7 @@
                                move-and-get-attacked
                                player-equips
                                player-is-equipped
+                               player-is-on
                                player-has-hp
                                player-has-items
                                player-unequip
@@ -271,3 +274,8 @@
   (move-and-get-attacked "Bat")
   (attack 19 5 1 1 1)
   (is (not (in-fight?))))
+
+(deftest level-2-can-be-entered-entered
+  (player-is-on :stair-down)
+  (activate)
+  (is (= 2 (get-level))))

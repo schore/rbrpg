@@ -5,7 +5,8 @@
             [clojure.spec.alpha :as s]
             [lum.game.dataspec]
             [lum.game.gamelogic :as gamelogic]
-            [lum.maputil :as m]))
+            [lum.maputil :as m]
+            [lum.maputil :as mu]))
 
 
 (defn create-game-maser
@@ -257,3 +258,8 @@
         [x y] (get-coordinates state field)]
     (log/info x y)
     (set-position x y)))
+
+(defn get-tile
+  []
+  (let [[x y] (get-position)]
+    (mu/get-tile (get-board) x y)))

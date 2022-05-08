@@ -21,6 +21,7 @@
                                get-messages
                                get-position
                                get-state
+                               get-tile
                                get-xp
                                in-a-fight
                                in-fight?
@@ -279,6 +280,11 @@
   (player-is-on :stair-down)
   (activate)
   (is (= 2 (get-level))))
+
+(deftest on-stairs-up-when-entering-next-level
+  (player-is-on :stair-down)
+  (activate)
+  (is (= :stair-up (:type (get-tile)))))
 
 (deftest level-2-not-entered-on-ground
   (player-is-on :ground)

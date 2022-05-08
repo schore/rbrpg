@@ -287,11 +287,21 @@
   [state]
   (get-in state [:boards (dec (:level state))]))
 
+(defn find-tile
+  [board tile]
+  (mu/n-to-position (.indexOf board {:type tile})))
+
+(defn set-to-tile
+  [state tile]
+  (assoc-in state [:player :position]
+            (find-tile (get-active-board state) tile)))
+
 (defn enter-next-level
   [state]
   (-> state
       (update :level inc)
-      (update :boards #(conj % (cavegen/get-dungeon)))))
+      (update :boards #(conj % (cavegen/get-dungeon)))
+      (set-to-tile :stair-up)))
 
 
 (defn player-tile

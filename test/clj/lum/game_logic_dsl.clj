@@ -259,6 +259,13 @@
     (log/info x y)
     (set-position x y)))
 
+(defn player-is-on-level
+  [level]
+  (game-is-initialized)
+  (while (> level (get-level))
+    (player-is-on :stair-down)
+    (activate)))
+
 (defn get-tile
   []
   (let [[x y] (get-position)]

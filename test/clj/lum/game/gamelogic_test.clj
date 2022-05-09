@@ -32,6 +32,7 @@
                                player-equips
                                player-is-equipped
                                player-is-on
+                               player-is-on-level
                                player-has-hp
                                player-has-items
                                player-unequip
@@ -290,3 +291,9 @@
   (player-is-on :ground)
   (activate)
   (is (= 1 (get-level))))
+
+(deftest can-go-one-level-up
+  (player-is-on-level 2)
+  (player-is-on :stair-up)
+  (activate)
+  (is (= 1  (get-level))))

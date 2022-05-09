@@ -303,6 +303,11 @@
       (update :boards #(conj % (cavegen/get-dungeon)))
       (set-to-tile :stair-up)))
 
+(defn enter-previous-level
+  [state]
+  (-> state
+      (update :level dec)))
+
 
 (defn player-tile
   [state]
@@ -313,6 +318,7 @@
   [state _]
   (case (:type (player-tile state))
     :stair-down (enter-next-level state)
+    :stair-up (enter-previous-level state)
     state))
 
 

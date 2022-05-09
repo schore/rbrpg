@@ -303,3 +303,18 @@
   (player-is-on :stair-up)
   (activate)
   (is (= :stair-down (:type (get-tile)))))
+
+(deftest enter-same-levels-when-going-up-and-down
+  (player-is-on-level 2)
+  (player-is-on :stair-up)
+  (let [board (get-board)]
+    (activate);;go-up
+    (activate);;go-down
+    (is (= board (get-board)))))
+
+(deftest create-only-necessary-boards-when-going-down
+  (player-is-on-level 2)
+  (player-is-on :stair-up)
+  (activate);;go-up
+  (activate);;go-down
+  (is (= 2 (count (:boards (get-state))))))

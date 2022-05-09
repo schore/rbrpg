@@ -296,11 +296,17 @@
   (assoc-in state [:player :position]
             (find-tile (get-active-board state) tile)))
 
+(defn cavegen-when-required
+  [state]
+  (if (> (:level state) (count (:boards state)))
+      (update state :boards #(conj % (cavegen/get-dungeon)))
+      state))
+
 (defn enter-next-level
   [state]
   (-> state
       (update :level inc)
-      (update :boards #(conj % (cavegen/get-dungeon)))
+      (cavegen-when-required)
       (set-to-tile :stair-up)))
 
 (defn enter-previous-level

@@ -256,7 +256,6 @@
   [field]
   (let [state (game-is-initialized)
         [x y] (get-coordinates state field)]
-    (log/info x y)
     (set-position x y)))
 
 (defn player-is-on-level

@@ -318,3 +318,9 @@
   (activate);;go-up
   (activate);;go-down
   (is (= 2 (count (:boards (get-state))))))
+
+(deftest going-up-on-level-one-does-not-crash
+  (player-is-on-level 1)
+  (player-is-on :stair-up)
+  (activate)
+  (is (s/valid? :game/game (get-state))))

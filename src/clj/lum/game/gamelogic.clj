@@ -311,9 +311,11 @@
 
 (defn enter-previous-level
   [state]
-  (-> state
-      (update :level dec)
-      (set-to-tile :stair-down)))
+  (if (not (= 1 (:level state)))
+    (-> state
+        (update :level dec)
+        (set-to-tile :stair-down))
+    state))
 
 
 (defn player-tile

@@ -297,3 +297,9 @@
   (player-is-on :stair-up)
   (activate)
   (is (= 1  (get-level))))
+
+(deftest on-stairs-down-when-entering-previous-level
+  (player-is-on-level 2)
+  (player-is-on :stair-up)
+  (activate)
+  (is (= :stair-down (:type (get-tile)))))

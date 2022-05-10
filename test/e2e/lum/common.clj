@@ -1,8 +1,8 @@
 (ns lum.common
   (:require
    [etaoin.api :as e]
-   [user]
-   [clojure.tools.logging :as log]
+   [etaoin.keys :as keys]
+   ;;[clojure.tools.logging :as log]
    [clojure.java.io :as io]))
 
 (def ^:dynamic *driver*)
@@ -47,6 +47,7 @@
   (prepare-save-game "got-two-batblood.edn")
   (prepare-save-game "one-hp-left-and-fighting.edn")
   (prepare-save-game "in-a-fight.edn")
+  (prepare-save-game "on-stairs.edn")
   (f)
   (delete-directory-recursive (io/file "tmp")))
 
@@ -178,6 +179,10 @@
                 :left "h"
                 :right "l"))
   (e/wait *driver* 0.1))
+
+(defn activate
+  []
+  (press-key keys/space))
 
 (defn load-game
   [filename]

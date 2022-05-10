@@ -5,7 +5,11 @@
    [etaoin.api :as e]
    [lum.common :as c]))
 
-(t/use-fixtures :once c/fixture-start-server c/fixture-driver c/open-website)
+(t/use-fixtures :once
+  c/fixture-prepare-directory
+  c/fixture-start-server
+  c/fixture-driver
+  c/open-website)
 
 (t/use-fixtures
   :each c/refresh)
@@ -33,3 +37,9 @@
   (c/on-test-map)
   (c/move :up)
   (is (= [10 9] (c/get-player-position))))
+
+(deftest ^:integration enter-next-level
+  (c/load-game "on-stairs.edn")
+  (let [prev-pos (c/get-player-position)]
+    (c/activate)
+    (is (not= prev-pos (c/get-player-position)))))

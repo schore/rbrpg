@@ -28,10 +28,10 @@
 (s/def :game/boards (s/coll-of :game/board))
 (s/def :game/level pos-int?)
 
-(s/def :game/position (s/cat :x (fn [x] (and (nat-int? x)
-                                             (< x mu/sizex)))
-                             :y (fn [y] (and (nat-int? y)
-                                             (< y mu/sizey)))))
+(s/def :game/position (s/cat :x (s/and nat-int?
+                                       #(< % mu/sizex))
+                             :y (s/and nat-int?
+                                       #(< % mu/sizey))))
 
 (s/def :player/xp nat-int?)
 

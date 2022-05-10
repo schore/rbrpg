@@ -327,7 +327,8 @@
       (let [items @items
             sitems @selected-items]
         [:<>
-         [:table.tbody (for [[k v] items]
+         [:table>tbody (for [[k v] items]
+                         ^{:key (str "show_item_" k)}
                          [:tr
                           [:td k]
                           [:td v]
@@ -358,8 +359,9 @@
     (fn []
       (let [equipment @equipment
             items @items]
-        [:table
+        [:table>tbody
          (for [slot db/slots]
+           ^{:key (str "item_slots_" slot)}
            [:tr
             [:td slot]
             [:td [:select
@@ -369,6 +371,7 @@
                   [:option "none"]
                   (for [item (filter #(>= (get items (keyword %) 0) 1)
                                      (db/get-items-for-slot slot))]
+                    ^{:key (str "item_slots_options_" item)}
                     [:option item])]]])]))))
 
 (defn game []

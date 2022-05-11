@@ -36,7 +36,7 @@
                                     {:tag :p
                                      :fn/has-text action}]
                                    "font-weight")))
-    (c/press-key etaoin.keys/space)))
+    (c/press-key etaoin.keys/enter)))
 
 
 (defn fight

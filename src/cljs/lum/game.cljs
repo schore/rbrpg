@@ -49,7 +49,7 @@
                                    [[:game/key :right] [{:keyCode 108}]];;l
                                    [[:game/key :down] [{:keyCode 106}]];;k
                                    [[:game/key :up] [{:keyCode 107}]];;j
-                                   [[:game/key :confirm] [{:keyCode 32}]];;space
+                                   [[:game/key :confirm] [{:keyCode 13}]];;enter
                                    ]}]]
          [:dispatch [::rp/add-keyboard-event-listener "keypress"]]]}))
 

@@ -182,7 +182,7 @@
 
 (defn activate
   []
-  (press-key keys/space))
+  (press-key keys/enter))
 
 (defn load-game
   [filename]

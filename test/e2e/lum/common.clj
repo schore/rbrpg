@@ -109,7 +109,7 @@
 
 (defn get-items
   []
-  (let [query [{:class "content"}
+  (let [query [{:class "items"}
                {:tag :table}
                {:tag :tr}]]
     (->> (e/query-all *driver* query)
@@ -127,7 +127,7 @@
 (defn get-item-row
   [item]
   (->> (e/query-all *driver*
-                    [{:class "content"}
+                    [{:class "items"}
                      {:tag :table}
                      {:tag :tr}])
        (filter (fn [el]
@@ -201,8 +201,8 @@
 
 (defn equip
   [slot item]
-  (e/wait-visible *driver* [{:class "content"}
-                          {:tag :table :index 2}])
+  (e/wait-visible *driver* [{:class "item-slots"}
+                            {:tag :table}])
   (e/select *driver* (keyword slot) item))
 
 (defn get-equipment-slot

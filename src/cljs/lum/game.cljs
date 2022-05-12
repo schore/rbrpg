@@ -379,17 +379,21 @@
         game-over? (rf/subscribe [:game/game-over?])]
     (fn []
       [:section.section>div.container>div.content
-       (cond
-         @game-over? [game-over]
-         @fight? [fight-screen]
-         :else  [:div.grid-container
-                 [board]
-                 [player]])
+       [:div.outer-grid-container
+        [:div.mainapplication
+         (cond
+           @game-over? [game-over]
+           @fight? [fight-screen]
+           :else  [:div.grid-container
+                   [board]
+                   [player]])]
+
+        [:div.stats [stats]]
+        [:div.item-slots [item-slots]]
+        [:div.messages [show-messages]]]
        [button "New map" [:game/get-new-map]]
        [button "Load map" [:game/load-map]]
        [:br]
        [load-save]
-       [stats]
-       [show-items]
-       [item-slots]
-       [show-messages]])))
+       [:div.items [show-items]]
+       ])))

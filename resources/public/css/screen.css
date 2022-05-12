@@ -38,17 +38,41 @@ body {
     filter: alpha(opacity=40);
 }
 
+.outer-grid-container{
+  display: grid;
+  gap: 1px;
+}
+
+.mainapplication {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+}
+
+.item-slots {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.stats {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.messages {
+  grid-column: 2;
+  grid-row: 3;
+}
 
 .grid-container {
   display: grid;
-  background: lightblue;
+  //background: lightblue;
   grid-auto-columns: 15px;
   grid-auto-rows: 15px;
   grid-template-columns: repeat(50, 15px);
 }
 
 .grid-item {
-  border: 1px solid black;
+  border: 1px solid gray;
   font-size: 12px;
   background-color: lightgray;
 }

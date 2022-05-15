@@ -6,7 +6,7 @@
    [goog.history.EventType :as HistoryEventType]
    [lum.ajax :as ajax]
    [lum.events]
-   [lum.game :refer [game]]
+   [lum.game :refer [game item]]
    [markdown.core :refer [md->html]]
    [re-frame.core :as rf]
    [reagent.core :as r]
@@ -36,6 +36,7 @@
       {:class (when @expanded? :is-active)}
       [:div.navbar-start
        [nav-link "#/" "Home" :home]
+       [nav-link "#/item" "Items" :item]
        ;;[nav-link "#/about" "About" :about]
        ;;[nav-link "#/test" "Test" :test]
        ;;[nav-link "#/game" "Game" :game]
@@ -79,8 +80,8 @@
     ;;            :view #'about-page}]
     ;; ["/test" {:name :test
     ;;           :view #'test-page}]
-    ["/game" {:name :game
-              :view #'game}]]))
+    ["/item" {:name :item
+              :view #'item}]]))
 
 (defn start-router! []
   (rfe/start!

@@ -394,6 +394,9 @@
        [button "New map" [:game/get-new-map]]
        [button "Load map" [:game/load-map]]
        [:br]
-       [load-save]
-       [:div.items [show-items]]
-       ])))
+       [load-save]])))
+
+(defn item []
+  [:section.section>div.container>div.content
+   [:div.items
+    [show-items]]])

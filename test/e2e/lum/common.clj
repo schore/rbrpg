@@ -2,7 +2,8 @@
   (:require
    [etaoin.api :as e]
    [etaoin.keys :as keys]
-   ;;[clojure.tools.logging :as log]
+   [user]
+   [clojure.tools.logging :as log]
    [clojure.java.io :as io]))
 
 (def ^:dynamic *driver*)
@@ -65,6 +66,12 @@
   (e/refresh *driver*)
   (f))
 
+
+(defn click-menu-item
+  [item]
+  (e/click-visible *driver* [{:class :navbar-start}
+                     {:tag :a :fn/text item}]))
+
 (defn on-test-map
   []
   (e/click-visible *driver* {:tag :input :value "Load map"}))
@@ -109,9 +116,11 @@
 
 (defn get-items
   []
+  (click-menu-item "Items")
   (let [query [{:class "items"}
                {:tag :table}
                {:tag :tr}]]
+    (e/wait-visible *driver* query)
     (->> (e/query-all *driver* query)
          (map #(e/get-element-text-el *driver* %))
          (map parse-item-str)
@@ -119,6 +128,7 @@
 
 (defn get-hp
   []
+  (click-menu-item "Home")
   (Integer/parseInt (second (re-matches #"hp: (.*)/(.*)"
                                (e/get-element-text *driver* [{:class "content"}
                                                              {:tag :span
@@ -144,14 +154,14 @@
            {:tag :input
             :value "+"}))
 
+
 (defn use-item
   [item]
+  (click-menu-item "Items")
   (e/click-el *driver*
               (e/child *driver* (get-item-row item)
                        {:tag :input
-                        :value "use"}))
-  (e/wait *driver* 0.1))
-
+                        :value "use"})))
 (defn select-items
   [item n]
   (let [el (get-plus-el item)]
@@ -160,6 +170,7 @@
 
 (defn combine
   [n item]
+  (click-menu-item "Items")
   (select-items item n)
   (e/click *driver* {:tag :input
                      :type "button"
@@ -182,12 +193,12 @@
 
 (defn activate
   []
-  (press-key keys/enter))
+  (press-key keys/enter)
+  (e/wait *driver* 0.4))
 
 (defn load-game
   [filename]
-  (e/wait-visible *driver* [{:tag :input
-                           :type :text}] )
+  (click-menu-item "Home")
   (e/clear *driver* [{:tag :input
                     :type :text}])
   (e/fill *driver* [{:tag :input
@@ -201,10 +212,12 @@
 
 (defn equip
   [slot item]
+  (click-menu-item "Home")
   (e/wait-visible *driver* [{:class "item-slots"}
                             {:tag :table}])
   (e/select *driver* (keyword slot) item))
 
 (defn get-equipment-slot
   [slot]
+  (click-menu-item "Home")
   (e/get-element-value *driver* (keyword slot)))

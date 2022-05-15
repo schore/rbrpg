@@ -199,6 +199,7 @@
 (defn load-game
   [filename]
   (click-menu-item "Home")
+  (e/wait-visible *driver* [{:tag :input :type :text}])
   (e/clear *driver* [{:tag :input
                     :type :text}])
   (e/fill *driver* [{:tag :input

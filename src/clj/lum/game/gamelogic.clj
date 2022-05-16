@@ -171,9 +171,18 @@
   (let [enemies (map first enemies)]
     (rand-nth enemies)))
 
+(defn roll-dice
+  [n]
+  (inc (rand-int n)))
+
+(defn advantage
+  [n]
+  (max (roll-dice n)
+       (roll-dice n)))
+
 (defn check-fight
   [data _]
-  (if (> (rand) 0.97)
+  (if (< (advantage 20) 5)
     ;;Start a fight every 20 turns
     (let [enemy (choose-enemy)]
       (-> data
@@ -182,11 +191,9 @@
           (update :messages #(conj % (str "You got attacked by a " enemy)))))
     data))
 
-
-
 (defn roll
   [n s]
-  (reduce + (take n (map #(%) (repeat #(inc (rand-int s)))))))
+  (reduce + (take n (map #(%) (repeat #(roll-dice s))))))
 
 (defn damage-role
   [_ attack_role]

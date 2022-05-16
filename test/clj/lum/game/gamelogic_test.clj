@@ -324,3 +324,12 @@
   (player-is-on :stair-up)
   (activate)
   (is (s/valid? :game/game (get-state))))
+
+;; (defn propability
+;;   [g n]
+;;   (/ (* (+ n (- g) 1)
+;;         (+ n g -1))
+;;      (* n n)))
+
+;; (for [i (range 1 21)]
+;;   [i (float (propability i 20))])

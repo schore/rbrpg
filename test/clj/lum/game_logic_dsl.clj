@@ -177,18 +177,7 @@
   [dir]
   (exec *game* [:move dir]))
 
-(defn move-and-get-attacked
-  ([] (move-and-get-attacked "Bat"))
-  ([name]
-   (with-redefs [rand (fn [] 0.98)
-                 gamelogic/choose-enemy (fn [] name)]
-     (move :down))))
 
-
-(defn in-a-fight
-  []
-  (game-is-initialized)
-  (move-and-get-attacked))
 
 (defn exec-with-rolls
   [f rolls]
@@ -201,6 +190,20 @@
                                  (do (log/error "You selected the wrong dice")
                                      0))))]
       (f))))
+
+(defn move-and-get-attacked
+  ([] (move-and-get-attacked "Bat"))
+  ([name]
+   (with-redefs [gamelogic/choose-enemy (fn [] name)]
+     (exec-with-rolls #(move :down) [1 2]))))
+
+
+(defn in-a-fight
+  []
+  (game-is-initialized)
+  (move-and-get-attacked))
+
+
 
 (defn attack
   ([]

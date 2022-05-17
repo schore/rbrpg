@@ -27,6 +27,7 @@
                    "batblood" []
                    "batwing" []
                    "ratmeet" []
+                   "herb" []
                    "sword" [{:target :player
                              :damage [1 6]
                              :slots #{:right-hand}}]

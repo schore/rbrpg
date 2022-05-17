@@ -46,6 +46,7 @@
 
 (s/def ::slot db/slots)
 (s/def :player/equipment (s/map-of ::slot :game-database/item))
+(s/def :player/items (s/map-of :game-database/item pos-int?))
 
 (s/def :game/player (s/keys :req-un [:game/position
                                      :player/ac
@@ -53,7 +54,7 @@
                                      :player/hp
                                      :player/mp
                                      :player/equipment
-                                     :game-database/items]))
+                                     :player/items]))
 
 (s/def :enemy/name string?)
 (s/def :enemy/hp :game/stat)

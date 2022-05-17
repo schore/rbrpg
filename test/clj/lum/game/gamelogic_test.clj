@@ -325,11 +325,14 @@
   (activate)
   (is (s/valid? :game/game (get-state))))
 
-;; (defn propability
-;;   [g n]
-;;   (/ (* (+ n (- g) 1)
-;;         (+ n g -1))
-;;      (* n n)))
+(deftest activating-a-tile-can-give-item
+  (player-is-on-level 1)
+  (player-is-on :ground)
+  (activate 10 10)
+  (is (= 1 (get (get-items) "herb"))))
 
-;; (for [i (range 1 21)]
-;;   [i (float (propability i 20))])
+
+(deftest check-handling-of-items
+  (player-has-items {"foo" 1})
+  (is (nil? (get (get-items) "foo")))
+  (is (s/valid? :game/game (get-state))))

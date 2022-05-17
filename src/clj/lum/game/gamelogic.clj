@@ -335,6 +335,7 @@
   (case (:type (player-tile state))
     :stair-down (enter-next-level state)
     :stair-up (enter-previous-level state)
+    :ground (change-items state {"herb" 1} )
     state))
 
 

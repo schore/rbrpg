@@ -73,6 +73,19 @@
 (t/use-fixtures
   :each create-game)
 
+(defn exec-with-rolls
+  [f rolls]
+  (let [r (atom (map dec rolls))]
+    (with-redefs [rand-int (fn [m]
+                             (let [next-roll (first @r)]
+                               (swap! r rest)
+                               (if (< next-roll m)
+                                 next-roll
+                                 (do (log/error "You selected the wrong dice")
+                                     0))))]
+      (f))))
+
+
 (defn get-state-unchecked
   []
   (exec *game* [:nop]))
@@ -82,8 +95,10 @@
   (exec *game* [:initialize]))
 
 (defn activate
-  []
-  (exec *game* [:activate]))
+  ([]
+   (exec *game* [:activate]))
+  ([& rolls]
+   (exec-with-rolls activate rolls)))
 
 (defn game-is-initialized
   []
@@ -179,17 +194,6 @@
 
 
 
-(defn exec-with-rolls
-  [f rolls]
-  (let [r (atom (map dec rolls))]
-    (with-redefs [rand-int (fn [m]
-                             (let [next-roll (first @r)]
-                               (swap! r rest)
-                               (if (< next-roll m)
-                                 next-roll
-                                 (do (log/error "You selected the wrong dice")
-                                     0))))]
-      (f))))
 
 (defn move-and-get-attacked
   ([] (move-and-get-attacked "Bat"))

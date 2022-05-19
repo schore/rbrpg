@@ -331,8 +331,12 @@
   (activate 10 10)
   (is (= 1 (get (get-items) "herb"))))
 
-
 (deftest check-handling-of-items
   (player-has-items {"foo" 1})
   (is (nil? (get (get-items) "foo")))
   (is (s/valid? :game/game (get-state))))
+
+(deftest enter-fight-after-activation
+  (game-is-initialized)
+  (activate 1 1 1 1)
+  (is (in-fight?)))

@@ -358,7 +358,7 @@
 
 (def move-mode
   (merge basic-mode
-         {:activate [activate]
+         {:activate [activate check-fight]
           :load-map [load-save/load-map]
           :move [move check-fight]
           :set-position [set-position]

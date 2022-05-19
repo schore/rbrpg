@@ -4,57 +4,23 @@
    [clojure.string]
    [clojure.test :as t :refer [deftest is testing]]
    [clojure.tools.logging :as log]
-   [lum.game-logic-dsl :refer [activate
-                               attack
-                               combine
-                               create-game
-                               game-is-initialized
-                               get-equipped-items
-                               load-game
-                               game-over?
-                               get-board
-                               get-enemy-hp
-                               get-enemy-name
-                               get-hp
-                               get-items
-                               get-level
-                               get-messages
-                               get-position
-                               get-state
-                               get-tile
-                               get-xp
-                               in-a-fight
-                               in-fight?
-                               initalize-game
-                               killed-the-enemy
-                               move
-                               move-and-get-attacked
-                               player-equips
-                               player-is-equipped
-                               player-is-on
-                               player-is-on-level
-                               player-has-hp
-                               player-has-items
-                               player-unequip
-                               set-position
-                               test-map-loaded
-                               use-item]]
+   [lum.game-logic-dsl :as dsl ]
    [lum.game.cavegen :as cavegen]
    [lum.game.dataspec]
    [lum.maputil :as mu]))
 
 (t/use-fixtures
-  :each create-game)
+  :each dsl/create-game)
 
 
 (deftest initalize-tests
-  (is (s/valid? :game/game (game-is-initialized))))
+  (is (s/valid? :game/game (dsl/game-is-initialized))))
 
 (deftest set-player-position
-  (game-is-initialized)
-  (set-position 25 27)
+  (dsl/game-is-initialized)
+  (dsl/set-position 25 27)
   (is (= [25 27]
-         (get-in (get-state) [:player :position]))))
+         (get-in (dsl/get-state) [:player :position]))))
 
 (deftest move-test
   (doseq [[[x y] direction end-pos] [;;Move with strings
@@ -75,14 +41,14 @@
                                      ;; don't move on walls
                                      [[4 1] :up [4 1]]]]
     (testing (str [x y] direction end-pos)
-      (test-map-loaded x y)
-      (move direction)
-      (is (= end-pos (get-position))))))
+      (dsl/test-map-loaded x y)
+      (dsl/move direction)
+      (is (= end-pos (dsl/get-position))))))
 
 (deftest load-map-test
   (testing "load a map from file"
-    (test-map-loaded)
-    (let [m (get-board)]
+    (dsl/test-map-loaded)
+    (let [m (dsl/get-board)]
       ;; check if map is valid
       (is (s/valid? :game/board m))
       ;;(log/info (s/explain :game/board m))
@@ -98,251 +64,251 @@
                       [10 10 :stair-down]
                       [10 11 :stair-up]]]
     (testing (str x y tile)
-      (test-map-loaded x y)
-      (is (= tile (:type (mu/get-tile (get-board) x y))))
-      (is (= [x y] (get-position))))))
+      (dsl/test-map-loaded x y)
+      (is (= tile (:type (mu/get-tile (dsl/get-board) x y))))
+      (is (= [x y] (dsl/get-position))))))
 
 (deftest get-in-a-fight
-  (game-is-initialized)
-  (move-and-get-attacked)
-  (is (in-fight?)))
+  (dsl/game-is-initialized)
+  (dsl/move-and-get-attacked)
+  (is (dsl/in-fight?)))
 
 (deftest kill-it
-  (in-a-fight)
+  (dsl/in-a-fight)
   ;; You kill it with the first strike
-  (attack 20 3 3 1)
-  (is (= 10 (get-hp)))
-  (is (= 1 (get-xp)))
-  (is (not (in-fight?))))
+  (dsl/attack 20 3 3 1)
+  (is (= 10 (dsl/get-hp)))
+  (is (= 1 (dsl/get-xp)))
+  (is (not (dsl/in-fight?))))
 
 (deftest get-killed-by-enemy
-  (in-a-fight)
-  (attack 1 20 2 2)
-  (attack 1 20 2 2)
-  (attack 1 20 2 2)
-  (is (= 0 (get-hp)))
-  (is (game-over?)))
+  (dsl/in-a-fight)
+  (dsl/attack 1 20 2 2)
+  (dsl/attack 1 20 2 2)
+  (dsl/attack 1 20 2 2)
+  (is (= 0 (dsl/get-hp)))
+  (is (dsl/game-over?)))
 
 (deftest hit-by-enemy
-  (in-a-fight)
-  (attack 15 1 15 2)
-  (is (= 8 (get-hp)))
-  (is (= 1 (get-enemy-hp))))
+  (dsl/in-a-fight)
+  (dsl/attack 15 1 15 2)
+  (is (= 8 (dsl/get-hp)))
+  (is (= 1 (dsl/get-enemy-hp))))
 
 (deftest enemy-always-hit-with-20
-  (in-a-fight)
-  (attack 1 20 2 2)
-  (is (> 10 (get-hp))))
+  (dsl/in-a-fight)
+  (dsl/attack 1 20 2 2)
+  (is (> 10 (dsl/get-hp))))
 
 (deftest enemy-ac<roll-no-hit
-  (in-a-fight)
-  (attack 1 15 2 2)
-  (is (> 10 (get-hp))))
+  (dsl/in-a-fight)
+  (dsl/attack 1 15 2 2)
+  (is (> 10 (dsl/get-hp))))
 
 (deftest enemy-ac>roll-no-hit
-  (in-a-fight)
-  (attack 1 2 2)
-  (is (= 10 (get-hp))))
+  (dsl/in-a-fight)
+  (dsl/attack 1 2 2)
+  (is (= 10 (dsl/get-hp))))
 
 (deftest enemy-ac=roll-no-hit
-  (in-a-fight)
-  (attack 1 5 2)
-  (is (= 10 (get-hp))))
+  (dsl/in-a-fight)
+  (dsl/attack 1 5 2)
+  (is (= 10 (dsl/get-hp))))
 
 (deftest player-always-hit-with-20
-  (in-a-fight)
-  (attack 20 0 1 1)
-  (is (> 2 (get-enemy-hp))))
+  (dsl/in-a-fight)
+  (dsl/attack 20 0 1 1)
+  (is (> 2 (dsl/get-enemy-hp))))
 
 (deftest player-ac<roll-hit
-  (in-a-fight)
-  (attack 15 1 0)
-  (is (> 2 (get-enemy-hp))))
+  (dsl/in-a-fight)
+  (dsl/attack 15 1 0)
+  (is (> 2 (dsl/get-enemy-hp))))
 
 (deftest player-ac>roll-no-hit
-  (in-a-fight)
-  (attack 9 2 2)
-  (is (= 2 (get-enemy-hp))))
+  (dsl/in-a-fight)
+  (dsl/attack 9 2 2)
+  (is (= 2 (dsl/get-enemy-hp))))
 
 (deftest player-ac=roll-no-hit
-  (in-a-fight)
-  (attack 10 5 2)
-  (is (= 2 (get-enemy-hp))))
+  (dsl/in-a-fight)
+  (dsl/attack 10 5 2)
+  (is (= 2 (dsl/get-enemy-hp))))
 
 (deftest armor-protects-from-damage
-  (player-is-equipped :body "leather armor")
-  (move-and-get-attacked "Bat")
-  (attack 1 10 1)
-  (is (= 10 (get-hp))))
+  (dsl/player-is-equipped :body "leather armor")
+  (dsl/move-and-get-attacked "Bat")
+  (dsl/attack 1 10 1)
+  (is (= 10 (dsl/get-hp))))
 
 (deftest enemy-makes-correct-damage
   (doseq [[enemy rolls hp] [["Rat" [2] 8]
                             ["Rat" [3] 9] ;;a bad input is reduced to 1
                             ["Bat" [3] 7]]]
     (testing (str enemy " " rolls " " hp)
-      (initalize-game)
-      (move-and-get-attacked enemy)
-      (apply attack 1 15 rolls)
-      (is (= hp (get-hp))))))
+      (dsl/initalize-game)
+      (dsl/move-and-get-attacked enemy)
+      (apply dsl/attack 1 15 rolls)
+      (is (= hp (dsl/get-hp))))))
 
 (deftest get-item-after-fight
-  (in-a-fight)
-  (killed-the-enemy)
-  (is (= 1 (get (get-items) "batblood")))
-  (is (= 1 (get (get-items) "batwing"))))
+  (dsl/in-a-fight)
+  (dsl/killed-the-enemy)
+  (is (= 1 (get (dsl/get-items) "batblood")))
+  (is (= 1 (get (dsl/get-items) "batwing"))))
 
 (deftest in-fight-with-a-rat
-  (game-is-initialized)
-  (move-and-get-attacked "Rat")
-  (is (= "Rat" (get-enemy-name)))
-  (is (clojure.string/includes? (first (get-messages)) "Rat")))
+  (dsl/game-is-initialized)
+  (dsl/move-and-get-attacked "Rat")
+  (is (= "Rat" (dsl/get-enemy-name)))
+  (is (clojure.string/includes? (first (dsl/get-messages)) "Rat")))
 
 (deftest combine-items
-  (player-has-items {"batblood" 2})
-  (combine "batblood" "batblood")
-  (is (nil? (get (get-items) "batblood")))
-  (is (= 1 (get (get-items) "small healing potion"))))
+  (dsl/player-has-items {"batblood" 2})
+  (dsl/combine "batblood" "batblood")
+  (is (nil? (get (dsl/get-items) "batblood")))
+  (is (= 1 (get (dsl/get-items) "small healing potion"))))
 
 (deftest combine-items-already-some-in-stock
-  (player-has-items {"batblood" 2
+  (dsl/player-has-items {"batblood" 2
                      "small healing potion" 1})
-  (combine "batblood" "batblood")
-  (is (nil? (get (get-items) "batblood")))
-  (is (= 2 (get (get-items) "small healing potion"))))
+  (dsl/combine "batblood" "batblood")
+  (is (nil? (get (dsl/get-items) "batblood")))
+  (is (= 2 (get (dsl/get-items) "small healing potion"))))
 
 (deftest combine-wrong-items
-  (player-has-items {"batblood" 1
+  (dsl/player-has-items {"batblood" 1
                      "batwing" 1})
-  (combine "batblood" "batwing")
-  (is (empty? (get-items))))
+  (dsl/combine "batblood" "batwing")
+  (is (empty? (dsl/get-items))))
 
 (deftest combine-items-not-in-inventory
-  (player-has-items {})
-  (combine "batblood" "batblood")
-  (is (empty? (get-items))))
+  (dsl/player-has-items {})
+  (dsl/combine "batblood" "batblood")
+  (is (empty? (dsl/get-items))))
 
 (deftest combine-items-not-enough-inventory
-  (player-has-items {"batblood" 1})
-  (combine "batblood" "batblood")
-  (is (= {"batblood" 1} (get-items))))
+  (dsl/player-has-items {"batblood" 1})
+  (dsl/combine "batblood" "batblood")
+  (is (= {"batblood" 1} (dsl/get-items))))
 
 (deftest apply-item
-  (player-has-items {"small healing potion" 1})
-  (player-has-hp 5)
-  (use-item "small healing potion")
-  (is (= 8 (get-hp)))
-  (is (nil? (get (get-items) "small healing potion"))))
+  (dsl/player-has-items {"small healing potion" 1})
+  (dsl/player-has-hp 5)
+  (dsl/use-item "small healing potion")
+  (is (= 8 (dsl/get-hp)))
+  (is (nil? (get (dsl/get-items) "small healing potion"))))
 
 (deftest apply-item-not-in-inventory
-  (player-has-hp 5)
-  (use-item "small healing potion")
-  (is (= 5 (get-hp))))
+  (dsl/player-has-hp 5)
+  (dsl/use-item "small healing potion")
+  (is (= 5 (dsl/get-hp))))
 
 (deftest apply-item-when-dead
-  (player-has-items {"small healing potion" 1})
-  (player-has-hp 0)
-  (use-item "small healing potion")
-  (is (= 0 (get-hp))))
+  (dsl/player-has-items {"small healing potion" 1})
+  (dsl/player-has-hp 0)
+  (dsl/use-item "small healing potion")
+  (is (= 0 (dsl/get-hp))))
 
 (deftest apply-item-bug-null-pointer-exception
-  (player-has-items {"sword" 1})
-  (use-item "sword")
-  (s/valid? :game/game (get-state)))
+  (dsl/player-has-items {"sword" 1})
+  (dsl/use-item "sword")
+  (s/valid? :game/game (dsl/get-state)))
 
 (deftest apply-equipped-item
-  (player-has-items {"sword" 1})
-  (player-equips :right-hand "sword")
-  (use-item "sword")
-  (is (not (contains? (get-items) "sword")))
-  (is (not (contains? (get-equipped-items) :right-hand))))
+  (dsl/player-has-items {"sword" 1})
+  (dsl/player-equips :right-hand "sword")
+  (dsl/use-item "sword")
+  (is (not (contains? (dsl/get-items) "sword")))
+  (is (not (contains? (dsl/get-equipped-items) :right-hand))))
 
 (deftest equip-item
-  (player-has-items {"sword" 1})
-  (player-equips :right-hand "sword")
-  (is (= "sword" (:right-hand (get-equipped-items)))))
+  (dsl/player-has-items {"sword" 1})
+  (dsl/player-equips :right-hand "sword")
+  (is (= "sword" (:right-hand (dsl/get-equipped-items)))))
 
 (deftest equip-item-which-is-not-in-stock-fails
-  (player-has-items {})
-  (player-equips :right-hand "sword")
-  (is (not (contains? (get-equipped-items) :right-hand))))
+  (dsl/player-has-items {})
+  (dsl/player-equips :right-hand "sword")
+  (is (not (contains? (dsl/get-equipped-items) :right-hand))))
 
 (deftest unequip-item
-  (player-is-equipped :right-hand "sword")
-  (player-unequip :right-hand)
-  (is (not (contains? (get-equipped-items) :right-hand))))
+  (dsl/player-is-equipped :right-hand "sword")
+  (dsl/player-unequip :right-hand)
+  (is (not (contains? (dsl/get-equipped-items) :right-hand))))
 
 (deftest weapon-makes-damage
-  (player-is-equipped :right-hand "sword")
-  (move-and-get-attacked "Bat")
-  (attack 19 5 1 1 1)
-  (is (not (in-fight?))))
+  (dsl/player-is-equipped :right-hand "sword")
+  (dsl/move-and-get-attacked "Bat")
+  (dsl/attack 19 5 1 1 1)
+  (is (not (dsl/in-fight?))))
 
 (deftest level-2-can-be-entered-entered
-  (player-is-on :stair-down)
-  (activate)
-  (is (= 2 (get-level))))
+  (dsl/player-is-on :stair-down)
+  (dsl/activate)
+  (is (= 2 (dsl/get-level))))
 
 (deftest on-stairs-up-when-entering-next-level
-  (player-is-on :stair-down)
-  (activate)
-  (is (= :stair-up (:type (get-tile)))))
+  (dsl/player-is-on :stair-down)
+  (dsl/activate)
+  (is (= :stair-up (:type (dsl/get-tile)))))
 
 (deftest level-2-not-entered-on-ground
-  (player-is-on :ground)
-  (activate)
-  (is (= 1 (get-level))))
+  (dsl/player-is-on :ground)
+  (dsl/activate)
+  (is (= 1 (dsl/get-level))))
 
 (deftest can-go-one-level-up
-  (player-is-on-level 2)
-  (player-is-on :stair-up)
-  (activate)
-  (is (= 1  (get-level))))
+  (dsl/player-is-on-level 2)
+  (dsl/player-is-on :stair-up)
+  (dsl/activate)
+  (is (= 1  (dsl/get-level))))
 
 (deftest on-stairs-down-when-entering-previous-level
-  (player-is-on-level 2)
-  (player-is-on :stair-up)
-  (activate)
-  (is (= :stair-down (:type (get-tile)))))
+  (dsl/player-is-on-level 2)
+  (dsl/player-is-on :stair-up)
+  (dsl/activate)
+  (is (= :stair-down (:type (dsl/get-tile)))))
 
 (deftest enter-same-levels-when-going-up-and-down
-  (player-is-on-level 2)
-  (player-is-on :stair-up)
-  (let [board (get-board)]
-    (activate);;go-up
-    (activate);;go-down
-    (is (= board (get-board)))))
+  (dsl/player-is-on-level 2)
+  (dsl/player-is-on :stair-up)
+  (let [board (dsl/get-board)]
+    (dsl/activate);;go-up
+    (dsl/activate);;go-down
+    (is (= board (dsl/get-board)))))
 
 (deftest create-only-necessary-boards-when-going-down
-  (player-is-on-level 2)
-  (player-is-on :stair-up)
-  (activate);;go-up
-  (activate);;go-down
-  (is (= 2 (count (:boards (get-state))))))
+  (dsl/player-is-on-level 2)
+  (dsl/player-is-on :stair-up)
+  (dsl/activate);;go-up
+  (dsl/activate);;go-down
+  (is (= 2 (count (:boards (dsl/get-state))))))
 
 (deftest going-up-on-level-one-does-not-crash
-  (player-is-on-level 1)
-  (player-is-on :stair-up)
-  (activate)
-  (is (s/valid? :game/game (get-state))))
+  (dsl/player-is-on-level 1)
+  (dsl/player-is-on :stair-up)
+  (dsl/activate)
+  (is (s/valid? :game/game (dsl/get-state))))
 
 (deftest activating-a-tile-can-give-item
-  (player-is-on-level 1)
-  (player-is-on :ground)
-  (activate 20 16 20 20)
-  (is (= 1 (get (get-items) "herb"))))
+  (dsl/player-is-on-level 1)
+  (dsl/player-is-on :ground)
+  (dsl/activate 20 16 20 20)
+  (is (= 1 (get (dsl/get-items) "herb"))))
 
 (deftest activation-doesnt-give-item-whith-no-luck
-  (game-is-initialized)
-  (player-is-on :ground)
-  (activate 20 15 20 20)
-  (is (not (contains? (get-items) "herb"))))
+  (dsl/game-is-initialized)
+  (dsl/player-is-on :ground)
+  (dsl/activate 20 15 20 20)
+  (is (not (contains? (dsl/get-items) "herb"))))
 
 (deftest check-handling-of-items
-  (player-has-items {"foo" 1})
-  (is (nil? (get (get-items) "foo")))
-  (is (s/valid? :game/game (get-state))))
+  (dsl/player-has-items {"foo" 1})
+  (is (nil? (get (dsl/get-items) "foo")))
+  (is (s/valid? :game/game (dsl/get-state))))
 
 (deftest enter-fight-after-activation
-  (game-is-initialized)
-  (activate 1 1 1 1)
-  (is (in-fight?)))
+  (dsl/game-is-initialized)
+  (dsl/activate 1 1 1 1)
+  (is (dsl/in-fight?)))

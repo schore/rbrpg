@@ -180,6 +180,11 @@
   (max (roll-dice n)
        (roll-dice n)))
 
+(defn disadvantage
+  [n]
+  (min (roll-dice n)
+       (roll-dice n)))
+
 (defn check-fight
   [data _]
   (if (< (advantage 20) 5)
@@ -330,12 +335,18 @@
   (let [[x y] (get-in state [:player :position])]
     (mu/get-tile (get-active-board state) x y)))
 
+(defn look-for-item
+  [state]
+  (if (<= 16 (disadvantage 20))
+    (change-items state {"herb" 1})
+    state))
+
 (defn activate
   [state _]
   (case (:type (player-tile state))
     :stair-down (enter-next-level state)
     :stair-up (enter-previous-level state)
-    :ground (change-items state {"herb" 1} )
+    :ground (look-for-item state)
     state))
 
 

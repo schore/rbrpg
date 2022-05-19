@@ -328,8 +328,14 @@
 (deftest activating-a-tile-can-give-item
   (player-is-on-level 1)
   (player-is-on :ground)
-  (activate 10 10)
+  (activate 20 16 20 20)
   (is (= 1 (get (get-items) "herb"))))
+
+(deftest activation-doesnt-give-item-whith-no-luck
+  (game-is-initialized)
+  (player-is-on :ground)
+  (activate 20 15 20 20)
+  (is (not (contains? (get-items) "herb"))))
 
 (deftest check-handling-of-items
   (player-has-items {"foo" 1})

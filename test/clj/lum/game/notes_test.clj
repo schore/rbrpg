@@ -1,6 +1,10 @@
 (ns lum.game.notes-test)
 
-(defn propability
+(defn normal
+  [g n]
+  (/ (- n (dec g)) n))
+
+(defn advantage
   "Calculates probability of advangtage
   `g` number to achieve
   `n` n sided dice"
@@ -20,7 +24,10 @@
 (defn create-table
   [n]
   (for [i (range 1 (inc n))]
-    [i (float (propability i n)) (float (disadvantage i n))]))
+    [i
+     (float (disadvantage i n))
+     (float (normal i n))
+     (float (advantage i n))]))
 
 ;;11 1: 4/4 4/4
 ;;12 2: 3/4 1/4

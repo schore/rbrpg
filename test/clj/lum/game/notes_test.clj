@@ -1,4 +1,4 @@
-(ns clj.lum.game.notes)
+(ns lum.game.notes-test)
 
 (defn propability
   "Calculates probability of advangtage

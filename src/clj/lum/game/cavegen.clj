@@ -50,7 +50,8 @@
         f
         (add-random-field :stair-up :ground)
         (add-random-field :stair-down :ground)
-        m/to-map)))
+        m/to-map
+        vec)))
 
 (defn print-new-map
   ([] (print-new-map (get-dungeon)))

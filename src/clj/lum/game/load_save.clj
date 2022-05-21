@@ -11,21 +11,22 @@
 
 (defn load-map-from-string
   [inp]
-  (->> (clojure.string/split-lines inp)
-       (map (fn [line]
-              (->> (seq line)
-                   (map (fn [c]
-                          (case c
-                            \  {:type :ground}
-                            \. {:type :ground}
-                            \> {:type :stair-up}
-                            \< {:type :stair-down}
-                            \# {:type :wall}
-                            {:type :wall}))))))
-       (map (fn [line]
-              (pad mu/sizex {:type :wall} line)))
-       flatten
-       (pad (* mu/sizex mu/sizey) {:type :wall})))
+  (vec
+   (->> (clojure.string/split-lines inp)
+        (map (fn [line]
+               (->> (seq line)
+                    (map (fn [c]
+                           (case c
+                             \  {:type :ground}
+                             \. {:type :ground}
+                             \> {:type :stair-up}
+                             \< {:type :stair-down}
+                             \# {:type :wall}
+                             {:type :wall}))))))
+        (map (fn [line]
+               (pad mu/sizex {:type :wall} line)))
+        flatten
+        (pad (* mu/sizex mu/sizey) {:type :wall}))))
 
 
 (defn load-map

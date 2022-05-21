@@ -31,6 +31,10 @@
                    "sword" [{:target :player
                              :damage [1 6]
                              :slots #{:right-hand}}]
+                   "pickaxe" [{:target :player
+                               :damage [1 4]
+                               :slot #{:right-hand}
+                               :properties #{:digging}}]
                    "leather armor" [{:target :player
                                      :ac 11
                                      :slots #{:body}}]})
@@ -68,8 +72,11 @@
 (s/def ::slot slots)
 (s/def ::slots (s/coll-of ::slot :kind set?))
 (s/def ::target #{:player :enemy})
+(s/def ::propertie #{:digging :burning})
+(s/def ::properties (s/coll-of ::propertie
+                               :kind set?))
 (s/def ::effect (s/keys :req-un [::target]
-                        :req-op [::hp ::mp ::damage ::ac ::slots]))
+                        :req-op [::hp ::mp ::damage ::ac ::slots ::properties]))
 
 (s/def ::effects (s/coll-of ::effect))
 (s/def ::item-effects (s/map-of ::item ::effects))

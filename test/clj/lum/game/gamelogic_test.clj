@@ -5,7 +5,6 @@
    [clojure.test :as t :refer [deftest is testing]]
    [clojure.tools.logging :as log]
    [lum.game-logic-dsl :as dsl ]
-   [lum.game.cavegen :as cavegen]
    [lum.game.dataspec]
    [lum.maputil :as mu]))
 
@@ -312,3 +311,15 @@
   (dsl/game-is-initialized)
   (dsl/activate 1 1 1 1)
   (is (dsl/in-fight?)))
+
+(deftest dig-a-hole
+  (dsl/test-map-loaded 1 4)
+  (dsl/player-is-equipped :right-hand "pickaxe")
+  (dsl/move :up)
+  (is (= [1 3] (dsl/get-position))))
+
+(deftest you-can-not-dig-with-a-sword
+  (dsl/test-map-loaded 1 4)
+  (dsl/player-is-equipped :right-hand "sword")
+  (dsl/move :up)
+  (is (= [1 4] (dsl/get-position))))

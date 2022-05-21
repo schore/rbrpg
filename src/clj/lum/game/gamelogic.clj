@@ -192,6 +192,14 @@
   (into {} (map f m)))
 
 
+(defn unequip-items-not-in-inventory
+  [state]
+  (let [items (get-in state [:player :items])]
+    (update-in state [:player :equipment]
+               #(into {}
+                      (filter (fn [[_ v]] (< 1 (get items v 0))) %)))))
+
+
 (defn combine
   [data [_ used-items]]
   (let [used-items (filter-map (fn [[_ v]] (pos-int? v)) used-items)
@@ -201,15 +209,9 @@
           (change-items (map-map (fn [[k v]] [k (* -1 v)]) used-items))
           (change-items (if new-item
                           {new-item 1}
-                          {})))
+                          {}))
+          (unequip-items-not-in-inventory))
       data)))
-
-(defn unequip-items-not-in-inventory
-  [state]
-  (let [items (get-in state [:player :items])]
-    (update-in state [:player :equipment]
-               #(into {}
-                      (filter (fn [[_ v]] (< 1 (get items v 0))) %)))))
 
 (defn use-item
   [data [_ item]]
@@ -383,7 +385,8 @@
 (defn look-for-item
   [state]
   (if (<= 16 (disadvantage 20))
-    (change-items state {"herb" 1})
+    (change-items state {"herb" 1
+                         "wooden stick" 1})
     state))
 
 (defn activate

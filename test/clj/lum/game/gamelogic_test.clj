@@ -221,6 +221,12 @@
   (is (not (contains? (dsl/get-items) "sword")))
   (is (not (contains? (dsl/get-equipped-items) :right-hand))))
 
+(deftest combine-equipped-items
+  (dsl/player-has-items {"sword" 1 "wooden stick" 1})
+  (dsl/player-equips :right-hand "sword")
+  (dsl/combine "sword" "wooden stick")
+  (is (not (contains? (dsl/get-equipped-items) :right-hand))))
+
 (deftest equip-item
   (dsl/player-has-items {"sword" 1})
   (dsl/player-equips :right-hand "sword")

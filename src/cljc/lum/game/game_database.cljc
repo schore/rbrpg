@@ -17,7 +17,9 @@
 
 
 (def recipies {{"batblood" 2} "small healing potion"
-               {"small healing potion" 2} "medium healing potion"})
+               {"small healing potion" 2} "medium healing potion"
+               {"sword" 1
+                "wooden stick" 1} "pickaxe"})
 
 
 (def item-effects {"small healing potion" [{:target :player
@@ -28,6 +30,9 @@
                    "batwing" []
                    "ratmeet" []
                    "herb" []
+                   "wooden stick" [{:target :player
+                                    :damage [1 4]
+                                    :slots #{:right-hand}}]
                    "sword" [{:target :player
                              :damage [1 6]
                              :slots #{:right-hand}}]

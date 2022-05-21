@@ -228,9 +228,15 @@
   (is (not (contains? (dsl/get-equipped-items) :right-hand))))
 
 (deftest equip-item
-  (dsl/player-has-items {"sword" 1})
-  (dsl/player-equips :right-hand "sword")
-  (is (= "sword" (:right-hand (dsl/get-equipped-items)))))
+  (doseq [[item slot] [["sword" :right-hand]
+                       ["pickaxe" :right-hand]
+                       ["wooden stick" :right-hand]
+                       ["leather armor" :body]]]
+    (testing (str "Item can be equipped" item slot)
+      (dsl/initalize-game)
+      (dsl/player-has-items {item 1})
+      (dsl/player-equips slot item)
+      (is (= item (slot (dsl/get-equipped-items)))))))
 
 (deftest equip-item-which-is-not-in-stock-fails
   (dsl/player-has-items {})

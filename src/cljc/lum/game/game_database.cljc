@@ -38,7 +38,7 @@
                              :slots #{:right-hand}}]
                    "pickaxe" [{:target :player
                                :damage [1 4]
-                               :slot #{:right-hand}
+                               :slots #{:right-hand}
                                :properties #{:digging}}]
                    "leather armor" [{:target :player
                                      :ac 11

@@ -88,5 +88,5 @@
 
 (defn get-items-for-slot
   [slot]
-  (map key (filter (fn [[_ v]] (contains? (:slots (first v)) slot ))
+  (map key (filter (fn [[_ v]] (contains? (:slots v) slot ))
                    item-effects)))

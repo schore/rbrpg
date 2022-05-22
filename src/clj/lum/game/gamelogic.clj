@@ -76,7 +76,7 @@
 (defn active-item-can-dig?
   [data]
   (let [weapon (get-in data [:player :equipment :right-hand])
-        function (get-in db/item-effects [weapon 0 :properties])]
+        function (get-in db/item-effects [weapon :properties])]
     (some #{:digging} function)))
 
 (defn pick-wall
@@ -218,7 +218,7 @@
   (if (enough-items? data {item 1})
     (-> data
         (change-items {item -1})
-        (process-event [(str "Use item: " item) (get item-effects item [])])
+        (process-event [(str "Use item: " item) [(get item-effects item {})]])
         (unequip-items-not-in-inventory))
     data))
 
@@ -275,18 +275,14 @@
   ["Beat"
    [(let [enemy-ac (get-in data [:fight :enemy :ac])
           weapon (get-in data [:player :equipment :right-hand])
-          [n dice] (if (some? weapon)
-                     (get (first (filter #(= :player (:target %))
-                                         (get db/item-effects weapon)))
-                          :damage [1 3])
-                     [1 3])]
+          [n dice] (get-in db/item-effects [weapon :damage] [1 3])]
       {:target :enemy
        :hp (* -1 (attack-calc enemy-ac n dice))})]])
 
 (defn get-armor-class
   [data]
   (let [equipment (get-in data [:player :equipment :body])]
-    (get-in db/item-effects [equipment 0 :ac]
+    (get-in db/item-effects [equipment :ac]
             (get-in data [:player :ac]))))
 
 (defn get-enemy-attack-roles

@@ -22,27 +22,27 @@
                 "wooden stick" 1} "pickaxe"})
 
 
-(def item-effects {"small healing potion" [{:target :player
-                                            :hp 3}]
-                   "medium healing potion" [{:target :player
-                                             :hp 30}]
-                   "batblood" []
-                   "batwing" []
-                   "ratmeet" []
-                   "herb" []
-                   "wooden stick" [{:target :player
+(def item-effects {"small healing potion" {:target :player
+                                            :hp 3}
+                   "medium healing potion" {:target :player
+                                            :hp 30}
+                   "batblood" {}
+                   "batwing" {}
+                   "ratmeet" {}
+                   "herb" {}
+                   "wooden stick" {:target :player
                                     :damage [1 4]
-                                    :slots #{:right-hand}}]
-                   "sword" [{:target :player
+                                    :slots #{:right-hand}}
+                   "sword" {:target :player
                              :damage [1 6]
-                             :slots #{:right-hand}}]
-                   "pickaxe" [{:target :player
+                             :slots #{:right-hand}}
+                   "pickaxe" {:target :player
                                :damage [1 4]
                                :slots #{:right-hand}
-                               :properties #{:digging}}]
-                   "leather armor" [{:target :player
+                               :properties #{:digging}}
+                   "leather armor" {:target :player
                                      :ac 11
-                                     :slots #{:body}}]})
+                                     :slots #{:body}}})
 
 
 (s/def ::item (into #{} (map first item-effects)))
@@ -80,11 +80,10 @@
 (s/def ::propertie #{:digging :burning})
 (s/def ::properties (s/coll-of ::propertie
                                :kind set?))
-(s/def ::effect (s/keys :req-un [::target]
-                        :req-op [::hp ::mp ::damage ::ac ::slots ::properties]))
+(s/def ::effect (s/keys :req-op [::target ::hp ::mp ::damage ::ac ::slots ::properties]))
 
-(s/def ::effects (s/coll-of ::effect))
-(s/def ::item-effects (s/map-of ::item ::effects))
+;;(s/def ::effects (s/coll-of ::effect))
+(s/def ::item-effects (s/map-of ::item ::effect))
 
 
 (defn get-items-for-slot

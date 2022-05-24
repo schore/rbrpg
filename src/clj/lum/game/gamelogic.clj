@@ -165,61 +165,6 @@
         (dissoc :fight))
     data))
 
-
-
-
-(defn find-tile
-  [board tile]
-  (mu/n-to-position (.indexOf board {:type tile})))
-
-(defn set-to-tile
-  [state tile]
-  (assoc-in state [:player :position]
-            (find-tile (u/get-active-board state) tile)))
-
-(defn cavegen-when-required
-  [state]
-  (if (> (:level state) (count (:boards state)))
-      (update state :boards #(conj % (cavegen/get-dungeon)))
-      state))
-
-(defn enter-next-level
-  [state]
-  (-> state
-      (update :level inc)
-      (cavegen-when-required)
-      (set-to-tile :stair-up)))
-
-(defn enter-previous-level
-  [state]
-  (if (not (= 1 (:level state)))
-    (-> state
-        (update :level dec)
-        (set-to-tile :stair-down))
-    state))
-
-
-(defn player-tile
-  [state]
-  (let [[x y] (get-in state [:player :position])]
-    (mu/get-tile (u/get-active-board state) x y)))
-
-(defn look-for-item
-  [state]
-  (if (<= 16 (u/disadvantage 20))
-    (item/change-items state {"herb" 1
-                         "wooden stick" 1})
-    state))
-
-(defn activate
-  [state _]
-  (case (:type (player-tile state))
-    :stair-down (enter-next-level state)
-    :stair-up (enter-previous-level state)
-    :ground (look-for-item state)
-    state))
-
-
 (def basic-mode
   {:initialize [initialize]
    :load [load-save/load-game]
@@ -239,7 +184,7 @@
 
 (def move-mode
   (merge basic-mode
-         {:activate [activate check-fight]
+         {:activate [move/activate check-fight]
           :load-map [load-save/load-map]
           :move [move/move check-fight]
           :set-position [set-position]

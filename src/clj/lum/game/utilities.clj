@@ -85,6 +85,13 @@
         [x y] (get-in data [:player :position])]
     (:type (mu/get-tile board x y))))
 
+
+(defn player-tile
+  [state]
+  (let [[x y] (get-in state [:player :position])]
+    (mu/get-tile (get-active-board state) x y)))
+
+
 (defn roll-dice
   [n]
   (inc (rand-int n)))

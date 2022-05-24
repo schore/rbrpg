@@ -58,6 +58,14 @@
       (is (= :stair-down (:type (mu/get-tile m 10 10))))
       (is (= :stair-up (:type (mu/get-tile m 10 11)))))))
 
+(deftest create-new-board
+  (dsl/game-is-initialized)
+  (let [old-board (dsl/get-board)]
+    (dsl/new-board)
+    (is (s/valid? :game/game (dsl/get-state)))
+    (is (not= old-board
+              (dsl/get-board)))))
+
 (deftest player-can-stand-on-tile
   (doseq [[x y tile] [[0 0 :ground]
                       [10 10 :stair-down]

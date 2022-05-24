@@ -254,6 +254,10 @@
   [slot]
   (exec *game* [:unequip slot]))
 
+(defn new-board
+  []
+  (exec *game* [:new-board]))
+
 (defn get-coordinates
   [state field]
   (let [board (get-in state [:boards (dec (:level state))])]

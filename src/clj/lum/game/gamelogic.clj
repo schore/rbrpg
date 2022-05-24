@@ -11,22 +11,10 @@
    [lum.game.update-data]
    [lum.game.game-database :as db]
    [lum.game.item :as item]
+   [lum.game.move :as move]
    [lum.game.utilities :as u]
    [lum.maputil :as mu]))
 
-(defn roll-dice
-  [n]
-  (inc (rand-int n)))
-
-(defn advantage
-  [n]
-  (max (roll-dice n)
-       (roll-dice n)))
-
-(defn disadvantage
-  [n]
-  (min (roll-dice n)
-       (roll-dice n)))
 
 
 (defn set-position
@@ -37,67 +25,7 @@
         data
         (recur (assoc-in data [:boards (dec (:level data))] (cavegen/get-dungeon)))))))
 
-(defn position-on-board?
-  [x y]
-  (and (nat-int? x)
-       (< x mu/sizex)
-       (nat-int? y)
-       (< y mu/sizey)))
 
-(defn move-unchecked
-  [data direction ]
-  (let [new-data (case (keyword direction)
-                   :left (update-in data [:player :position 0] dec)
-                   :right (update-in data [:player :position 0] inc)
-                   :up (update-in data [:player :position 1] dec)
-                   :down (update-in data [:player :position 1] inc))
-        [x y] (get-in new-data [:player :position])]
-    (if (position-on-board? x y)
-      new-data
-      data)))
-
-(defn change-active-tile
-  [data new-type]
-  (let [[x y] (get-in data [:player :position])]
-    (assoc-in data [:boards
-                    (dec (:level data))
-                    (mu/position-to-n x y)
-                    :type]
-              new-type)))
-
-(defn get-active-board
-  [state]
-  (get-in state [:boards (dec (:level state))]))
-
-(defn get-active-tile
-  [data]
-  (let [board (get-active-board data)
-        [x y] (get-in data [:player :position])]
-    (:type (mu/get-tile board x y))))
-
-(defn active-item-can-dig?
-  [data]
-  (let [weapon (get-in data [:player :equipment :right-hand])
-        function (get-in db/item-effects [weapon :properties])]
-    (some #{:digging} function)))
-
-(defn pick-wall
-  [data]
-  (log/info (get-active-tile data))
-  (if (and (= :wall (get-active-tile data))
-           (active-item-can-dig? data)
-           (< 0 (roll-dice 20)))
-    (change-active-tile data :ground)
-    data))
-
-(defn move
-  [data [_ direction]]
-  (let [new-data (-> (move-unchecked data direction)
-                     (pick-wall))]
-;;    (s/explain :game/game new-data)
-    (if (s/valid? :game/game new-data)
-      new-data
-      data)))
 
 (defn new-board
   [data _]
@@ -143,7 +71,7 @@
 
 (defn check-fight
   [data _]
-  (if (< (advantage 20) 5)
+  (if (< (u/advantage 20) 5)
     ;;Start a fight every 20 turns
     (let [enemy (choose-enemy)]
       (-> data
@@ -154,7 +82,7 @@
 
 (defn roll
   [n s]
-  (reduce + (take n (map #(%) (repeat #(roll-dice s))))))
+  (reduce + (take n (map #(%) (repeat #(u/roll-dice s))))))
 
 (defn damage-role
   [_ attack_role]
@@ -247,7 +175,7 @@
 (defn set-to-tile
   [state tile]
   (assoc-in state [:player :position]
-            (find-tile (get-active-board state) tile)))
+            (find-tile (u/get-active-board state) tile)))
 
 (defn cavegen-when-required
   [state]
@@ -274,11 +202,11 @@
 (defn player-tile
   [state]
   (let [[x y] (get-in state [:player :position])]
-    (mu/get-tile (get-active-board state) x y)))
+    (mu/get-tile (u/get-active-board state) x y)))
 
 (defn look-for-item
   [state]
-  (if (<= 16 (disadvantage 20))
+  (if (<= 16 (u/disadvantage 20))
     (item/change-items state {"herb" 1
                          "wooden stick" 1})
     state))
@@ -313,7 +241,7 @@
   (merge basic-mode
          {:activate [activate check-fight]
           :load-map [load-save/load-map]
-          :move [move check-fight]
+          :move [move/move check-fight]
           :set-position [set-position]
           :new-board [new-board]
           :combine [item/combine]

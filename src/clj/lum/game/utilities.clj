@@ -1,4 +1,5 @@
-(ns lum.game.utilities)
+(ns lum.game.utilities
+  (:require [lum.maputil :as mu]))
 
 
 (defn fight-ended?
@@ -56,3 +57,44 @@
 (defn process-event
   [data [action-name effects]]
   (reduce (process-effect action-name) data effects))
+
+(defn position-on-board?
+  [x y]
+  (and (nat-int? x)
+       (< x mu/sizex)
+       (nat-int? y)
+       (< y mu/sizey)))
+
+
+(defn change-active-tile
+  [data new-type]
+  (let [[x y] (get-in data [:player :position])]
+    (assoc-in data [:boards
+                    (dec (:level data))
+                    (mu/position-to-n x y)
+                    :type]
+              new-type)))
+
+(defn get-active-board
+  [state]
+  (get-in state [:boards (dec (:level state))]))
+
+(defn get-active-tile
+  [data]
+  (let [board (get-active-board data)
+        [x y] (get-in data [:player :position])]
+    (:type (mu/get-tile board x y))))
+
+(defn roll-dice
+  [n]
+  (inc (rand-int n)))
+
+(defn advantage
+  [n]
+  (max (roll-dice n)
+       (roll-dice n)))
+
+(defn disadvantage
+  [n]
+  (min (roll-dice n)
+       (roll-dice n)))

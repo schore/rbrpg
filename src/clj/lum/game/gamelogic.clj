@@ -15,8 +15,6 @@
    [lum.game.utilities :as u]
    [lum.maputil :as mu]))
 
-
-
 (defn set-position
   [data [_ x y]]
   (let [data (assoc-in data [:player :position] [x y])]
@@ -25,28 +23,25 @@
         data
         (recur (assoc-in data [:boards (dec (:level data))] (cavegen/get-dungeon)))))))
 
-
-
 (defn new-board
   [data _]
   (-> data
       (assoc-in [:boards (dec (:level data))] (cavegen/get-dungeon))
-      (move/set-to-tile :ground)
-      ))
+      (move/set-to-tile :ground)))
 
 (defn initialize
   [_ _]
   (loop []
     (let [data {:boards [(cavegen/get-dungeon)]
                 :level 1
-           :messages '("Hello adventurer")
-           :player {:position [10 10]
-                    :ac 5
-                    :xp 0
-                    :hp [10 10]
-                    :mp [3 3]
-                    :equipment {}
-                    :items { "sword" 1}}}]
+                :messages '("Hello adventurer")
+                :player {:position [10 10]
+                         :ac 5
+                         :xp 0
+                         :hp [10 10]
+                         :mp [3 3]
+                         :equipment {}
+                         :items {"sword" 1}}}]
       (if (s/valid? :game/game data)
         data
         (recur)))))
@@ -202,7 +197,6 @@
     (contains? state :fight) fight-mode
     :else move-mode))
 
-
 (defn process-actions
   [data action]
   (when (nil? (get (get-mode-map data) (keyword (first action))))
@@ -211,7 +205,6 @@
             (f data action))
           data (get (get-mode-map data)
                     (keyword (first action)) [])))
-
 
 (defn game-master
   [input-chan]

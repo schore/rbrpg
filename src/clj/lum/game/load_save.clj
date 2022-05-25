@@ -4,7 +4,8 @@
             [clojure.string]
             [clojure.java.io :as io]
             [lum.maputil :as mu]
-            [lum.game.dataspec]))
+            [lum.game.dataspec]
+            [lum.game.move :as move]))
 
 (defn pad [n pad coll]
   (take n (concat coll (repeat pad))))
@@ -34,7 +35,9 @@
   (if-let [mf (try
                 (slurp (io/resource file))
                 (catch Exception e (log/error "Exception thrown " (.getMessage e))))]
-    (assoc-in data [:boards (dec (:level data))] (load-map-from-string mf))
+    (-> data
+        (assoc-in [:boards (dec (:level data))] (load-map-from-string mf))
+        (move/set-to-tile :ground))
     data))
 
 (defn load-save-game

@@ -12,6 +12,7 @@
    [lum.game.game-database :as db]
    [lum.game.item :as item]
    [lum.game.move :as move]
+   [lum.game.fight :as fight]
    [lum.game.utilities :as u]
    [lum.maputil :as mu]))
 
@@ -24,20 +25,17 @@
 
 (defn initialize
   [_ _]
-  (loop []
-    (let [data {:boards [(cavegen/get-dungeon)]
-                :level 1
-                :messages '("Hello adventurer")
-                :player {:position [10 10]
-                         :ac 5
-                         :xp 0
-                         :hp [10 10]
-                         :mp [3 3]
-                         :equipment {}
-                         :items {"sword" 1}}}]
-      (if (s/valid? :game/game data)
-        data
-        (recur)))))
+  (-> {:boards [(cavegen/get-dungeon)]
+         :level 1
+         :messages '("Hello adventurer")
+         :player {:position [10 10]
+                  :ac 5
+                  :xp 0
+                  :hp [10 10]
+                  :mp [3 3]
+                  :equipment {}
+                  :items {"sword" 1}}}
+      (move/set-to-tile :ground)))
 
 (defn fight-ended?
   [data]
@@ -47,29 +45,11 @@
   [data]
   (= 0 (get-in data [:player :hp 0])))
 
-(defn get-enemy-stat
-  [k]
-  (let [enemy (get enemies k)]
-    {:name k
-     :ac (:ac enemy)
-     :hp [(:hp enemy) (:hp enemy)]
-     :mp [(:mp enemy) (:mp enemy)]}))
 
 (defn choose-enemy
   []
   (let [enemies (map first enemies)]
     (rand-nth enemies)))
-
-(defn check-fight
-  [data _]
-  (if (< (u/advantage 20) 5)
-    ;;Start a fight every 20 turns
-    (let [enemy (choose-enemy)]
-      (-> data
-          (assoc :fight {:enemy (get-enemy-stat enemy)
-                         :actions []})
-          (update :messages #(conj % (str "You got attacked by a " enemy)))))
-    data))
 
 (defn roll
   [n s]
@@ -175,9 +155,9 @@
 
 (def move-mode
   (merge basic-mode
-         {:activate [move/activate check-fight]
+         {:activate [move/activate fight/check-fight]
           :load-map [load-save/load-map]
-          :move [move/move check-fight]
+          :move [move/move fight/check-fight]
           :set-position [move/set-position]
           :new-board [new-board]
           :combine [item/combine]

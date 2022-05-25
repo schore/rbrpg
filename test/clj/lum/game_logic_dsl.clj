@@ -5,7 +5,7 @@
             [clojure.spec.alpha :as s]
             [lum.game.dataspec]
             [lum.game.gamelogic :as gamelogic]
-            [lum.maputil :as m]
+            [lum.game.fight :as fight]
             [lum.maputil :as mu]))
 
 
@@ -198,7 +198,7 @@
 (defn move-and-get-attacked
   ([] (move-and-get-attacked "Bat"))
   ([name]
-   (with-redefs [gamelogic/choose-enemy (fn [] name)]
+   (with-redefs [fight/choose-enemy (fn [] name)]
      (exec-with-rolls #(move :down) [1 2]))))
 
 
@@ -261,7 +261,7 @@
 (defn get-coordinates
   [state field]
   (let [board (get-in state [:boards (dec (:level state))])]
-    (m/n-to-position (.indexOf board {:type field}))))
+    (mu/n-to-position (.indexOf board {:type field}))))
 
 (defn player-is-on
   [field]

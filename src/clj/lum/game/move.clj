@@ -96,3 +96,11 @@
     :stair-up (enter-previous-level state)
     :ground (look-for-item state)
     state))
+
+(defn set-position
+  [data [_ x y]]
+  (let [data (assoc-in data [:player :position] [x y])]
+    (loop [data data]
+      (if (s/valid? :game/game data)
+        data
+        (recur (assoc-in data [:boards (dec (:level data))] (cavegen/get-dungeon)))))))

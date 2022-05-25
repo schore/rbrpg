@@ -15,13 +15,6 @@
    [lum.game.utilities :as u]
    [lum.maputil :as mu]))
 
-(defn set-position
-  [data [_ x y]]
-  (let [data (assoc-in data [:player :position] [x y])]
-    (loop [data data]
-      (if (s/valid? :game/game data)
-        data
-        (recur (assoc-in data [:boards (dec (:level data))] (cavegen/get-dungeon)))))))
 
 (defn new-board
   [data _]
@@ -185,7 +178,7 @@
          {:activate [move/activate check-fight]
           :load-map [load-save/load-map]
           :move [move/move check-fight]
-          :set-position [set-position]
+          :set-position [move/set-position]
           :new-board [new-board]
           :combine [item/combine]
           :use-item [item/use-item]}))

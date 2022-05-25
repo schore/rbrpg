@@ -29,7 +29,10 @@
 
 (defn new-board
   [data _]
-  (assoc-in data [:boards (dec (:level data))] (cavegen/get-dungeon)))
+  (-> data
+      (assoc-in [:boards (dec (:level data))] (cavegen/get-dungeon))
+      (move/set-to-tile :ground)
+      ))
 
 (defn initialize
   [_ _]

@@ -37,7 +37,7 @@
                 (catch Exception e (log/error "Exception thrown " (.getMessage e))))]
     (-> data
         (assoc-in [:boards (dec (:level data))] (load-map-from-string mf))
-        (move/set-to-tile :ground))
+        (assoc-in [:player :position] [10 10]))
     data))
 
 (defn load-save-game

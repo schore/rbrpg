@@ -93,8 +93,10 @@
 
 
 (defn roll-dice
-  [n]
-  (inc (rand-int n)))
+  ([n]
+   (inc (rand-int n)))
+  ([n s]
+   (reduce + (take n (map #(%) (repeat #(roll-dice s)))))))
 
 (defn advantage
   [n]

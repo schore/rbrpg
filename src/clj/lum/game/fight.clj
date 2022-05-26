@@ -42,6 +42,51 @@
                            (assoc acc item (inc (get acc item 0))))
                          items loot)))))
 
+
+(defn attack-calc
+  [ac n dice]
+  (let [hit-roll (u/roll-dice 20)
+        hit? (case hit-roll
+               1 false
+               20 true
+               (> hit-roll ac))
+        n (if (= 20 hit-roll)
+            (inc n)
+            n)]
+    (if hit?
+      (u/roll-dice n dice)
+      0)))
+
+(defn player-attacks
+  [data]
+  ["Beat"
+   [(let [enemy-ac (get-in data [:fight :enemy :ac])
+          weapon (get-in data [:player :equipment :right-hand])
+          [n dice] (get-in db/item-effects [weapon :damage] [1 3])]
+      {:target :enemy
+       :hp (* -1 (attack-calc enemy-ac n dice))})]])
+
+(defn get-armor-class
+  [data]
+  (let [equipment (get-in data [:player :equipment :body])]
+    (get-in db/item-effects [equipment :ac]
+            (get-in data [:player :ac]))))
+
+(defn get-enemy-attack-roles
+  [data]
+  (let [enemy (get-in data [:fight :enemy :name])]
+    (get-in db/enemies [enemy :damage])))
+
+
+
+(defn enemy-attacks
+  [data]
+  (let [player-ac (get-armor-class data)
+        [n dice] (get-enemy-attack-roles data)]
+    ["Bite" [{:target :player
+              :hp (* -1 (attack-calc player-ac n dice))}]]))
+
+
 ;; high level
 (defn check-fight
   [data _]
@@ -62,3 +107,10 @@
         update-items
         (dissoc :fight))
     data))
+
+
+(defn attack
+  [data _]
+  (let  [actions [(player-attacks data)
+                  (enemy-attacks data)]]
+    (reduce u/process-event data actions)))

@@ -37,10 +37,6 @@
                   :items {"sword" 1}}}
       (move/set-to-tile :ground)))
 
-(defn fight-ended?
-  [data]
-  (= 0 (get-in data [:fight :enemy :hp 0])))
-
 (defn game-over?
   [data]
   (= 0 (get-in data [:player :hp 0])))
@@ -109,32 +105,6 @@
                   (enemy-attacks data)]]
     (reduce u/process-event data actions)))
 
-(defn get-enemy
-  [data]
-  (get enemies (get-in data [:fight :enemy :name])))
-
-(defn update-xp
-  [data]
-  (update-in data [:player :xp]
-             #(+ % (:xp (get-enemy data)))))
-
-(defn update-items
-  [data]
-  (update-in data [:player :items]
-             (fn [items]
-               (let [loot (:items (get-enemy data))]
-                 (reduce (fn [acc item]
-                           (assoc acc item (inc (get acc item 0))))
-                         items loot)))))
-
-(defn check-fight-end
-  [data _]
-  (if (fight-ended? data)
-    (-> data
-        update-xp
-        update-items
-        (dissoc :fight))
-    data))
 
 (def basic-mode
   {:initialize [initialize]
@@ -150,7 +120,7 @@
 
 (def fight-mode
   (merge basic-mode
-         {:attack [attack check-fight-end]
+         {:attack [attack fight/check-fight-end]
           :use-item [item/use-item]}))
 
 (def move-mode

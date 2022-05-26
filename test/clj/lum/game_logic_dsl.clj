@@ -37,13 +37,7 @@
   (exec [_ command]
     ;(log/info "Execute command" command)
     (swap! state (fn [state]
-                   ;; This allows to cancel in case of endless loops
-                   (let [f (future (gamelogic/process-actions state command))
-                         result (deref f 1000 :timeout)]
-                     (when (= :timeout result)
-                       (future-cancel f)
-                       (is false "computation takes to long"))
-                     result)))
+                   (gamelogic/process-actions state command)))
     @state)
 
   (close [_]))

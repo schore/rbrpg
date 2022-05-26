@@ -10,7 +10,10 @@
   [data item]
   (if (pos-int? (get-in data [:player :items item]))
     data
-    (update-in data [:player :items] #(dissoc % item))))
+    (-> data
+        (update-in [:player :items] #(dissoc % item))
+        (update-in [:player :equipment]
+                   #(u/filter-map (fn [[_ v]] (not= v item)) %)))))
 
 (defn add-item
   [data item n]

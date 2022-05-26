@@ -35,15 +35,17 @@
       (> s max) max
       :else s)))
 
-
+(defn add-hp
+  [state target n]
+  (update-in state (get-target-keys target :hp)
+             (fn [[v max]] [(add-with-boundaries 0 max v n) max])))
 
 (defn process-hp
   [state action-name effect]
   (if (contains? effect :hp)
     (-> state
         (update :messages #(conj % (str action-name ": " (:hp effect) "hp")))
-        (update-in (get-target-keys (:target effect) :hp)
-                   (fn [[v max]] [(add-with-boundaries 0 max v (:hp effect)) max])))
+        (add-hp (:target effect) (:hp effect)))
     state))
 
 (defn process-effect

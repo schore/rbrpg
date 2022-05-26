@@ -8,22 +8,24 @@
   (let [items (get-in data [:player :items])]
     (every? (fn [[k v]] (<= v (get-in data [:player :items k] 0))) required-items)))
 
-(defn remove-empty-items
-  [data]
-  (update-in data [:player :items]
-             (fn [items] (u/filter-map (fn [[_ v]] (pos-int? v)) items))))
 
+(defn remove-if-empty
+  [data item]
+  (if (pos-int? (get-in data [:player :items item]))
+    data
+    (update-in data [:player :items] #(dissoc % item))))
 
-(defn change-item
+(defn add-item
   [data item n]
   ;; nil is passed in case the k is not in the list
-  (update-in data [:player :items item] #(+ (if % % 0) n)))
+  (-> (update-in data [:player :items item] #(+ (if % % 0) n))
+      (remove-if-empty item)))
 
 (defn change-items
   [data used-items]
-  (remove-empty-items (reduce (fn [a [item n]] (change-item a item n))
+  (reduce (fn [a [item n]] (add-item a item n))
                               data
-                              used-items)))
+                              used-items))
 
 
 (defn unequip-items-not-in-inventory

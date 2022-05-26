@@ -52,8 +52,7 @@
   (if (enough-items? data {item 1})
     (-> data
         (add-items {item -1})
-        (u/process-event [(str "Use item: " item) [(get db/item-effects item {})]])
-        (unequip-items-not-in-inventory))
+        (u/process-event [(str "Use item: " item) [(get db/item-effects item {})]]))
     data))
 
 (defn combine
@@ -65,6 +64,5 @@
           (add-items (u/map-map (fn [[k v]] [k (* -1 v)]) used-items))
           (add-items (if new-item
                           {new-item 1}
-                          {}))
-          (unequip-items-not-in-inventory))
+                          {})))
       data)))

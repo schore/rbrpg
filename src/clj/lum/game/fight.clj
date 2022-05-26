@@ -1,7 +1,8 @@
 (ns lum.game.fight
   (:require
-   [lum.game.game-database :as db :refer [enemies]]
-   [lum.game.utilities :as u]))
+   [lum.game.game-database :as db]
+   [lum.game.utilities :as u]
+   [lum.game.item :as item]))
 
 (defn choose-enemy
   []
@@ -24,7 +25,7 @@
 
 (defn get-enemy
   [data]
-  (get enemies (get-in data [:fight :enemy :name])))
+  (get db/enemies (get-in data [:fight :enemy :name])))
 
 (defn update-xp
   [data]
@@ -32,15 +33,11 @@
              #(+ % (:xp (get-enemy data)))))
 
 
-
-(defn update-items
+(defn loot-items
   [data]
-  (update-in data [:player :items]
-             (fn [items]
-               (let [loot (:items (get-enemy data))]
-                 (reduce (fn [acc item]
-                           (assoc acc item (inc (get acc item 0))))
-                         items loot)))))
+  (reduce (fn [data item] (item/add-item data item 1))
+          data (:items (get-enemy data))))
+
 
 
 (defn attack-calc
@@ -104,7 +101,7 @@
   (if (fight-ended? data)
     (-> data
         update-xp
-        update-items
+        loot-items
         (dissoc :fight))
     data))
 

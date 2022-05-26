@@ -5,8 +5,7 @@
 
 (defn enough-items?
   [data required-items]
-  (let [items (get-in data [:player :items])]
-    (every? (fn [[k v]] (<= v (get-in data [:player :items k] 0))) required-items)))
+  (every? (fn [[k v]] (<= v (get-in data [:player :items k] 0))) required-items))
 
 
 (defn remove-if-empty

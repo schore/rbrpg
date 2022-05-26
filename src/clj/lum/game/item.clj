@@ -2,11 +2,9 @@
   (:require [lum.game.game-database :as db]
             [lum.game.utilities :as u]))
 
-
 (defn enough-items?
   [data required-items]
   (every? (fn [[k v]] (<= v (get-in data [:player :items k] 0))) required-items))
-
 
 (defn remove-if-empty
   [data item]
@@ -26,15 +24,6 @@
           data
           used-items))
 
-
-(defn unequip-items-not-in-inventory
-  [state]
-  (let [items (get-in state [:player :items])]
-    (update-in state [:player :equipment]
-               #(into {}
-                      (filter (fn [[_ v]] (< 1 (get items v 0))) %)))))
-
-
 ;; High level functions
 (defn equip-item
   [state [_ slot item]]
@@ -45,7 +34,6 @@
 (defn unequip-item
   [state [_ slot]]
   (update-in state [:player :equipment] #(dissoc % (keyword slot))))
-
 
 (defn use-item
   [data [_ item]]
@@ -63,6 +51,6 @@
       (-> data
           (add-items (u/map-map (fn [[k v]] [k (* -1 v)]) used-items))
           (add-items (if new-item
-                          {new-item 1}
-                          {})))
+                       {new-item 1}
+                       {})))
       data)))

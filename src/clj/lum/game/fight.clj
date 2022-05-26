@@ -17,11 +17,9 @@
      :hp [(:hp enemy) (:hp enemy)]
      :mp [(:mp enemy) (:mp enemy)]}))
 
-
 (defn fight-ended?
   [data]
   (= 0 (get-in data [:fight :enemy :hp 0])))
-
 
 (defn get-enemy
   [data]
@@ -32,26 +30,29 @@
   (update-in data [:player :xp]
              #(+ % (:xp (get-enemy data)))))
 
-
 (defn loot-items
   [data]
   (reduce (fn [data item] (item/add-item data item 1))
           data (:items (get-enemy data))))
 
+(defn hit?
+  [hit-roll ac]
+  (case hit-roll
+    1 false
+    20 true
+    (> hit-roll ac)))
 
+(defn damage-calc
+  [hit-roll [n dice]]
+  (u/roll-dice (if (= hit-roll 20)
+                  (inc n) n)
+                dice))
 
 (defn attack-calc
-  [ac n dice]
-  (let [hit-roll (u/roll-dice 20)
-        hit? (case hit-roll
-               1 false
-               20 true
-               (> hit-roll ac))
-        n (if (= 20 hit-roll)
-            (inc n)
-            n)]
-    (if hit?
-      (u/roll-dice n dice)
+  [ac weapon-damage]
+  (let [hit-roll (u/roll-dice 20)]
+    (if (hit? hit-roll ac)
+      (damage-calc hit-roll weapon-damage)
       0)))
 
 (defn player-attacks
@@ -59,9 +60,9 @@
   ["Beat"
    [(let [enemy-ac (get-in data [:fight :enemy :ac])
           weapon (get-in data [:player :equipment :right-hand])
-          [n dice] (get-in db/item-effects [weapon :damage] [1 3])]
+          weapon-damage (get-in db/item-effects [weapon :damage] [1 3])]
       {:target :enemy
-       :hp (* -1 (attack-calc enemy-ac n dice))})]])
+       :hp (* -1 (attack-calc enemy-ac weapon-damage))})]])
 
 (defn get-armor-class
   [data]
@@ -74,15 +75,12 @@
   (let [enemy (get-in data [:fight :enemy :name])]
     (get-in db/enemies [enemy :damage])))
 
-
-
 (defn enemy-attacks
   [data]
   (let [player-ac (get-armor-class data)
-        [n dice] (get-enemy-attack-roles data)]
+        weapon-damage (get-enemy-attack-roles data)]
     ["Bite" [{:target :player
-              :hp (* -1 (attack-calc player-ac n dice))}]]))
-
+              :hp (* -1 (attack-calc player-ac weapon-damage))}]]))
 
 ;; high level
 (defn check-fight
@@ -104,7 +102,6 @@
         loot-items
         (dissoc :fight))
     data))
-
 
 (defn attack
   [data _]

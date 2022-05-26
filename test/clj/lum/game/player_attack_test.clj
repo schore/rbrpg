@@ -1,6 +1,7 @@
 (ns lum.game.player-attack-test
   (:require  [clojure.test :as t :refer [deftest testing is]]
-             [lum.game.gamelogic :as g]))
+             [lum.game.gamelogic :as g]
+             [lum.game.fight :as f]))
 
 
 (defn attack
@@ -19,7 +20,7 @@
 
 (deftest attack-role
   (defn get-damage [& rolls]
-    (get-in (apply attack g/player-attacks gamestate rolls) [1 0 :hp]))
+    (get-in (apply attack f/player-attacks gamestate rolls) [1 0 :hp]))
   (testing "A 20 always hits and gives double roles"
     (is (> -1 (get-damage 20 1 2))))
   (testing "A 1 never hits"
@@ -33,7 +34,7 @@
 (deftest check-enemy-hit
   (defn hit? [ac roll]
     (> 0
-       (get-in (attack g/player-attacks
+       (get-in (attack f/player-attacks
                        {:fight {:enemy {:name "Bat" :ac ac}}}
                        roll 1 1 1 1 1 1 1 1 1 1 1 1)
                [1 0 :hp ])))
@@ -48,7 +49,7 @@
 (deftest check-player-hit
   (defn hit? [ac roll]
     (> 0
-       (get-in (attack g/enemy-attacks
+       (get-in (attack f/enemy-attacks
                        {:fight {:enemy {:name "Bat" :ac 30}}
                         :player {:ac ac}}
                        roll 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)

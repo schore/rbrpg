@@ -21,11 +21,11 @@
   (-> (update-in data [:player :items item] #(+ (if % % 0) n))
       (remove-if-empty item)))
 
-(defn change-items
+(defn add-items
   [data used-items]
-  (reduce (fn [a [item n]] (add-item a item n))
-                              data
-                              used-items))
+  (reduce (fn [data [item n]] (add-item data item n))
+          data
+          used-items))
 
 
 (defn unequip-items-not-in-inventory
@@ -52,7 +52,7 @@
   [data [_ item]]
   (if (enough-items? data {item 1})
     (-> data
-        (change-items {item -1})
+        (add-items {item -1})
         (u/process-event [(str "Use item: " item) [(get db/item-effects item {})]])
         (unequip-items-not-in-inventory))
     data))
@@ -63,8 +63,8 @@
         new-item (get db/recipies used-items)]
     (if (enough-items? data used-items)
       (-> data
-          (change-items (u/map-map (fn [[k v]] [k (* -1 v)]) used-items))
-          (change-items (if new-item
+          (add-items (u/map-map (fn [[k v]] [k (* -1 v)]) used-items))
+          (add-items (if new-item
                           {new-item 1}
                           {}))
           (unequip-items-not-in-inventory))

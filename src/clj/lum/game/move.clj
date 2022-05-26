@@ -73,7 +73,7 @@
 (defn look-for-item
   [state]
   (if (<= 16 (u/disadvantage 20))
-    (item/change-items state {"herb" 1
+    (item/add-items state {"herb" 1
                          "wooden stick" 1})
     state))
 

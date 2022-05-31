@@ -6,27 +6,6 @@
   [data required-items]
   (every? (fn [[k v]] (<= v (get-in data [:player :items k] 0))) required-items))
 
-(defn remove-if-empty
-  [data item]
-  (if (pos-int? (get-in data [:player :items item]))
-    data
-    (-> data
-        (update-in [:player :items] #(dissoc % item))
-        (update-in [:player :equipment]
-                   #(u/filter-map (fn [[_ v]] (not= v item)) %)))))
-
-(defn add-item
-  [data item n]
-  ;; nil is passed in case the k is not in the list
-  (-> (update-in data [:player :items item] #(+ (if % % 0) n))
-      (remove-if-empty item)))
-
-(defn add-items
-  [data used-items]
-  (reduce (fn [data [item n]] (add-item data item n))
-          data
-          used-items))
-
 ;; High level functions
 (defn equip-item
   [state [_ slot item]]
@@ -42,7 +21,7 @@
   [data [_ item]]
   (if (enough-items? data {item 1})
     (-> data
-        (add-items {item -1})
+        (u/add-items {item -1})
         (u/process-event [(str "Use item: " item) [(get db/item-effects item {})]]))
     data))
 
@@ -52,8 +31,8 @@
         new-item (get db/recipies used-items)]
     (if (enough-items? data used-items)
       (-> data
-          (add-items (u/map-map (fn [[k v]] [k (* -1 v)]) used-items))
-          (add-items (if new-item
-                       {new-item 1}
-                       {})))
+          (u/add-items (u/map-map (fn [[k v]] [k (* -1 v)]) used-items))
+          (u/add-items (if new-item
+                         {new-item 1}
+                         {})))
       data)))

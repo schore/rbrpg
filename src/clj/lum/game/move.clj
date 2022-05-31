@@ -68,16 +68,12 @@
         (set-to-tile :stair-down))
     state))
 
-
-
 (defn look-for-item
   [state]
   (if (<= 16 (u/disadvantage 20))
-    (item/add-items state {"herb" 1
-                         "wooden stick" 1})
+    (u/add-items state {"herb" 1
+                        "wooden stick" 1})
     state))
-
-
 
 ;; High level
 (defn move

@@ -1,8 +1,7 @@
 (ns lum.game.fight
   (:require
    [lum.game.game-database :as db]
-   [lum.game.utilities :as u]
-   [lum.game.item :as item]))
+   [lum.game.utilities :as u]))
 
 (defn choose-enemy
   []
@@ -32,7 +31,7 @@
 
 (defn loot-items
   [data]
-  (reduce (fn [data item] (item/add-item data item 1))
+  (reduce (fn [data item] (u/add-item data item 1))
           data (:items (get-enemy data))))
 
 (defn hit?

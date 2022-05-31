@@ -257,18 +257,26 @@
   (let [board (get-in state [:boards (dec (:level state))])]
     (mu/n-to-position (.indexOf board {:type field}))))
 
+(defn get-current-field
+  []
+  (let [[x y] (get-in (get-state) [:player :position])
+        board (get-board)]
+    (mu/get-tile board x y)))
+
 (defn player-is-on
   [field]
   (let [state (game-is-initialized)
         [x y] (get-coordinates state field)]
-    (set-position x y)))
+    (set-position x y))
+  (is (= field (:type (get-current-field)))))
 
 (defn player-is-on-level
   [level]
   (game-is-initialized)
   (while (> level (get-level))
     (player-is-on :stair-down)
-    (activate)))
+    (activate))
+  (is (= level (get-level))))
 
 (defn get-tile
   []

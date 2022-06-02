@@ -17,7 +17,6 @@
 
 (defn pick-wall
   [data]
-  (log/info (u/get-active-tile data))
   (if (and (= :wall (u/get-active-tile data))
            (active-item-can-dig? data)
            (< 0 (u/roll-dice 20)))
@@ -50,7 +49,7 @@
 (defn cavegen-when-required
   [state]
   (if (> (:level state) (count (:boards state)))
-      (update state :boards #(conj % (cavegen/get-dungeon)))
+      (update state :boards #(conj (into [] %) (cavegen/get-dungeon)))
       state))
 
 (defn enter-next-level

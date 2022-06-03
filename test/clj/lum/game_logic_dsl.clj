@@ -141,6 +141,10 @@
   []
   (get-in (get-state) [:player :hp 0]))
 
+(defn get-max-hp
+  []
+  (get-in (get-state) [:player :hp 1]))
+
 (defn get-enemy-hp
   []
   (get-in (get-state) [:fight :enemy :hp 0]))
@@ -156,6 +160,7 @@
 (defn get-items
   []
   (get-in (get-state) [:player :items]))
+
 
 (defn in-fight?
   []
@@ -282,3 +287,13 @@
   []
   (let [[x y] (get-position)]
     (mu/get-tile (get-board) x y)))
+
+(defn player-has-xp
+  [xp]
+  (let [state (game-is-initialized)]
+    (load-game (assoc-in state [:player :xp] xp))))
+
+(defn get-one-xp
+  []
+  (in-a-fight)
+  (killed-the-enemy))

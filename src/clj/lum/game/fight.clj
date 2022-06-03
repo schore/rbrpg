@@ -24,10 +24,30 @@
   [data]
   (get db/enemies (get-in data [:fight :enemy :name])))
 
+(defn xp-to-level
+  [xp]
+  (cond
+    (< xp 300) 1
+    (< xp 900) 2
+    (< xp 2700) 3
+    :else 4))
+
+(defn level-up?
+  [xp initial-xp]
+  (> (xp-to-level xp) (xp-to-level initial-xp)))
+
+
+(defn add-max-hp-on-level-up
+  [data initial-xp]
+  (if (level-up? (get-in data [:player :xp]) initial-xp)
+    (update-in data [:player :hp 1] (partial + 6))
+    data))
+
 (defn update-xp
   [data]
-  (update-in data [:player :xp]
-             #(+ % (:xp (get-enemy data)))))
+  (-> data
+      (update-in [:player :xp] #(+ % (:xp (get-enemy data))))
+      (add-max-hp-on-level-up (get-in data [:player :xp]))))
 
 (defn loot-items
   [data]

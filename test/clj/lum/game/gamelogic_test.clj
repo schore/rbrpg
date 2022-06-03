@@ -343,3 +343,13 @@
   (dsl/player-is-equipped :right-hand "sword")
   (dsl/move :up)
   (is (= [1 4] (dsl/get-position))))
+
+(deftest player-can-increase-level
+  (dsl/player-has-xp 299)
+  (dsl/get-one-xp)
+  (is (= 16 (dsl/get-max-hp))))
+
+(deftest player-hp-does-not-increase-on-regular-xp-updates
+  (dsl/player-has-xp 260)
+  (dsl/get-one-xp)
+  (is (= 10 (dsl/get-max-hp))))

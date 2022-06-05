@@ -24,13 +24,11 @@
   [data]
   (get db/enemies (get-in data [:fight :enemy :name])))
 
+
 (defn xp-to-level
   [xp]
-  (cond
-    (< xp 300) 1
-    (< xp 900) 2
-    (< xp 2700) 3
-    :else 4))
+  (let [required-xp [0 300 900 2700]]
+    (count (filter #(>= xp %) required-xp))))
 
 (defn level-up?
   [xp initial-xp]

@@ -69,7 +69,7 @@
    :dev           [:project/dev :profiles/dev]
    :test          [:project/dev :project/test :profiles/test]
 
-   :project/dev  {:jvm-opts ["-Dconf=dev-config.edn"]
+   :project/dev  {:jvm-opts ["-Dconf=dev-config.edn" "-XX:-OmitStackTraceInFastThrow"]
                   :dependencies [[binaryage/devtools "1.0.3"]
                                  [cider/piggieback "0.5.2"]
                                  [pjstadig/humane-test-output "0.11.0"]

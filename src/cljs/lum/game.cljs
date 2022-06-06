@@ -18,7 +18,12 @@
 
 (defn keyify-ws
   [msg]
-  (rf/dispatch [:game/update (clojure.walk/keywordize-keys msg)]))
+  (let [msg (clojure.walk/keywordize-keys msg)]
+    (print msg)
+    (rf/dispatch
+     (case (first msg)
+       "data" [:game/update (second msg)]
+       "boards" [:game/board-update (second msg)]))))
 
 (defn create-ws
   []
@@ -130,6 +135,11 @@
                           :active 0})
        (dissoc db :action)))))
 
+(rf/reg-event-db
+ :game/board-update
+ (fn [db [_ boards]]
+   (assoc db :boards boards)))
+
 (rf/reg-sub
  :game/position
  (fn [db _]
@@ -139,7 +149,7 @@
 (rf/reg-sub
  :game/board
  (fn [db _]
-   (get-in db [:game :boards (dec (get-in db [:game :level]))])))
+   (get-in db [:boards (dec (get-in db [:game :level]))])))
 
 (rf/reg-sub
  :game/fight?

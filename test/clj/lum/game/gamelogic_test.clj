@@ -319,7 +319,7 @@
 (deftest activation-doesnt-give-item-whith-no-luck
   (dsl/game-is-initialized)
   (dsl/player-is-on :ground)
-  (dsl/activate 20 15 20 20)
+  (dsl/activate 20 14 20 20)
   (is (not (contains? (dsl/get-items) "herb"))))
 
 (deftest check-handling-of-items

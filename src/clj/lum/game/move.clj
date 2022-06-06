@@ -67,12 +67,19 @@
         (set-to-tile :stair-down))
     state))
 
+(defn items-to-add
+  [current-level thrown-dice]
+  (->> db/items-on-ground
+       (filter (fn [[_ {:keys [level dice]}]] (and (>= current-level (first level))
+                                                   (<= current-level (second level))
+                                                   (>= thrown-dice dice))))
+       (map first)))
+
 (defn look-for-item
   [state]
-  (if (<= 16 (u/disadvantage 20))
-    (u/add-items state {"herb" 1
-                        "wooden stick" 1})
-    state))
+  (u/add-items state (into {}
+                           (for [i (items-to-add (:level state) (u/disadvantage 20))]
+                             [i 1]))))
 
 ;; High level
 (defn move

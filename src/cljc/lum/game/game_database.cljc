@@ -44,6 +44,11 @@
                                      :ac 11
                                      :slots #{:body}}})
 
+(def items-on-ground {"herb" {:level [1 20]
+                              :dice 15}
+                      "wooden stick" {:level [1 20]
+                                      :dice 5}})
+
 
 (s/def ::item (into #{} (map first item-effects)))
 (s/def :game-database/item ::item)

@@ -322,6 +322,12 @@
   (dsl/activate 20 14 20 20)
   (is (not (contains? (dsl/get-items) "herb"))))
 
+;; (deftest no-sticks-on-level-30
+;;   (dsl/player-is-on-level 30)
+;;   (dsl/player-is-on :ground)
+;;   (dsl/activate 20 20)
+;;   (is (not (contains? (dsl/get-items) "wooden stick"))))
+
 (deftest check-handling-of-items
   (dsl/player-has-items {"foo" 1})
   (is (nil? (get (dsl/get-items) "foo")))

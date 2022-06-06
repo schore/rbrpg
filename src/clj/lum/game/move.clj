@@ -87,7 +87,9 @@
   (let [new-data (-> (move-unchecked data direction)
                      (pick-wall))]
 ;;    (s/explain :game/game new-data)
-    (if (s/valid? :game/game new-data)
+    (if (contains? #{:ground :stair-down :stair-up}
+                   (u/get-active-tile new-data)
+           :ground)
       new-data
       data)))
 

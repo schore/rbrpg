@@ -6,6 +6,7 @@
             [lum.game.dataspec]
             [lum.game.gamelogic :as gamelogic]
             [lum.game.fight :as fight]
+            [lum.game.utilities :as util]
             [lum.maputil :as mu]))
 
 
@@ -69,14 +70,15 @@
 
 (defn exec-with-rolls
   [f rolls]
-  (let [r (atom (map dec rolls))]
-    (with-redefs [rand-int (fn [m]
+  (let [r (atom rolls)]
+    (with-redefs [util/roll (fn [m]
                              (let [next-roll (first @r)]
+                               (log/info m next-roll)
                                (swap! r rest)
-                               (if (< next-roll m)
+                               (if (<= next-roll m)
                                  next-roll
                                  (do (log/error "You selected the wrong dice")
-                                     0))))]
+                                     1))))]
       (f))))
 
 
@@ -278,10 +280,12 @@
 (defn player-is-on-level
   [level]
   (game-is-initialized)
-  (while (> level (get-level))
+  (while (and (> level (get-level))
+              (not (in-fight?)))
     (player-is-on :stair-down)
     (activate))
-  (is (= level (get-level))))
+  (is (= level (get-level)))
+  (is (not (in-fight?))))
 
 (defn get-tile
   []

@@ -1,5 +1,6 @@
 (ns lum.game.utilities
-  (:require [lum.maputil :as mu]))
+  (:require [lum.maputil :as mu]
+            [clojure.tools.logging :as log]))
 
 
 (defn fight-ended?
@@ -93,10 +94,14 @@
   (let [[x y] (get-in state [:player :position])]
     (mu/get-tile (get-active-board state) x y)))
 
+(defn roll
+  [n]
+  (log/info n)
+  (inc (rand-int n)))
 
 (defn roll-dice
   ([n]
-   (inc (rand-int n)))
+   (roll n))
   ([n s]
    (reduce + (take n (map #(%) (repeat #(roll-dice s)))))))
 

@@ -88,8 +88,7 @@
                      (pick-wall))]
 ;;    (s/explain :game/game new-data)
     (if (contains? #{:ground :stair-down :stair-up}
-                   (u/get-active-tile new-data)
-           :ground)
+                   (u/get-active-tile new-data))
       new-data
       data)))
 

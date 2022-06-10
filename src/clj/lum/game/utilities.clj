@@ -96,7 +96,6 @@
 
 (defn roll
   [n]
-  (log/info n)
   (inc (rand-int n)))
 
 (defn roll-dice

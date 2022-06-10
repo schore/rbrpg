@@ -73,12 +73,15 @@
   (let [r (atom rolls)]
     (with-redefs [util/roll (fn [m]
                              (let [next-roll (first @r)]
-                               (log/info m next-roll)
                                (swap! r rest)
-                               (if (<= next-roll m)
+                               (if (and (some? next-roll)
+                                        (<= next-roll m))
                                  next-roll
-                                 (do (log/error "You selected the wrong dice")
-                                     1))))]
+                                 (do
+                                   (is (nil? next-roll) "Nor more dices")
+                                   (when (some? next-roll)
+                                     (is (> next-roll m) "Wrong dice"))
+                                   1))))]
       (f))))
 
 
@@ -283,7 +286,7 @@
   (while (and (> level (get-level))
               (not (in-fight?)))
     (player-is-on :stair-down)
-    (activate))
+    (activate 20 20))
   (is (= level (get-level)))
   (is (not (in-fight?))))
 

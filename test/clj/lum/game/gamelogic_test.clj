@@ -150,7 +150,6 @@
 
 (deftest enemy-makes-correct-damage
   (doseq [[enemy rolls hp] [["Rat" [2] 8]
-                            ["Rat" [3] 9] ;;a bad input is reduced to 1
                             ["Bat" [3] 7]]]
     (testing (str enemy " " rolls " " hp)
       (dsl/initalize-game)
@@ -322,11 +321,11 @@
   (dsl/activate 20 14 20 20)
   (is (not (contains? (dsl/get-items) "herb"))))
 
-;; (deftest no-sticks-on-level-30
-;;   (dsl/player-is-on-level 30)
-;;   (dsl/player-is-on :ground)
-;;   (dsl/activate 20 20)
-;;   (is (not (contains? (dsl/get-items) "wooden stick"))))
+(deftest no-sticks-on-level-30
+  (dsl/player-is-on-level 30)
+  (dsl/player-is-on :ground)
+  (dsl/activate 20 20)
+  (is (not (contains? (dsl/get-items) "wooden stick"))))
 
 (deftest check-handling-of-items
   (dsl/player-has-items {"foo" 1})

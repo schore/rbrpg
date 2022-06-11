@@ -86,9 +86,19 @@
 (s/def ::properties (s/coll-of ::propertie
                                :kind set?))
 (s/def ::effect (s/keys :req-op [::target ::hp ::mp ::damage ::ac ::slots ::properties]))
-
-;;(s/def ::effects (s/coll-of ::effect))
 (s/def ::item-effects (s/map-of ::item ::effect))
+
+
+;; Item on grounds
+;;
+
+(s/def ::level (s/and (s/cat :from pos-int? :to pos-int? )
+                      (fn [{:keys [from to]}]
+                        (<= from to))))
+(s/def ::dice (s/and pos-int?
+                     #(<= % 20)))
+(s/def ::ground-item (s/keys :req-un [::level ::dice]))
+(s/def ::ground-items (s/map-of ::item ::ground-item))
 
 
 (defn get-items-for-slot

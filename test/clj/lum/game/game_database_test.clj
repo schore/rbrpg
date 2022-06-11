@@ -12,3 +12,6 @@
 
 (t/deftest valid-item-db
   (t/is (s/valid? :lum.game.game-database/item-effects sut/item-effects)))
+
+(t/deftest valid-items-on-ground
+  (t/is (s/valid? :lum.game.game-database/ground-items sut/items-on-ground)))

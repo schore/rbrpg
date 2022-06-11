@@ -14,29 +14,36 @@
 (t/use-fixtures
   :each c/refresh)
 
+
+(defn move-with-retry
+  [direction]
+  (loop [i 0]
+    (c/refresh #())
+    (c/on-test-map)
+    (c/move direction)
+    (when (and (> i 10)
+               (c/fight-screen?))
+      (recur (inc i)))))
+
 (deftest ^:integration game-load
   (c/on-test-map)
   (is (= [10 10] (c/get-player-position))))
 
 (deftest ^:integration navigate-left
-  (c/on-test-map)
-  (c/move :left)
+  (move-with-retry :left)
   (is (= [9 10] (c/get-player-position))))
 
 (deftest ^:integration navigate-right
-  (c/on-test-map)
-  (c/move :right)
+  (move-with-retry :right)
   (is (= [11 10] (c/get-player-position))))
 
 (deftest ^:integration navigate-up
-  (c/on-test-map)
-  (c/move :down)
-  (is (= [10 11] (c/get-player-position))))
+  (move-with-retry :up)
+  (is (= [10 9] (c/get-player-position))))
 
 (deftest ^:integration navigate-down
-  (c/on-test-map)
-  (c/move :up)
-  (is (= [10 9] (c/get-player-position))))
+  (move-with-retry :down)
+  (is (= [10 11] (c/get-player-position))))
 
 (deftest ^:integration enter-next-level
   (c/load-game "on-stairs.edn")

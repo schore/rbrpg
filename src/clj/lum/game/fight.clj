@@ -1,7 +1,8 @@
 (ns lum.game.fight
   (:require
    [lum.game.game-database :as db]
-   [lum.game.utilities :as u]))
+   [lum.game.utilities :as u]
+   [clojure.tools.logging :as log]))
 
 (defn choose-enemy
   []
@@ -49,8 +50,13 @@
 
 (defn loot-items
   [data]
-  (reduce (fn [data item] (u/add-item data item 1))
-          data (:items (get-enemy data))))
+  (reduce (fn [data [item dice]]
+            (log/info item dice)
+            (if (>= (u/roll-dice 20) dice)
+              (u/add-item data item 1)
+              data))
+          data
+          (partition 2 (:items (get-enemy data)))))
 
 (defn hit?
   [hit-roll ac]
@@ -74,12 +80,14 @@
 
 (defn player-attacks
   [data]
-  ["Beat"
-   [(let [enemy-ac (get-in data [:fight :enemy :ac])
-          weapon (get-in data [:player :equipment :right-hand])
-          weapon-damage (get-in db/item-effects [weapon :damage] [1 3])]
-      {:target :enemy
-       :hp (* -1 (attack-calc enemy-ac weapon-damage))})]])
+  (u/process-event
+   data
+   ["Beat"
+    [(let [enemy-ac (get-in data [:fight :enemy :ac])
+           weapon (get-in data [:player :equipment :right-hand])
+           weapon-damage (get-in db/item-effects [weapon :damage] [1 3])]
+       {:target :enemy
+        :hp (* -1 (attack-calc enemy-ac weapon-damage))})]]))
 
 (defn get-armor-class
   [data]
@@ -94,10 +102,14 @@
 
 (defn enemy-attacks
   [data]
-  (let [player-ac (get-armor-class data)
-        weapon-damage (get-enemy-attack-roles data)]
-    ["Bite" [{:target :player
-              :hp (* -1 (attack-calc player-ac weapon-damage))}]]))
+  (if (> (get-in data [:fight :enemy :hp 0]) 0)
+    (u/process-event
+     data
+     (let [player-ac (get-armor-class data)
+           weapon-damage (get-enemy-attack-roles data)]
+       ["Bite" [{:target :player
+                 :hp (* -1 (attack-calc player-ac weapon-damage))}]]))
+    data))
 
 ;; high level
 (defn check-fight
@@ -120,8 +132,9 @@
         (dissoc :fight))
     data))
 
+
 (defn attack
   [data _]
-  (let  [actions [(player-attacks data)
-                  (enemy-attacks data)]]
-    (reduce u/process-event data actions)))
+  (-> data
+      player-attacks
+      enemy-attacks))

@@ -207,9 +207,11 @@
 
 
 (defn in-a-fight
-  []
-  (game-is-initialized)
-  (move-and-get-attacked))
+  ([]
+   (in-a-fight "Bat"))
+  ([enemy]
+   (game-is-initialized)
+   (move-and-get-attacked enemy)))
 
 
 

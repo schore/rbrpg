@@ -7,13 +7,21 @@
                      :hp 2
                      :mp 0
                      :xp 1
-                     :items ["batblood" "batwing"]}
+                     :items ["batblood" 1 "batwing" 1]}
               "Rat" {:ac 3
                      :damage [1 2]
                      :hp 1
                      :mp 0
                      :xp 1
-                     :items ["ratmeet"]}})
+                     :items ["ratmeet" 1]}
+              "Bandit" {:ac 10
+                        :damage [1 6]
+                        :hp 5
+                        :mp 0
+                        :xp 3
+                        :items ["leather armor" 15
+                                "medium healing potion" 5
+                                "small healing potion" 1]}})
 
 
 (def recipies {{"batblood" 2} "small healing potion"
@@ -59,7 +67,7 @@
 (s/def ::mp int?)
 (s/def ::xp pos-int?)
 (s/def ::damage (s/cat :n pos-int? :faces pos-int?))
-(s/def ::items (s/coll-of ::item))
+(s/def ::items (s/* (s/cat :item ::item :dice pos-int?)))
 (s/def ::enemy (s/keys :req-un [::ac ::damage ::hp ::mp ::xp ::items]))
 (s/def ::enemies (s/map-of string? ::enemy))
 

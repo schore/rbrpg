@@ -358,3 +358,15 @@
   (dsl/player-has-xp 260)
   (dsl/get-one-xp)
   (is (= 10 (dsl/get-max-hp))))
+
+(deftest bandit-gives-aromor-if-lucky
+  (dsl/player-is-equipped :right-hand "sword")
+  (dsl/in-a-fight "Bandit")
+  (dsl/attack 20 6 6 15 1 1)
+  (is (contains? (dsl/get-items) "leather armor")))
+
+(deftest bandit-gives-no-aromor-if-unlucky
+  (dsl/player-is-equipped :right-hand "sword")
+  (dsl/in-a-fight "Bandit")
+  (dsl/attack 20 6 6 1 1 1)
+  (is (not (contains? (dsl/get-items) "leather armor"))))

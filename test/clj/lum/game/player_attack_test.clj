@@ -1,43 +1,45 @@
 (ns lum.game.player-attack-test
   (:require  [clojure.test :as t :refer [deftest testing is]]
              [lum.game.gamelogic :as g]
+             [lum.game.utilities :as u]
              [lum.game.fight :as f]))
 
 
 (defn attack
   [f data & rolls]
-  (let [r (atom (map dec rolls))]
-    (with-redefs [rand-int (fn [_]
-                             (let [f (first @r)]
-                               (swap! r rest)
-                               f))]
+  (let [r (atom rolls)]
+    (with-redefs [u/roll (fn [_]
+                           (let [f (first @r)]
+                             (swap! r rest)
+                             f))]
       (f data))))
 
 (def gamestate
-  {:fight { :enemy {:ac 10} }})
+  {:fight { :enemy {:hp [1 1]
+                    :ac 10} }})
 
 
 
 (deftest attack-role
   (defn get-damage [& rolls]
-    (get-in (apply attack f/player-attacks gamestate rolls) [1 0 :hp]))
+    (get-in (apply attack f/player-attacks gamestate rolls) [:fight :enemy :hp 0]))
   (testing "A 20 always hits and gives double roles"
-    (is (> -1 (get-damage 20 1 2))))
+    (is (= 0 (get-damage 20 1 2))))
   (testing "A 1 never hits"
-    (is (= 0 (get-damage 1))))
+    (is (= 1 (get-damage 1 1 1))))
   (testing "Miss because of AC"
-    (is (= 0 (get-damage 10))))
+    (is (= 1 (get-damage 10 1 1))))
   (testing "Regular hit"
-    (is (= -1 (get-damage 11 1 2)))))
+    (is (= 0(get-damage 12 1 2)))))
 
 
 (deftest check-enemy-hit
   (defn hit? [ac roll]
-    (> 0
+    (= 0
        (get-in (attack f/player-attacks
-                       {:fight {:enemy {:name "Bat" :ac ac}}}
+                       {:fight {:enemy {:name "Bat" :ac ac :hp [1 1]}}}
                        roll 1 1 1 1 1 1 1 1 1 1 1 1)
-               [1 0 :hp ])))
+               [:fight :enemy :hp 0])))
   (is (hit? 50 20))
   (is (hit? 20 20))
   (is (hit? 5 6))
@@ -48,12 +50,14 @@
 
 (deftest check-player-hit
   (defn hit? [ac roll]
-    (> 0
+    (= 0
        (get-in (attack f/enemy-attacks
-                       {:fight {:enemy {:name "Bat" :ac 30}}
-                        :player {:ac ac}}
+                       {:fight {:enemy {:name "Bat" :ac 30
+                                        :hp [1 1]}}
+                        :player {:ac ac
+                                 :hp [1 10]}}
                        roll 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-               [1 0 :hp])))
+               [:player :hp 0])))
   (is (hit? 5 6))
   (is (hit? 50 20))
   (is (not (hit? -10 1)))

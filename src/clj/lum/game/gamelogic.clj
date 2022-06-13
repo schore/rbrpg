@@ -12,7 +12,7 @@
    [lum.game.fight :as fight]))
 
 (def inital-items
-  {"sword" 1})
+  {"small healing potion" 2})
 
 (defn new-board
   [data _]

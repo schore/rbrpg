@@ -14,7 +14,15 @@
                      :mp 0
                      :xp 1
                      :items ["ratmeet" 1]}
-              "Bandit" {:ac 10
+              "Karren" {:ac 7
+                        :damage [3 2]
+                        :hp 4
+                        :mp 0
+                        :xp 2
+                        :items ["knife" 10
+                                "small healing potion" 3
+                                "small healing potion" 3]}
+              "Bandit" {:ac 7
                         :damage [1 6]
                         :hp 5
                         :mp 0
@@ -27,7 +35,9 @@
 (def recipies {{"batblood" 2} "small healing potion"
                {"small healing potion" 2} "medium healing potion"
                {"sword" 1
-                "wooden stick" 1} "pickaxe"})
+                "knife" 2} "pickaxe"
+               {"knife" 1
+                "wooden stick" 1} "spear"})
 
 
 (def item-effects {"small healing potion" {:target :player
@@ -44,6 +54,12 @@
                    "sword" {:target :player
                              :damage [1 6]
                              :slots #{:right-hand}}
+                   "knife" {:target :player
+                            :damage [1 3]
+                            :slots #{:right-hand}}
+                   "spear" {:target :player
+                            :damage [2 3]
+                            :slots #{:right-hand}}
                    "pickaxe" {:target :player
                                :damage [1 4]
                                :slots #{:right-hand}

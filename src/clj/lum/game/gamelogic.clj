@@ -9,9 +9,10 @@
    [lum.game.update-data]
    [lum.game.item :as item]
    [lum.game.move :as move]
-   [lum.game.fight :as fight]
-   ))
+   [lum.game.fight :as fight]))
 
+(def inital-items
+  {"sword" 1})
 
 (defn new-board
   [data _]
@@ -30,7 +31,7 @@
                   :hp [10 10]
                   :mp [3 3]
                   :equipment {}
-                  :items {"sword" 1}}}
+                  :items inital-items}}
       (move/set-to-tile :ground)))
 
 (defn game-over?

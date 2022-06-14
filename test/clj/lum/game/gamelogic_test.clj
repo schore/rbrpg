@@ -364,19 +364,24 @@
 (deftest bandit-gives-aromor-if-lucky
   (dsl/player-is-equipped :right-hand "sword")
   (dsl/in-a-fight "Bandit")
-  (dsl/attack 20 6 6 15 1 1)
+  (dsl/attack 20 6 6 15 1 1 1)
   (is (contains? (dsl/get-items) "leather armor")))
 
 (deftest bandit-gives-no-aromor-if-unlucky
   (dsl/player-is-equipped :right-hand "sword")
   (dsl/in-a-fight "Bandit")
-  (dsl/attack 20 6 6 1 1 1)
+  (dsl/attack 20 6 6 1 1 1 1)
   (is (not (contains? (dsl/get-items) "leather armor"))))
 
 (deftest reading-a-note-gives-a-hint
   (dsl/player-has-items {"note" 1})
   (dsl/use-item "note")
-  (log/info (dsl/get-messages))
   (is (some
        #{(first (dsl/get-messages))}
        db/hints)))
+
+(deftest using-regular-items-does-not-give-hint
+  (dsl/player-has-items {"herb" 1})
+  (dsl/use-item "herb")
+  (is (not (some #{(first (dsl/get-messages))}
+                 db/hints))))

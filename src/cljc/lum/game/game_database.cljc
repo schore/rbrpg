@@ -20,6 +20,7 @@
                         :mp 0
                         :xp 2
                         :items ["knife" 10
+                                "note" 10
                                 "small healing potion" 3
                                 "small healing potion" 3]}
               "Bandit" {:ac 7
@@ -28,13 +29,14 @@
                         :mp 0
                         :xp 3
                         :items ["leather armor" 15
+                                "note" 17
                                 "medium healing potion" 5
                                 "small healing potion" 1]}})
 
 
 (def recipies {{"batblood" 2} "small healing potion"
                {"small healing potion" 2} "medium healing potion"
-               {"sword" 1
+               {"wooden stick" 1
                 "knife" 2} "pickaxe"
                {"knife" 1
                 "wooden stick" 1} "spear"})

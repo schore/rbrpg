@@ -51,7 +51,6 @@
 (defn loot-items
   [data]
   (reduce (fn [data [item dice]]
-            (log/info item dice)
             (if (>= (u/roll-dice 20) dice)
               (u/add-item data item 1)
               data))

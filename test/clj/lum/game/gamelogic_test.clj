@@ -326,7 +326,7 @@
 (deftest no-sticks-on-level-30
   (dsl/player-is-on-level 30)
   (dsl/player-is-on :ground)
-  (dsl/activate 20 20)
+  (dsl/activate 20 20 20 20)
   (is (not (contains? (dsl/get-items) "wooden stick"))))
 
 (deftest check-handling-of-items

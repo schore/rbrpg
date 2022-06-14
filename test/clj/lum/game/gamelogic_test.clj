@@ -6,7 +6,8 @@
    [clojure.tools.logging :as log]
    [lum.game-logic-dsl :as dsl ]
    [lum.game.dataspec]
-   [lum.maputil :as mu]))
+   [lum.maputil :as mu]
+   [lum.game.game-database :as db]))
 
 (t/use-fixtures
   :each dsl/create-game)
@@ -370,3 +371,11 @@
   (dsl/in-a-fight "Bandit")
   (dsl/attack 20 6 6 1 1 1)
   (is (not (contains? (dsl/get-items) "leather armor"))))
+
+(deftest reading-a-note-gives-a-hint
+  (dsl/player-has-items {"note" 1})
+  (dsl/use-item "note")
+  (log/info (dsl/get-messages))
+  (is (some
+       #{(first (dsl/get-messages))}
+       db/hints)))

@@ -17,12 +17,17 @@
   [state [_ slot]]
   (update-in state [:player :equipment] #(dissoc % (keyword slot))))
 
+(defn add-hint
+  [data item]
+  (update data :messages #(conj % (rand-nth db/hints))))
+
 (defn use-item
   [data [_ item]]
   (if (enough-items? data {item 1})
     (-> data
         (u/add-items {item -1})
-        (u/process-event [(str "Use item: " item) [(get db/item-effects item {})]]))
+        (u/process-event [(str "Use item: " item) [(get db/item-effects item {})]])
+        (add-hint item))
     data))
 
 (defn combine

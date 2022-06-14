@@ -48,6 +48,7 @@
                    "batwing" {}
                    "ratmeet" {}
                    "herb" {}
+                   "note" {:properties #{:hint}}
                    "wooden stick" {:target :player
                                     :damage [1 4]
                                     :slots #{:right-hand}}
@@ -73,6 +74,8 @@
                       "wooden stick" {:level [1 20]
                                       :dice 5}})
 
+(def hints ["Mixing batblood may help"
+            "A spear is a knife with a long handle"])
 
 (s/def ::item (into #{} (map first item-effects)))
 (s/def :game-database/item ::item)

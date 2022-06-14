@@ -84,7 +84,7 @@
 (deftest kill-it
   (dsl/in-a-fight)
   ;; You kill it with the first strike
-  (dsl/attack 20 3 3 1)
+  (dsl/attack 20 2 2 1 1)
   (is (= 10 (dsl/get-hp)))
   (is (= 1 (dsl/get-xp)))
   (is (not (dsl/in-fight?))))
@@ -207,6 +207,7 @@
   (is (nil? (get (dsl/get-items) "small healing potion"))))
 
 (deftest apply-item-not-in-inventory
+  (dsl/player-has-items {})
   (dsl/player-has-hp 5)
   (dsl/use-item "small healing potion")
   (is (= 5 (dsl/get-hp))))

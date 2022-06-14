@@ -78,9 +78,9 @@
                                         (<= next-roll m))
                                  next-roll
                                  (do
-                                   (is (nil? next-roll) "Nor more dices")
+                                   (is (not (nil? next-roll)) "Nor more dices")
                                    (when (some? next-roll)
-                                     (is (> next-roll m) "Wrong dice"))
+                                     (is (<= next-roll m) "Wrong dice"))
                                    1))))]
       (f))))
 

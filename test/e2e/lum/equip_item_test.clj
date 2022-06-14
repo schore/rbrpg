@@ -15,15 +15,18 @@
 
 
 (deftest ^:integration selcet-sword
+  (c/load-game "got-two-batblood.edn")
   (c/equip "right-hand" "sword")
   (is (= (c/get-equipment-slot "right-hand") "sword")))
 
 (deftest ^:integration unselect-sword
+  (c/load-game "got-two-batblood.edn")
   (c/equip "right-hand" "sword")
   (c/equip "right-hand" "none")
   (is (= (c/get-equipment-slot "right-hand") "none")))
 
 (deftest ^:integration use-equipped-item
+  (c/load-game "got-two-batblood.edn")
   (c/equip "right-hand" "sword")
   (c/use-item "sword")
   (is (= (c/get-equipment-slot "right-hand") "none")))

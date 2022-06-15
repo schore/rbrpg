@@ -1,6 +1,5 @@
 (ns lum.game.cavegen
-  (:require [lum.maputil :as m]
-            [clojure.tools.logging :as log]))
+  (:require [lum.maputil :as m]))
 
 (def xsize m/sizex)
 (def ysize m/sizey)

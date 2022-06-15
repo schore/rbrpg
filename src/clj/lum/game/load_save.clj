@@ -1,6 +1,5 @@
 (ns lum.game.load-save
   (:require [clojure.spec.alpha :as s]
-            [clojure.tools.logging :as log]
             [clojure.string]
             [clojure.java.io :as io]
             [lum.maputil :as mu]
@@ -34,7 +33,7 @@
   [data [_ file]]
   (if-let [mf (try
                 (slurp (io/resource file))
-                (catch Exception e (log/error "Exception thrown " (.getMessage e))))]
+                (catch Exception e (println "Exception thrown " (.getMessage e))))]
     (-> data
         (assoc-in [:boards (dec (:level data))] (load-map-from-string mf))
         (assoc-in [:player :position] [10 10]))
@@ -44,7 +43,7 @@
   [filename]
   (try
     (read-string (slurp  (str "tmp/" filename)))
-    (catch Exception e (log/error "Exception thrown " (.getMessage e) ))))
+    (catch Exception e (println "Exception thrown " (.getMessage e) ))))
 
 (defn valid-save-game?
   [file-name]

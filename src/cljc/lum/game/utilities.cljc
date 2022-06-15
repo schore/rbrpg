@@ -1,6 +1,5 @@
 (ns lum.game.utilities
-  (:require [lum.maputil :as mu]
-            [clojure.tools.logging :as log]))
+  (:require [lum.maputil :as mu]))
 
 
 (defn fight-ended?

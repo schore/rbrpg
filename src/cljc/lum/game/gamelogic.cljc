@@ -2,9 +2,8 @@
   (:require
    [clojure.core.async :as a :refer [<! >! chan close! go-loop]]
    [clojure.string]
-   [clojure.tools.logging :as log]
    [lum.game.cavegen :as cavegen]
-   [lum.game.load-save :as load-save]
+   #?(:clj [lum.game.load-save :as load-save])
    [lum.game.dataspec]
    [lum.game.update-data]
    [lum.game.item :as item]
@@ -41,8 +40,8 @@
 
 (def basic-mode
   {:initialize [initialize]
-   :load [load-save/load-game]
-   :save [load-save/save-game]
+   :load [#?(:clj load-save/load-game)]
+   :save [#?(:clj load-save/save-game)]
    :equip [item/equip-item]
    :unequip [item/unequip-item]
    :nop []})
@@ -59,7 +58,7 @@
 (def move-mode
   (merge basic-mode
          {:activate [move/activate fight/check-fight]
-          :load-map [load-save/load-map]
+          :load-map [#?(:clj load-save/load-map)]
           :move [move/move fight/check-fight]
           :set-position [move/set-position]
           :new-board [new-board]
@@ -76,7 +75,7 @@
 (defn process-actions
   [data action]
   (when (nil? (get (get-mode-map data) (keyword (first action))))
-    (log/error "No entry defined " action))
+    (println "No entry defined " action))
   (reduce (fn [data f]
             (f data action))
           data (get (get-mode-map data)

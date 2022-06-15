@@ -6,7 +6,7 @@
    [goog.history.EventType :as HistoryEventType]
    [lum.ajax :as ajax]
    [lum.events]
-   [lum.game :refer [game item]]
+   [lum.game-main :refer [game item]]
    [markdown.core :refer [md->html]]
    [re-frame.core :as rf]
    [reagent.core :as r]

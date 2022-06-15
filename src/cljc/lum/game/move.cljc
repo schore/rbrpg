@@ -5,7 +5,6 @@
    [lum.maputil :as mu]
    [lum.game.cavegen :as cavegen]
    [lum.game.item :as item]
-   [clojure.tools.logging :as log]
    [clojure.spec.alpha :as s]))
 
 

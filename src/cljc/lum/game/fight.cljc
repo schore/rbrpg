@@ -1,8 +1,7 @@
 (ns lum.game.fight
   (:require
    [lum.game.game-database :as db]
-   [lum.game.utilities :as u]
-   [clojure.tools.logging :as log]))
+   [lum.game.utilities :as u]))
 
 (defn choose-enemy
   []

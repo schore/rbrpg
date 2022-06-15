@@ -1,4 +1,4 @@
-(ns lum.game
+(ns lum.game-main
   ;; (:require-macros
   ;;  [cljs.core.async.macros :refer [go]])
   (:require
@@ -9,6 +9,7 @@
    [lum.maputil :as maputil]
    [lum.game.game-database :as gamedb]
    [lum.game.dataspec :as gamedata]
+   [lum.game.gamelogic :as gl]
    [ajax.core :as ajax]
    [haslett.client :as ws]
    [haslett.format :as fmt]

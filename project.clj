@@ -27,7 +27,6 @@
                  [org.clojure/clojurescript "1.10.879" :scope "provided"]
                  [org.clojure/core.async "1.3.618"]
                  [org.clojure/tools.cli "1.0.206"]
-                 [org.clojure/tools.logging "1.1.0"]
                  [org.webjars.npm/bulma "0.9.2"]
                  [org.webjars.npm/material-icons "0.7.0"]
                  [org.webjars/webjars-locator "0.41"]

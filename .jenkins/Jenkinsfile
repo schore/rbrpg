@@ -7,13 +7,10 @@ pipeline {
     stage('Prepare') {
       steps {
         sh 'npm install .'
-        sh 'ls -la'
-        sh 'lein deps'
       }
     }
    stage('test') {
       steps {
-        sh 'npx --call=\'shadow-cljs compile app\''
         sh 'npx --call=\'lein test :all\''
       }
       post {

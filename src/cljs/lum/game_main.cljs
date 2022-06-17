@@ -15,7 +15,9 @@
    [haslett.format :as fmt]
    [clojure.walk]
    [cljs.core.async :as a :refer [<! >! go-loop go]]
-   [lum.game.game-database :as db]))
+   [lum.game.game-database :as db]
+   [lum.game.update-splitter :as update-splitter]
+   [lum.game.gamelogic :as gamelogic]))
 
 (defn keyify-ws
   [msg]
@@ -38,11 +40,37 @@
     {:stream stream
      :send-message send-message}))
 
-(defonce wsconn (create-ws))
+;; (defonce wsconn (create-ws))
+
+(defn create-game
+  []
+  (let [in (a/chan)
+        out (update-splitter/update-splitter
+             (gamelogic/game-master in))]
+    [in out]))
+
+(defonce gamelogic (let [[in out] (create-game)]
+                     {:in in
+                      :out out}))
+
+(go-loop []
+  (when-let [msg (<! (:out gamelogic))]
+    (print msg)
+    (rf/dispatch
+     (case (first msg)
+       :data [:game/update (second msg)]
+       :boards [:game/board-update (second msg)]))
+    (recur)))
 
 (rf/reg-fx
  :game/send-message
- (fn [msg] ((:send-message wsconn) msg)))
+ (fn [msg]
+   (print msg)
+   (a/put! (:in gamelogic) msg)))
+;; (rf/reg-fx
+;;  :game/send-message
+;;  (fn [msg] ((:send-message wsconn) msg)))
+
 
 (def sizex 50)
 (def sizey 30)
@@ -57,7 +85,8 @@
                                    [[:game/key :up] [{:keyCode 107}]];;j
                                    [[:game/key :confirm] [{:keyCode 13}]];;enter
                                    ]}]]
-         [:dispatch [::rp/add-keyboard-event-listener "keypress"]]]}))
+         [:dispatch [::rp/add-keyboard-event-listener "keypress"]]]
+    :game/send-message [:initialize]}))
 
 (defn fight?
   [db]
@@ -380,7 +409,7 @@
                    :id slot
                    :on-change (fn [e] (rf/dispatch [:game/equip slot (-> e .-target .-value)]))}
                   [:option "none"]
-                  (for [item (filter #(>= (get items (keyword %) 0) 1)
+                  (for [item (filter #(>= (get items % 0) 1)
                                      (db/get-items-for-slot slot))]
                     ^{:key (str "item_slots_options_" item)}
                     [:option item])]]])]))))

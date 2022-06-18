@@ -1,12 +1,17 @@
 (ns lum.handler-test
   (:require
     [clojure.test :refer [use-fixtures deftest testing is]]
+    [lum.game-logic-dsl :as dsl]
+    [lum.game.dataspec]
+    [clojure.spec.alpha :as s]
     [clojure.data.json :as json]
     [ring.mock.request :refer [request]]
     [lum.handler :refer [app]]
     [lum.middleware.formats :as formats]
     [muuntaja.core :as m]
-    [mount.core :as mount]))
+    [mount.core :as mount]
+    [clojure.edn :as edn]
+    [ring.util.http-response :as response]))
 
 (defn parse-json [body]
   (m/decode formats/instance "application/json" body))
@@ -17,6 +22,8 @@
     (mount/start #'lum.config/env
                  #'lum.handler/app-routes)
     (f)))
+
+(use-fixtures :each dsl/prepare-directory)
 
 (deftest test-app
   (testing "main route"
@@ -35,3 +42,14 @@
       (is (= 7 (:result body)))
       (is (= 3 (:x body)))
       (is (= 4 (:y body))))))
+
+(deftest gamestorage-load
+  (dsl/prepare-save-game "load-test.edn")
+  (let [response ((app) (request :get "/game/data/load-test.edn"))]
+    (is (= 200 (:status response)))
+    (is (s/valid? :game/game
+                  (edn/read-string  (:body response))))))
+
+(deftest gamestorage-load-not-found
+  (let [response ((app) (request :get "/game/data/not-available.edn"))]
+    (is (= 404 (:status response)))))

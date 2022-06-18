@@ -5,7 +5,8 @@
    [lum.layout :as layout]
    [lum.middleware :as middleware]
    [ring.util.http-response :as response]
-   [ring.util.response]))
+   [ring.util.response]
+   [lum.game.load-save :as load-save]))
 
 (defn home-page [request]
   (layout/render request "home.html"))
@@ -28,6 +29,15 @@
                              :body {:x x
                                     :y y
                                     :result (+ x y)}}))}]
+   ["/game/data/:id" {:get (fn [req]
+                             (let [id (get-in req [:path-params :id])
+                                   savegame (load-save/load-rest-interface id)]
+                               (if (some? savegame)
+                                 {:status 200
+                                  :header {:content-type "text"}
+                                  :body (str savegame)}
+                                 {:status 404
+                                  :body "save game not found"})))}]
    ["/game/dungeon" {:get (fn [_]
                             {:status 200
                              :headers {"content-type" "application/json"}

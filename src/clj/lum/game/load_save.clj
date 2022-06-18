@@ -62,3 +62,9 @@
   [state [_ filename]]
   (spit (str "tmp/" filename) state)
   state)
+
+
+(defn load-rest-interface
+  [filename]
+  (when (valid-save-game? filename)
+    (load-save-game filename)))

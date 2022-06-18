@@ -7,7 +7,36 @@
             [lum.game.gamelogic :as gamelogic]
             [lum.game.fight :as fight]
             [lum.game.utilities :as util]
+            [clojure.java.io :as io]
             [lum.maputil :as mu]))
+
+
+(defn delete-directory-recursive
+  "Recursively delete a directory."
+  [^java.io.File file]
+  ;; when `file` is a directory, list its entries and call this
+  ;; function with each entry. can't `recur` here as it's not a tail
+  ;; position, sadly. could cause a stack overflow for many entries?
+  ;; thanks to @nikolavojicic for the idea to use `run!` instead of
+  ;; `doseq` :)
+  (when (.isDirectory file)
+    (run! delete-directory-recursive (.listFiles file)))
+  ;; delete the file or directory. if it it's a file, it's easily
+  ;; deletable. if it's a directory, we already have deleted all its
+  ;; contents with the code above (remember?)
+  (io/delete-file file))
+
+(defn prepare-directory
+  [f]
+  (.mkdir (io/file "tmp"))
+  (f)
+  (delete-directory-recursive (io/file "tmp")))
+
+
+(defn prepare-save-game
+  [filename]
+  (spit (str "tmp/" filename)
+        (slurp (io/resource (str "savegames/" filename)))))
 
 
 (defn create-game-maser

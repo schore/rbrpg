@@ -42,7 +42,6 @@
                                  {:status 404
                                   :body "save game not found"})))
                       :put (fn [req]
-                             (println "PUT2\n" (:body req))
                              (let [id (get-in req [:path-params :id])
                                    data (-> (:body req)
                                             slurp

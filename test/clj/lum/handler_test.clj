@@ -55,7 +55,19 @@
   (let [response ((app) (request :get "/game/data/not-available.edn"))]
     (is (= 404 (:status response)))))
 
-(deftest load-save-not-conformant-to-spec
+(deftest save-not-conformant-to-spec
     (is (= 400 (:status ((app)
                          (body (request :put "/game/data/foo.edn")
                                "[1 2 3]"))))))
+
+(deftest save-and-load
+  (dsl/prepare-save-game "load-test.edn")
+  (dsl/prepare-save-game "in-a-fight.edn")
+  (let [valid-game (edn/read-string (slurp "tmp/load-test.edn"))
+        response-save ((app) (-> (request :put "/game/data/in-a-fight.edn")
+                                 (body (str valid-game))))
+        response-load ((app) (request :get "/game/data/in-a-fight.edn"))
+        loaded-game (edn/read-string (:body response-load))]
+    (is (= 200 (:status response-save)))
+    (is (= 200 (:status response-load)))
+    (is (= valid-game loaded-game))))

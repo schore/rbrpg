@@ -11,7 +11,8 @@
 (defn default-headers [request]
   (if (local-uri? request)
     (-> request
-        (update :headers #(merge {"x-csrf-token" js/csrfToken} %)))
+        (update :headers #(merge {"x-csrf-token" js/csrfToken} %))
+        )
     request))
 
 ;; injects transit serialization config into request options

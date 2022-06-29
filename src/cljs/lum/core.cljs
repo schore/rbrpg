@@ -97,6 +97,6 @@
 
 (defn init! []
   (start-router!)
-  (ajax/load-interceptors!)
+  ;;(ajax/load-interceptors!)
   (rf/dispatch [:initialize])
   (mount-components))

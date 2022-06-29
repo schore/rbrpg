@@ -33,6 +33,7 @@
                                     :y y
                                     :result (+ x y)}}))}]
    ["/game/data/:id" {:get (fn [req]
+                             (println "get request")
                              (let [id (get-in req [:path-params :id])
                                    savegame (load-save/load-rest-interface id)]
                                (if (some? savegame)
@@ -46,11 +47,14 @@
                                    data (-> (:body req)
                                             slurp
                                             edn/read-string)]
+                               (println req)
+                               (println data)
                                (if (s/valid? :game/game data)
                                  (do
                                    (load-save/save-game data [0 id])
                                    {:status 200})
                                  {:status 400
+                                  :header {:content-type "text"}
                                   :body "Input not conforming to spec\n"
                                   })))}]
    ["/game/dungeon" {:get (fn [_]

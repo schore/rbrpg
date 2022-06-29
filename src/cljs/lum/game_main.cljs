@@ -13,6 +13,7 @@
    [ajax.core :as ajax]
    [haslett.client :as ws]
    [haslett.format :as fmt]
+   [clojure.edn :as edn]
    [clojure.walk]
    [cljs.core.async :as a :refer [<! >! go-loop go]]
    [lum.game.game-database :as db]
@@ -141,12 +142,28 @@
 (rf/reg-event-fx
  :game/load
  (fn [_ [_ fn]]
-   {:game/send-message [:load fn]}))
+   {:http-xhrio {:method :get
+                 :uri (str "/game/data/" fn)
+                 :timeout 10000
+                 ;;:request-format (ajax/text-response-format)
+                 :response-format (ajax/text-response-format)
+                 :on-success [:game/load-response]}}))
+
+(rf/reg-event-fx
+ :game/load-response
+ (fn [_ [_ data]]
+   {:game/send-message [:load (edn/read-string data)]}))
 
 (rf/reg-event-fx
  :game/save
- (fn [_ [_ fn]]
-   {:game/send-message [:save fn]}))
+ (fn [{:keys [:db]} [_ fn]]
+   (let [gamestate (-> (:game db)
+                       (assoc :boards (:boards db)))]
+     {:http-xhrio {:method :put
+                   :uri (str "/game/data/" fn)
+                   :request-format (ajax/text-request-format)
+                   :response-format (ajax/text-response-format)
+                   :body (str gamestate)}})))
 
 (rf/reg-event-fx
  :game/equip

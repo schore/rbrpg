@@ -3,7 +3,7 @@
    [clojure.core.async :as a :refer [<! >! chan close! go-loop]]
    [clojure.string]
    [lum.game.cavegen :as cavegen]
-   #?(:clj [lum.game.load-save :as load-save])
+   [lum.game.load-save :as load-save]
    [lum.game.dataspec]
    [lum.game.update-data]
    [lum.game.item :as item]
@@ -40,7 +40,7 @@
 
 (def basic-mode
   {:initialize [initialize]
-   :load [#?(:clj load-save/load-game)]
+   :load [load-save/load-game]
    :save [#?(:clj load-save/save-game)]
    :equip [item/equip-item]
    :unequip [item/unequip-item]

@@ -154,6 +154,11 @@
    {:game/send-message [:load (edn/read-string data)]}))
 
 (rf/reg-event-fx
+ :nop
+ (fn [_ _]
+   {}))
+
+(rf/reg-event-fx
  :game/save
  (fn [{:keys [:db]} [_ fn]]
    (let [gamestate (-> (:game db)
@@ -162,6 +167,7 @@
                    :headers {"Content-Type" "text/plain"}
                    :uri (str "/game/data/" fn)
                    :response-format (ajax/text-response-format)
+                   :on-success [:nop]
                    :body gamestate}})))
 
 (rf/reg-event-fx

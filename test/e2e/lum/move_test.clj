@@ -19,17 +19,18 @@
   [direction]
   (loop [i 0]
     (c/refresh #())
-    (c/on-test-map)
+    (c/load-game "test-map.edn")
     (c/move direction)
     (when (and (> i 10)
                (c/fight-screen?))
       (recur (inc i)))))
 
 (deftest ^:integration game-load
-  (c/on-test-map)
+  (c/load-game "test-map.edn")
   (is (= [10 10] (c/get-player-position))))
 
 (deftest ^:integration navigate-left
+  (c/load-game "test-map.edn")
   (move-with-retry :left)
   (is (= [9 10] (c/get-player-position))))
 

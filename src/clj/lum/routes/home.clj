@@ -33,7 +33,6 @@
                                     :y y
                                     :result (+ x y)}}))}]
    ["/game/data/:id" {:get (fn [req]
-                             (println "get request")
                              (let [id (get-in req [:path-params :id])
                                    savegame (load-save/load-rest-interface id)]
                                (if (some? savegame)

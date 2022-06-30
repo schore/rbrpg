@@ -49,6 +49,7 @@
   (prepare-save-game "one-hp-left-and-fighting.edn")
   (prepare-save-game "in-a-fight.edn")
   (prepare-save-game "on-stairs.edn")
+  (prepare-save-game "test-map.edn")
   (f)
   (delete-directory-recursive (io/file "tmp")))
 

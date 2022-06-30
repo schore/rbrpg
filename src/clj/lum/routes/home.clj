@@ -38,23 +38,22 @@
                                    savegame (load-save/load-rest-interface id)]
                                (if (some? savegame)
                                  {:status 200
-                                  :header {:content-type "text"}
+                                  :headers {"Content-Type" "text/plain"}
                                   :body (str savegame)}
                                  {:status 404
+                                  :headers {"Content-Type" "text/plain"}
                                   :body "save game not found"})))
                       :put (fn [req]
                              (let [id (get-in req [:path-params :id])
                                    data (-> (:body req)
                                             slurp
                                             edn/read-string)]
-                               (println req)
-                               (println data)
                                (if (s/valid? :game/game data)
                                  (do
                                    (load-save/save-game data [0 id])
                                    {:status 200})
                                  {:status 400
-                                  :header {:content-type "text"}
+                                  :headers {"Content-Type" "text/plain"}
                                   :body "Input not conforming to spec\n"
                                   })))}]
    ["/game/dungeon" {:get (fn [_]

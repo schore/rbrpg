@@ -145,7 +145,6 @@
    {:http-xhrio {:method :get
                  :uri (str "/game/data/" fn)
                  :timeout 10000
-                 ;;:request-format (ajax/text-response-format)
                  :response-format (ajax/text-response-format)
                  :on-success [:game/load-response]}}))
 
@@ -160,10 +159,10 @@
    (let [gamestate (-> (:game db)
                        (assoc :boards (:boards db)))]
      {:http-xhrio {:method :put
+                   :headers {"Content-Type" "text/plain"}
                    :uri (str "/game/data/" fn)
-                   :request-format (ajax/text-request-format)
                    :response-format (ajax/text-response-format)
-                   :body (str gamestate)}})))
+                   :body gamestate}})))
 
 (rf/reg-event-fx
  :game/equip

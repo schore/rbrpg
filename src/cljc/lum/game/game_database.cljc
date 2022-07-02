@@ -14,7 +14,7 @@
                      :mp 0
                      :xp 1
                      :items ["ratmeet" 1]}
-              "Karren" {:ac 7
+              "Crazy" {:ac 7
                         :damage [3 2]
                         :hp 4
                         :mp 0

@@ -20,6 +20,11 @@ pipeline {
         }
       }
     }
+    stage('publish') {
+      steps {
+        sh '.jenkins/publish.sh'
+      }
+    }
     stage('build') {
       when {
         expression{ return params.BUILD }

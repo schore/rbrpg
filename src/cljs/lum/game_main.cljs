@@ -392,13 +392,25 @@
                          [:tr
                           [:td k]
                           [:td v]
-                          [:td [:input {:type "button"
-                                        :value "use"
-                                        :on-click (fn [] (rf/dispatch [:game/use k]))}]]
                           [:td [plus-minus-counter selected-items k (get sitems k)]]])]
          [:input {:type "button"
                   :value "combine"
                   :on-click (fn [] (rf/dispatch [:game/combine sitems]))}]]))))
+
+(defn items-for-use
+  []
+  (let [items (rf/subscribe [:game/items])]
+    (fn []
+      (let [items @items]
+        [:table>tbody
+         (for [[k v] items]
+           ^{:key (str "show_items_use_" k)}
+           [:tr
+            [:td [:input {:type "button"
+                          :value "use"
+                          :on-click (fn [] (rf/dispatch [:game/use k]))}]]
+            [:td k]
+            [:td v]])]))))
 
 (defn load-save
   []
@@ -451,6 +463,7 @@
         [:div.stats [stats]]
         [:div.item-slots [item-slots]]
         [:div.messages [show-messages]]]
+       [:div.items-use [items-for-use]]
        [button "New map" [:game/get-new-map]]
        [button "Load map" [:game/load-map]]
        [:br]

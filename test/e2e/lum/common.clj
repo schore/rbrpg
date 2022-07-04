@@ -41,7 +41,6 @@
   (spit (str "tmp/" filename)
         (slurp (io/resource (str "savegames/" filename)))))
 
-
 (defn fixture-prepare-directory
   [f]
   (.mkdir (io/file "tmp"))
@@ -53,11 +52,8 @@
   (f)
   (delete-directory-recursive (io/file "tmp")))
 
-
-
 (defn open []
   (e/go *driver* "http://localhost:3000/"))
-
 
 (defn open-website [f]
   (open)
@@ -67,16 +63,14 @@
   (e/refresh *driver*)
   (f))
 
-
 (defn click-menu-item
   [item]
   (e/click-visible *driver* [{:class :navbar-start}
-                     {:tag :a :fn/text item}]))
+                             {:tag :a :fn/text item}]))
 
 (defn on-test-map
   []
   (e/click-visible *driver* {:tag :input :value "Load map"}))
-
 
 (defn map-screen?
   []
@@ -131,9 +125,9 @@
   []
   (click-menu-item "Home")
   (Integer/parseInt (second (re-matches #"hp: (.*)/(.*)"
-                               (e/get-element-text *driver* [{:class "content"}
-                                                             {:tag :span
-                                                              :fn/has-text "hp:"}])))))
+                                        (e/get-element-text *driver* [{:class "content"}
+                                                                      {:tag :span
+                                                                       :fn/has-text "hp:"}])))))
 
 (defn get-item-row
   [item]
@@ -149,18 +143,33 @@
                    (= x item))))
        first))
 
+(defn get-use-item-row
+  [item]
+  (->> (e/query-all *driver*
+                    [{:class "items-use"}
+                     {:tag :table}
+                     {:tag :tr}])
+       (filter (fn [el]
+                 (let [x (e/get-element-text-el *driver* (e/child *driver* el
+                                                                  {:tag :td
+                                                                   :index 2}))]
+                   (println x)
+                   (= x
+                      item))))
+       first))
+
 (defn get-plus-el
   [item]
   (e/child *driver* (get-item-row item)
            {:tag :input
             :value "+"}))
 
-
 (defn use-item
   [item]
-  (click-menu-item "Items")
+  (click-menu-item "Home")
+  (println (get-use-item-row item))
   (e/click-el *driver*
-              (e/child *driver* (get-item-row item)
+              (e/child *driver* (get-use-item-row item)
                        {:tag :input
                         :value "use"})))
 (defn select-items
@@ -202,15 +211,14 @@
   (click-menu-item "Home")
   (e/wait-visible *driver* [{:tag :input :type :text}])
   (e/clear *driver* [{:tag :input
-                    :type :text}])
+                      :type :text}])
   (e/fill *driver* [{:tag :input
-                   :type :text}]
+                     :type :text}]
           filename)
   (e/click *driver* [{:tag :input
-                    :type :button
-                    :value "load"}])
+                      :type :button
+                      :value "load"}])
   (e/wait *driver* 1))
-
 
 (defn equip
   [slot item]

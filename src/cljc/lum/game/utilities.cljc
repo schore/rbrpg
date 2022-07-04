@@ -1,7 +1,6 @@
 (ns lum.game.utilities
   (:require [lum.maputil :as mu]))
 
-
 (defn fight-ended?
   [data]
   (= 0 (get-in data [:fight :enemy :hp 0])))
@@ -9,7 +8,6 @@
 (defn game-over?
   [data]
   (= 0 (get-in data [:player :hp 0])))
-
 
 (defn filter-map
   [f m]
@@ -25,7 +23,6 @@
             :player [:player]
             :enemy [:fight :enemy])
           ext))
-
 
 (defn add-with-boundaries
   [min max & vals]
@@ -51,10 +48,10 @@
 (defn process-effect
   [action-name]
   (fn [state effect]
-      (if (not (fight-ended? state))
-        (-> state
-            (process-hp action-name effect))
-        state)))
+    (if (not (fight-ended? state))
+      (-> state
+          (process-hp action-name effect))
+      state)))
 
 (defn process-event
   [data [action-name effects]]
@@ -66,7 +63,6 @@
        (< x mu/sizex)
        (nat-int? y)
        (< y mu/sizey)))
-
 
 (defn change-active-tile
   [data new-type]
@@ -86,7 +82,6 @@
   (let [board (get-active-board data)
         [x y] (get-in data [:player :position])]
     (:type (mu/get-tile board x y))))
-
 
 (defn player-tile
   [state]
@@ -122,7 +117,6 @@
         (update-in [:player :equipment]
                    #(filter-map (fn [[_ v]] (not= v item)) %)))))
 
-
 (defn add-item
   [data item n]
   ;; nil is passed in case the k is not in the list
@@ -134,4 +128,3 @@
   (reduce (fn [data [item n]] (add-item data item n))
           data
           used-items))
-

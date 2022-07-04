@@ -9,14 +9,12 @@
    [clojure.tools.logging :as log]
    [clojure.string]))
 
-
 (defn create-game
   []
   (let [in (a/chan)
         out (update-splitter/update-splitter
              (gamelogic/game-master in))]
     [in out]))
-
 
 (defn ws-handler [request]
   (if-not (:websocket? request)

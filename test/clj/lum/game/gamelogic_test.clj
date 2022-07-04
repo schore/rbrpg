@@ -4,14 +4,13 @@
    [clojure.string]
    [clojure.test :as t :refer [deftest is testing]]
    [clojure.tools.logging :as log]
-   [lum.game-logic-dsl :as dsl ]
+   [lum.game-logic-dsl :as dsl]
    [lum.game.dataspec]
    [lum.maputil :as mu]
    [lum.game.game-database :as db]))
 
 (t/use-fixtures
   :each dsl/create-game)
-
 
 (deftest initalize-tests
   (is (s/valid? :game/game (dsl/game-is-initialized))))
@@ -178,14 +177,14 @@
 
 (deftest combine-items-already-some-in-stock
   (dsl/player-has-items {"batblood" 2
-                     "small healing potion" 1})
+                         "small healing potion" 1})
   (dsl/combine "batblood" "batblood")
   (is (nil? (get (dsl/get-items) "batblood")))
   (is (= 2 (get (dsl/get-items) "small healing potion"))))
 
 (deftest combine-wrong-items
   (dsl/player-has-items {"batblood" 1
-                     "batwing" 1})
+                         "batwing" 1})
   (dsl/combine "batblood" "batwing")
   (is (empty? (dsl/get-items))))
 

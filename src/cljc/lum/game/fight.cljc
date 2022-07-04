@@ -24,7 +24,6 @@
   [data]
   (get db/enemies (get-in data [:fight :enemy :name])))
 
-
 (defn xp-to-level
   [xp]
   (let [required-xp [0 300 900 2700]]
@@ -33,7 +32,6 @@
 (defn level-up?
   [xp initial-xp]
   (> (xp-to-level xp) (xp-to-level initial-xp)))
-
 
 (defn add-max-hp-on-level-up
   [data initial-xp]
@@ -66,8 +64,8 @@
 (defn damage-calc
   [hit-roll [n dice]]
   (u/roll-dice (if (= hit-roll 20)
-                  (inc n) n)
-                dice))
+                 (inc n) n)
+               dice))
 
 (defn attack-calc
   [ac weapon-damage]
@@ -129,7 +127,6 @@
         loot-items
         (dissoc :fight))
     data))
-
 
 (defn attack
   [data _]

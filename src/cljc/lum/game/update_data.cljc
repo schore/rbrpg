@@ -32,7 +32,6 @@
               (-> new-data :player :ac))
     [:ac (-> new-data :player :ac)]))
 
-
 (defn board-update
   [data new-data]
   (if (not= (:board data)
@@ -46,7 +45,6 @@
               (get-in new-data [:player :position]))
     (let [[x y] (get-in new-data [:player :position])]
       [:player-move x y])))
-
 
 (def update-calc-functions
   [board-update

@@ -22,21 +22,20 @@
 (defn initialize
   [_ _]
   (-> {:boards [(cavegen/get-dungeon)]
-         :level 1
-         :messages '("Hello adventurer")
-         :player {:position [10 10]
-                  :ac 5
-                  :xp 0
-                  :hp [10 10]
-                  :mp [3 3]
-                  :equipment {}
-                  :items inital-items}}
+       :level 1
+       :messages '("Hello adventurer")
+       :player {:position [10 10]
+                :ac 5
+                :xp 0
+                :hp [10 10]
+                :mp [3 3]
+                :equipment {}
+                :items inital-items}}
       (move/set-to-tile :ground)))
 
 (defn game-over?
   [data]
   (= 0 (get-in data [:player :hp 0])))
-
 
 (def basic-mode
   {:initialize [initialize]

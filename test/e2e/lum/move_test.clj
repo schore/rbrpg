@@ -14,7 +14,6 @@
 (t/use-fixtures
   :each c/refresh)
 
-
 (defn move-with-retry
   [direction]
   (loop [i 0]

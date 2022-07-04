@@ -60,14 +60,13 @@
        (s/valid? :game/game input) input
        :else state)))
 
-
 #?(:clj
-  (defn load-game
-    [state [_ input]]
-    (cond
-      (s/valid? :game/game input) input
-      (valid-save-game? input) (load-save-game input)
-      :else state)))
+   (defn load-game
+     [state [_ input]]
+     (cond
+       (s/valid? :game/game input) input
+       (valid-save-game? input) (load-save-game input)
+       :else state)))
 
 #?(:clj
    (defn save-game

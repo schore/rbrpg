@@ -13,12 +13,9 @@
 (defn home-page [request]
   (layout/render request "home.html"))
 
-
-
 (defn home-routes []
   [""
-   {:middleware [
-                 ;middleware/wrap-csrf
+   {:middleware [;middleware/wrap-csrf
                  middleware/wrap-formats]}
    ["/" {:get home-page}]
    ["/docs" {:get (fn [_]
@@ -53,10 +50,8 @@
                                    {:status 200})
                                  {:status 400
                                   :headers {"Content-Type" "text/plain"}
-                                  :body "Input not conforming to spec\n"
-                                  })))}]
+                                  :body "Input not conforming to spec\n"})))}]
    ["/game/dungeon" {:get (fn [_]
                             {:status 200
                              :headers {"content-type" "application/json"}
-                             :body (into [] (cavegen/get-dungeon))
-                             })}]])
+                             :body (into [] (cavegen/get-dungeon))})}]])

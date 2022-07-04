@@ -10,7 +10,6 @@
             [clojure.java.io :as io]
             [lum.maputil :as mu]))
 
-
 (defn delete-directory-recursive
   "Recursively delete a directory."
   [^java.io.File file]
@@ -32,12 +31,10 @@
   (f)
   (delete-directory-recursive (io/file "tmp")))
 
-
 (defn prepare-save-game
   [filename]
   (spit (str "tmp/" filename)
         (slurp (io/resource (str "savegames/" filename)))))
-
 
 (defn create-game-maser
   []
@@ -52,7 +49,7 @@
 (deftype Game [in out]
   IGame
 
-  (exec [_ command ]
+  (exec [_ command]
     (log/info "Execute command" command)
     (a/put! in command)
     (first (a/alts!! [out (a/timeout 1000)])))
@@ -83,7 +80,6 @@
      (f)
      (close *game*))))
 
-
 (defn create-game-without-chan
   [f]
   (binding [*game* (GameNoChan. (atom {}))]
@@ -101,18 +97,17 @@
   [f rolls]
   (let [r (atom rolls)]
     (with-redefs [util/roll (fn [m]
-                             (let [next-roll (first @r)]
-                               (swap! r rest)
-                               (if (and (some? next-roll)
-                                        (<= next-roll m))
-                                 next-roll
-                                 (do
-                                   (is (not (nil? next-roll)) "Nor more dices")
-                                   (when (some? next-roll)
-                                     (is (<= next-roll m) "Wrong dice"))
-                                   1))))]
+                              (let [next-roll (first @r)]
+                                (swap! r rest)
+                                (if (and (some? next-roll)
+                                         (<= next-roll m))
+                                  next-roll
+                                  (do
+                                    (is (not (nil? next-roll)) "Nor more dices")
+                                    (when (some? next-roll)
+                                      (is (<= next-roll m) "Wrong dice"))
+                                    1))))]
       (f))))
-
 
 (defn get-state-unchecked
   []
@@ -195,7 +190,6 @@
   []
   (get-in (get-state) [:player :items]))
 
-
 (defn in-fight?
   []
   (some? (:fight (get-state))))
@@ -220,20 +214,15 @@
    (test-map-loaded)
    (set-position x y)))
 
-
 (defn move
   [dir]
   (exec *game* [:move dir]))
-
-
-
 
 (defn move-and-get-attacked
   ([] (move-and-get-attacked "Bat"))
   ([name]
    (with-redefs [fight/choose-enemy (fn [] name)]
      (exec-with-rolls #(move :down) [1 2]))))
-
 
 (defn in-a-fight
   ([]
@@ -242,20 +231,16 @@
    (game-is-initialized)
    (move-and-get-attacked enemy)))
 
-
-
 (defn attack
   ([]
    (exec *game* [:attack]))
   ([& rolls]
    ;;(attack)
-   (exec-with-rolls attack rolls)
-   ))
+   (exec-with-rolls attack rolls)))
 
 (defn use-item
   [item]
   (exec *game* [:use-item item]))
-
 
 (defn killed-the-enemy
   []

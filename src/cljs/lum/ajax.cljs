@@ -1,9 +1,9 @@
 (ns lum.ajax
   (:require
-    [ajax.core :as ajax]
-    [luminus-transit.time :as time]
-    [cognitect.transit :as transit]
-    [re-frame.core :as rf]))
+   [ajax.core :as ajax]
+   [luminus-transit.time :as time]
+   [cognitect.transit :as transit]
+   [re-frame.core :as rf]))
 
 (defn local-uri? [{:keys [uri]}]
   (not (re-find #"^\w+?://" uri)))
@@ -11,8 +11,7 @@
 (defn default-headers [request]
   (if (local-uri? request)
     (-> request
-        (update :headers #(merge {"x-csrf-token" js/csrfToken} %))
-        )
+        (update :headers #(merge {"x-csrf-token" js/csrfToken} %)))
     request))
 
 ;; injects transit serialization config into request options

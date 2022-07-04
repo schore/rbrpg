@@ -7,7 +7,6 @@
    [lum.game.item :as item]
    [clojure.spec.alpha :as s]))
 
-
 (defn active-item-can-dig?
   [data]
   (let [weapon (get-in data [:player :equipment :right-hand])
@@ -22,9 +21,8 @@
     (u/change-active-tile data :ground)
     data))
 
-
 (defn move-unchecked
-  [data direction ]
+  [data direction]
   (let [new-data (case (keyword direction)
                    :left (update-in data [:player :position 0] dec)
                    :right (update-in data [:player :position 0] inc)
@@ -39,7 +37,6 @@
   [board tile]
   (mu/n-to-position (.indexOf board {:type tile})))
 
-
 (defn set-to-tile
   [state tile]
   (assoc-in state [:player :position]
@@ -48,8 +45,8 @@
 (defn cavegen-when-required
   [state]
   (if (> (:level state) (count (:boards state)))
-      (update state :boards #(conj (into [] %) (cavegen/get-dungeon)))
-      state))
+    (update state :boards #(conj (into [] %) (cavegen/get-dungeon)))
+    state))
 
 (defn enter-next-level
   [state]

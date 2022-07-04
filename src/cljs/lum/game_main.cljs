@@ -72,7 +72,6 @@
 ;;  :game/send-message
 ;;  (fn [msg] ((:send-message wsconn) msg)))
 
-
 (def sizex 50)
 (def sizey 30)
 
@@ -176,7 +175,6 @@
    {:game/send-message (if (= "none" item)
                          [:unequip slot]
                          [:equip slot item])}))
-
 
 (rf/reg-event-db
  :game/update

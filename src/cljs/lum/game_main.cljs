@@ -116,7 +116,8 @@
       {:game/send-message (let [{:keys [entries active]} (:action db)
                                 action (nth entries active)]
                             (case action
-                              "Attack" [:attack]))}))))
+                              "Attack" [:attack]
+                              "Run" [:flea]))}))))
 
 (rf/reg-event-fx
  :game/get-new-map

@@ -38,16 +38,15 @@
                                    "font-weight")))
     (c/press-key etaoin.keys/enter)))
 
-
 (defn fight
   []
+  (is (c/fight-screen?) "Ensure you are really in a fight")
   (loop [i 0]
     (when (and (< i 20)
                (c/fight-screen?))
       (select-and-activate "Attack")
       (e/wait *driver* 0.3)
       (recur (inc i)))))
-
 
 (defn get-two-batblood
   []
@@ -86,6 +85,11 @@
   (fight)
   (is (c/map-screen?))
   (is (seq (c/get-items))))
+
+(deftest ^:integratin flea-from-fight
+  (c/load-game "in-a-fight.edn")
+  (select-and-activate "Run")
+  (is (c/map-screen?)))
 
 (deftest ^:integration fight-until-end
   (c/load-game "one-hp-left-and-fighting.edn")

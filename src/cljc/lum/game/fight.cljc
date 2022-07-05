@@ -133,3 +133,7 @@
   (-> data
       player-attacks
       enemy-attacks))
+
+(defn flea
+  [data _]
+  (dissoc data :fight))

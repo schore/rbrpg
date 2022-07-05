@@ -384,3 +384,8 @@
   (dsl/use-item "herb")
   (is (not (some #{(first (dsl/get-messages))}
                  db/hints))))
+
+(deftest in-a-fight-fleeing-successfull
+  (dsl/in-a-fight "Bandit")
+  (dsl/flea 20)
+  (is (not (dsl/in-fight?))))

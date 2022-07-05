@@ -52,6 +52,7 @@
 (def fight-mode
   (merge basic-mode
          {:attack [fight/attack fight/check-fight-end]
+          :flea [fight/flea]
           :use-item [item/use-item]}))
 
 (def move-mode

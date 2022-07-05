@@ -153,6 +153,12 @@
   [& s]
   (exec *game* [:combine (frequencies s)]))
 
+(defn flea
+  ([]
+   (exec *game* [:flea]))
+  ([& s]
+   (exec-with-rolls flea s)))
+
 (defn get-messages
   []
   (:messages (get-state)))

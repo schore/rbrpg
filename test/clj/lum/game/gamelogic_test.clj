@@ -389,3 +389,8 @@
   (dsl/in-a-fight "Bandit")
   (dsl/flea 20)
   (is (not (dsl/in-fight?))))
+
+(deftest fleeing-unsuscessfull
+  (dsl/in-a-fight "Bandit")
+  (dsl/flea 1)
+  (is (dsl/in-fight?)))

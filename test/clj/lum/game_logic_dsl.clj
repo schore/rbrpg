@@ -235,7 +235,8 @@
    (in-a-fight "Bat"))
   ([enemy]
    (game-is-initialized)
-   (move-and-get-attacked enemy)))
+   (move-and-get-attacked enemy)
+   (is (in-fight?))))
 
 (defn attack
   ([]

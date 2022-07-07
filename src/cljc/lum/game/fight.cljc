@@ -136,4 +136,7 @@
 
 (defn flea
   [data _]
-  (dissoc data :fight))
+  (if (> (u/roll-dice 20)
+         10)
+    (dissoc data :fight)
+    data))

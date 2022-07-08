@@ -392,7 +392,7 @@
 
 (deftest fleeing-unsuscessfull
   (dsl/in-a-fight "Bandit")
-  (dsl/flea 1)
+  (dsl/flea 1 1)
   (is (dsl/in-fight?)))
 
 (deftest enemy-attacks-when-fleeing-fails

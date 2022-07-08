@@ -21,6 +21,15 @@
     (binding [*driver* driver]
       (f))))
 
+(defn retry
+  ([fn] (retry fn 20))
+  ([fn n]
+   (loop [n n]
+     (if (or (fn)
+             (= 0 n))
+       nil
+       (recur (dec n))))))
+
 (defn delete-directory-recursive
   "Recursively delete a directory."
   [^java.io.File file]

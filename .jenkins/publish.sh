@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+cd "$(dirname "$0")/.."
+
+
 rm -rf rbrpg-static-site
 git clone git@github.com:schore/rbrpg-static-site.git
 

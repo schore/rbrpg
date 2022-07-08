@@ -87,8 +87,11 @@
   (is (seq (c/get-items))))
 
 (deftest ^:integratin flea-from-fight
-  (c/load-game "in-a-fight.edn")
-  (select-and-activate "Run")
+  ;;(c/load-game "in-a-fight.edn")
+  (c/retry (fn []
+             (c/load-game "in-a-fight.edn")
+             (select-and-activate "Run")
+             (c/map-screen?)))
   (is (c/map-screen?)))
 
 (deftest ^:integration fight-until-end

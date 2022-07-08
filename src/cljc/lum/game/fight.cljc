@@ -139,4 +139,4 @@
   (if (> (u/roll-dice 20)
          10)
     (dissoc data :fight)
-    data))
+    (enemy-attacks data)))

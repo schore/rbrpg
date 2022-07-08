@@ -394,3 +394,8 @@
   (dsl/in-a-fight "Bandit")
   (dsl/flea 1)
   (is (dsl/in-fight?)))
+
+(deftest fleeing-enemy-attacks-when-unseccessfull
+  (dsl/in-a-fight "Bandit")
+  (dsl/flea 1 20 1 1 1 1)
+  (is (< (dsl/get-hp) 10)))

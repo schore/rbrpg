@@ -3,6 +3,11 @@
 cd "$(dirname "$0")/.."
 
 
+if [[ $(git status --porcelain | wc -l) -gt 0 ]]; then
+    echo "Commit before puplishing"
+    exit -1
+fi
+
 rm -rf rbrpg-static-site
 git clone git@github.com:schore/rbrpg-static-site.git
 

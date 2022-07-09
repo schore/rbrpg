@@ -379,6 +379,12 @@
   (dsl/attack 20 6 6 1 1 1 1)
   (is (not (contains? (dsl/get-items) "leather armor"))))
 
+(deftest message-about-looted-items
+  (dsl/player-is-equipped :right-hand "sword")
+  (dsl/in-a-fight "Bandit")
+  (dsl/attack 20 6 6 15 1 1 1)
+  (is (clojure.string/includes? (first (dsl/get-messages)) "looted")))
+
 (deftest reading-a-note-gives-a-hint
   (dsl/player-has-items {"note" 1})
   (dsl/use-item "note")

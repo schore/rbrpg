@@ -128,3 +128,7 @@
   (reduce (fn [data [item n]] (add-item data item n))
           data
           used-items))
+
+(defn add-message
+  [data message]
+  (update data :messages #(conj % message)))

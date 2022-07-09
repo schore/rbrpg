@@ -1,7 +1,8 @@
 (ns lum.game.fight
   (:require
    [lum.game.game-database :as db]
-   [lum.game.utilities :as u]))
+   [lum.game.utilities :as u]
+   [lum.game.item :as item]))
 
 (defn choose-enemy
   []
@@ -49,7 +50,9 @@
   [data]
   (reduce (fn [data [item dice]]
             (if (>= (u/roll-dice 20) dice)
-              (u/add-item data item 1)
+              (-> data
+                  (u/add-item item 1)
+                  (u/add-message (str "You looted a "  item)))
               data))
           data
           (partition 2 (:items (get-enemy data)))))

@@ -119,7 +119,7 @@
       (-> data
           (assoc :fight {:enemy (get-enemy-stat enemy)
                          :actions []})
-          (update :messages #(conj % (str "You got attacked by a " enemy)))))
+          (u/add-message (str "You got attacked by a " enemy))))
     data))
 
 (defn check-fight-end

@@ -1,6 +1,10 @@
 (ns lum.game.utilities
   (:require [lum.maputil :as mu]))
 
+(defn add-message
+  [data message]
+  (update data :messages #(take 10 (conj % message))))
+
 (defn fight-ended?
   [data]
   (= 0 (get-in data [:fight :enemy :hp 0])))
@@ -41,7 +45,7 @@
   [state action-name effect]
   (if (contains? effect :hp)
     (-> state
-        (update :messages #(conj % (str action-name ": " (:hp effect) "hp")))
+        (add-message (str action-name ": " (:hp effect) "hp"))
         (add-hp (:target effect) (:hp effect)))
     state))
 
@@ -128,7 +132,3 @@
   (reduce (fn [data [item n]] (add-item data item n))
           data
           used-items))
-
-(defn add-message
-  [data message]
-  (update data :messages #(conj % message)))

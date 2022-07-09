@@ -74,7 +74,7 @@
 (defn add-found-item-messages
   [state item]
   (reduce (fn [s [item-name n]]
-            (update-in s [:messages] #(conj % (str "Found " n " " item-name))))
+            (u/add-message s (str "You found " n " " item-name)))
           state item))
 
 (defn look-for-item

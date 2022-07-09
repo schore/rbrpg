@@ -20,7 +20,7 @@
 (defn add-hint
   [data item]
   (if (contains? (get-in db/item-effects [item :properties]) :hint)
-    (update data :messages #(conj % (rand-nth db/hints)))
+    (u/add-message data (rand-nth db/hints))
     data))
 
 (defn use-item

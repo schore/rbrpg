@@ -23,7 +23,14 @@
   [_ _]
   (-> {:boards [(cavegen/get-dungeon)]
        :level 1
-       :messages '("Hello adventurer")
+       :messages '("Hello adventurer"
+                   ""
+                   "Welcome to my dungeon"
+                   "" ""
+                   "You will have a lot of fun"
+                   "The madness will go into your soul"
+                   "" ""
+                   "Try not to die")
        :player {:position [10 10]
                 :ac 5
                 :xp 0
@@ -87,8 +94,7 @@
     (go-loop [data {}]
       (let [action (<! input-chan)
             new-data (-> data
-                         (process-actions action)
-                         (update :messages #(take 10 %)))]
+                         (process-actions action))]
         (if (some? action)
           (do
             (>! out new-data)

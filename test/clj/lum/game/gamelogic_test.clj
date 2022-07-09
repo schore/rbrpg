@@ -3,7 +3,6 @@
    [clojure.spec.alpha :as s]
    [clojure.string]
    [clojure.test :as t :refer [deftest is testing]]
-   [clojure.tools.logging :as log]
    [lum.game-logic-dsl :as dsl]
    [lum.game.dataspec]
    [lum.maputil :as mu]
@@ -331,9 +330,8 @@
 (deftest get-a-message-when-picking-up
   (dsl/player-is-on-level 1)
   (dsl/player-is-on :ground)
-  (let [message-count (count (dsl/get-messages))]
-    (dsl/activate 20 20 20 20)
-    (is (< message-count (count (dsl/get-messages))))))
+  (dsl/activate 20 20 20 20)
+  (is (clojure.string/includes? (first (dsl/get-messages)) "found")))
 
 (deftest check-handling-of-items
   (dsl/player-has-items {"foo" 1})

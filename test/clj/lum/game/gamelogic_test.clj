@@ -328,6 +328,13 @@
   (dsl/activate 20 20 20 20)
   (is (not (contains? (dsl/get-items) "wooden stick"))))
 
+(deftest get-a-message-when-picking-up
+  (dsl/player-is-on-level 1)
+  (dsl/player-is-on :ground)
+  (let [message-count (count (dsl/get-messages))]
+    (dsl/activate 20 20 20 20)
+    (is (< message-count (count (dsl/get-messages))))))
+
 (deftest check-handling-of-items
   (dsl/player-has-items {"foo" 1})
   (is (nil? (get (dsl/get-items) "foo")))

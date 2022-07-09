@@ -71,11 +71,19 @@
                                                    (>= thrown-dice dice))))
        (map first)))
 
+(defn add-found-item-messages
+  [state item]
+  (reduce (fn [s [item-name n]]
+            (update-in s [:messages] #(conj % (str "Found " n " " item-name))))
+          state item))
+
 (defn look-for-item
   [state]
-  (u/add-items state (into {}
-                           (for [i (items-to-add (:level state) (u/disadvantage 20))]
-                             [i 1]))))
+  (let [items (for [i (items-to-add (:level state) (u/disadvantage 20))]
+                [i 1])]
+    (-> state
+        (u/add-items (into {} items))
+        (add-found-item-messages items))))
 
 ;; High level
 (defn move

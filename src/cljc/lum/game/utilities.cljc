@@ -41,6 +41,11 @@
   (update-in state (get-target-keys target :hp)
              (fn [[v max]] [(add-with-boundaries 0 max v n) max])))
 
+(defn add-max-hp
+  [state target n]
+  (update-in state (get-target-keys target :hp)
+             (fn [[v max]] [(+ v n) (+ max n)])))
+
 (defn process-hp
   [state action-name effect]
   (if (contains? effect :hp)
@@ -49,12 +54,21 @@
         (add-hp (:target effect) (:hp effect)))
     state))
 
+(defn process-max-hp
+  [state action-name effects]
+  (if (contains? effects :maxhp)
+    (-> state
+        (add-message (str action-name ": " (:maxhp effects) "max hp"))
+        (add-max-hp (:target effects) (:maxhp effects)))
+    state))
+
 (defn process-effect
   [action-name]
   (fn [state effect]
     (if (not (fight-ended? state))
       (-> state
-          (process-hp action-name effect))
+          (process-hp action-name effect)
+          (process-max-hp action-name effect))
       state)))
 
 (defn process-event

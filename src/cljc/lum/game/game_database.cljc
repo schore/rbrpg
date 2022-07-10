@@ -35,6 +35,9 @@
 
 (def recipies {{"batblood" 2} "small healing potion"
                {"small healing potion" 2} "medium healing potion"
+               {"wooden stick" 2
+                "ratmeet" 2
+                "herb" 1} "roast beef"
                {"wooden stick" 1
                 "knife" 2} "pickaxe"
                {"knife" 1
@@ -48,6 +51,8 @@
                    "batwing" {}
                    "ratmeet" {}
                    "herb" {}
+                   "roast beef" {:target :player
+                                 :maxhp 1}
                    "note" {:properties #{:hint}}
                    "wooden stick" {:target :player
                                    :damage [1 4]
@@ -75,7 +80,8 @@
                                       :dice 5}})
 
 (def hints ["Mixing batblood may help"
-            "A spear is a knife with a long handle"])
+            "A spear is a knife with a long handle"
+            "Two ratmeet and a herb give an excellent meal"])
 
 (s/def ::item (into #{} (map first item-effects)))
 (s/def :game-database/item ::item)
@@ -83,6 +89,7 @@
 ;;enemie database
 (s/def ::ac int?)
 (s/def ::hp int?)
+(s/def ::hpmax int?)
 (s/def ::mp int?)
 (s/def ::xp pos-int?)
 (s/def ::damage (s/cat :n pos-int? :faces pos-int?))
@@ -108,7 +115,7 @@
 (s/def ::propertie #{:digging :burning})
 (s/def ::properties (s/coll-of ::propertie
                                :kind set?))
-(s/def ::effect (s/keys :req-op [::target ::hp ::mp ::damage ::ac ::slots ::properties]))
+(s/def ::effect (s/keys :req-op [::target ::hp ::hpmax ::mp ::damage ::ac ::slots ::properties]))
 (s/def ::item-effects (s/map-of ::item ::effect))
 
 ;; Item on grounds

@@ -410,3 +410,15 @@
   (dsl/in-a-fight "Bandit")
   (dsl/flea 1 20 1 1 1 1)
   (is (< (dsl/get-hp) 10)))
+
+(deftest roast-beef-add-max-hp
+  (dsl/player-has-items {"roast beef" 1})
+  (dsl/use-item "roast beef")
+  (is (= 11 (dsl/get-hp)))
+  (is (= 11 (dsl/get-max-hp))))
+
+(deftest increasing-maxhp-also-increases-hp
+  (dsl/player-has-hp 9)
+  (dsl/player-has-items {"roast beef" 1})
+  (dsl/use-item "roast beef")
+  (is (= 10 (dsl/get-hp))))

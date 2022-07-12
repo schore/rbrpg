@@ -182,7 +182,7 @@
  (fn [db [_ game]]
    (let [db (assoc db :game game)]
      (if (fight? db)
-       (assoc db :action {:entries ["Attack" "Magic" "Run"]
+       (assoc db :action {:entries ["Attack" "Run"]
                           :active 0})
        (dissoc db :action)))))
 

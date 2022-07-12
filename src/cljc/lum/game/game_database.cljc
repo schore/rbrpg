@@ -75,7 +75,7 @@
                                     :slots #{:body}}})
 
 (def items-on-ground {"herb" {:level [1 20]
-                              :dice 15}
+                              :dice 20}
                       "wooden stick" {:level [1 20]
                                       :dice 5}})
 

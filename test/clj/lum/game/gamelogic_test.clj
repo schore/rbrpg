@@ -312,7 +312,7 @@
 (deftest activating-a-tile-can-give-item
   (dsl/player-is-on-level 1)
   (dsl/player-is-on :ground)
-  (dsl/activate 20 16 20 20)
+  (dsl/activate 20 20 20 20)
   (is (= 1 (get (dsl/get-items) "herb"))))
 
 (deftest activation-doesnt-give-item-whith-no-luck

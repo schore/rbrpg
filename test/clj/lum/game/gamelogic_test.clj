@@ -425,5 +425,10 @@
 
 (deftest magic-can-end-fights-with-damage
   (dsl/in-a-fight "Bandit")
-  (dsl/cast-spell "Burning Hands")
+  (dsl/cast-spell "Burning Hands" 1 1 3 1 1 1 1)
   (is (not (dsl/in-fight?))))
+
+(deftest magic-makes-damage-according-to-rolls
+  (dsl/in-a-fight "Bandit")
+  (dsl/cast-spell "Burning Hands" 1 1 1)
+  (is (= 2 (dsl/get-enemy-hp))))

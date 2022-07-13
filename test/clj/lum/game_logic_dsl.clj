@@ -245,6 +245,12 @@
    ;;(attack)
    (exec-with-rolls attack rolls)))
 
+(defn cast-spell
+  ([spell]
+   (exec *game* [:cast-spell spell]))
+  ([spell & rolls]
+   (exec-with-rolls #(cast-spell spell) rolls)))
+
 (defn use-item
   [item]
   (exec *game* [:use-item item]))

@@ -422,3 +422,8 @@
   (dsl/player-has-items {"roast beef" 1})
   (dsl/use-item "roast beef")
   (is (= 10 (dsl/get-hp))))
+
+(deftest magic-can-end-fights-with-damage
+  (dsl/in-a-fight "Bandit")
+  (dsl/cast-spell "Burning Hands")
+  (is (not (dsl/in-fight?))))

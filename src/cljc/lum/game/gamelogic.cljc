@@ -8,7 +8,8 @@
    [lum.game.update-data]
    [lum.game.item :as item]
    [lum.game.move :as move]
-   [lum.game.fight :as fight]))
+   [lum.game.fight :as fight]
+   [lum.game.magic :as magic]))
 
 (def inital-items
   {"small healing potion" 2})
@@ -59,6 +60,7 @@
 (def fight-mode
   (merge basic-mode
          {:attack [fight/attack fight/check-fight-end]
+          :cast-spell [magic/attack-spell fight/check-fight-end]
           :flea [fight/flea]
           :use-item [item/use-item]}))
 

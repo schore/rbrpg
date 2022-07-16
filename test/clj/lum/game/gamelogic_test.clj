@@ -432,3 +432,8 @@
   (dsl/in-a-fight "Bandit")
   (dsl/cast-spell "Burning Hands" 1 1 1)
   (is (= 2 (dsl/get-enemy-hp))))
+
+(deftest magic-burns-hp
+  (dsl/in-a-fight "Bandit")
+  (dsl/cast-spell "Burning Hands")
+  (is (= 0 (dsl/get-mp))))

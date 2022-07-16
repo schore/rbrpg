@@ -80,7 +80,8 @@
                                       :dice 5}})
 
 (def spells {"Burning Hands" {:target :enemy
-                              :damage [3 6]}})
+                              :damage [3 6]
+                              :mp 3}})
 
 (def hints ["Mixing batblood may help"
             "A spear is a knife with a long handle"

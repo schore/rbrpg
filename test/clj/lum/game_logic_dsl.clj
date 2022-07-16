@@ -176,6 +176,10 @@
   []
   (get-in (get-state) [:player :hp 0]))
 
+(defn get-mp
+  []
+  (get-in (get-state) [:player :mp 0]))
+
 (defn get-max-hp
   []
   (get-in (get-state) [:player :hp 1]))

@@ -437,3 +437,8 @@
   (dsl/in-a-fight "Bandit")
   (dsl/cast-spell "Burning Hands")
   (is (= 0 (dsl/get-mp))))
+
+(deftest can-not-cast-unknown-spells
+  (dsl/in-a-fight "Bandit")
+  (dsl/cast-spell "Magic missle")
+  (is (= 5 (dsl/get-enemy-hp))))

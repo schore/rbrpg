@@ -83,6 +83,8 @@
                               :damage [3 6]
                               :mp 3}})
 
+(def spell-names (map first spells))
+
 (def hints ["Mixing batblood may help"
             "A spear is a knife with a long handle"
             "Two ratmeet and a herb give an excellent meal"])

@@ -19,7 +19,6 @@
   (< 0 (count (filter #(= element (:type %))
                       (s/unform :game/board board)))))
 
-
 (s/def :game/board (s/and (s/coll-of :game/tile
                                      :count 1500)
                           (partial board-contains-element? :stair-up)
@@ -35,10 +34,8 @@
 
 (s/def :player/xp nat-int?)
 
-
-
 (s/def :game/stat (s/and (s/cat :current nat-int? :max nat-int?)
-                           #(<= (:current %) (:max %))))
+                         #(<= (:current %) (:max %))))
 
 (s/def :player/hp :game/stat)
 (s/def :player/mp :game/stat)
@@ -48,12 +45,17 @@
 (s/def :player/equipment (s/map-of ::slot :game-database/item))
 (s/def :player/items (s/map-of :game-database/item pos-int?))
 
+(s/def :player/spell (into #{} db/spell-names))
+(s/def :player/spells (s/and (s/coll-of :player/spell)
+                             set?))
+
 (s/def :game/player (s/keys :req-un [:game/position
                                      :player/ac
                                      :player/xp
                                      :player/hp
                                      :player/mp
                                      :player/equipment
+                                     :player/spells
                                      :player/items]))
 
 (s/def :enemy/name string?)
@@ -65,8 +67,6 @@
                                      :enemy/hp
                                      :enemy/mp
                                      :enemy/ac]))
-
-
 
 (s/def :effect/target #{:player :enemy})
 (s/def :effect/stat #{:hp :mp})
@@ -103,11 +103,9 @@
                                           :game/boards
                                           :game/level
                                           :game/messages]
-                                 :opt-un [:game/fight]
-                                 )
+                                 :opt-un [:game/fight])
                          valid-position?
                          valid-level?))
-
 
 ;; (s/explain :game/game {:boards [(g/get-dungeon)]
 ;;                        :level 1
@@ -116,12 +114,12 @@
 ;;                                 :ac 10
 ;;                                 :hp [8 10]
 ;;                                 :mp [0 3]
+;;                                 :spells #{"Burning Hands"}
 ;;                                 :equipment {:right-hand "sword"}
 ;;                                 :items {"batwing" 2
 ;;                                         "batblood" 2}}
 ;;                        :messages ["Hello World"]
-;;                        :fight {:enemy {
-;;                                        :name "bat"
+;;                        :fight {:enemy {:name "bat"
 ;;                                        :ac 1
 ;;                                        :hp [20 20]
 ;;                                        :mp [0 0]}

@@ -38,6 +38,7 @@
                 :hp [10 10]
                 :mp [3 3]
                 :equipment {}
+                :spells #{"Burning Hands"}
                 :items inital-items}}
       (move/set-to-tile :ground)))
 

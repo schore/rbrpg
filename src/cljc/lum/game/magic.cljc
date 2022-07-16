@@ -1,9 +1,11 @@
 (ns lum.game.magic
   (:require
-   [lum.game.utilities :as u]))
+   [lum.game.utilities :as u]
+   [lum.game.game-database :as db]))
 
 (defn attack-spell
   [state [_ spell]]
-  (-> state
-      (u/process-event [spell [{:target :enemy
-                                :hp (* -1 (u/roll-dice 3 6))}]])))
+  (let [{:keys [target damage]} (get db/spells spell)]
+    (-> state
+        (u/process-event [spell [{:target target
+                                  :hp (* -1 (apply u/roll-dice damage))}]]))))

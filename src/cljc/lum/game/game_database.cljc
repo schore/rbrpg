@@ -79,6 +79,9 @@
                       "wooden stick" {:level [1 20]
                                       :dice 5}})
 
+(def spells {"Burning Hands" {:target :enemy
+                              :damage [3 6]}})
+
 (def hints ["Mixing batblood may help"
             "A spear is a knife with a long handle"
             "Two ratmeet and a herb give an excellent meal"])
@@ -128,6 +131,10 @@
                      #(<= % 20)))
 (s/def ::ground-item (s/keys :req-un [::level ::dice]))
 (s/def ::ground-items (s/map-of ::item ::ground-item))
+
+;;spells
+
+(s/def ::spells (s/map-of string? ::effect))
 
 (defn get-items-for-slot
   [slot]

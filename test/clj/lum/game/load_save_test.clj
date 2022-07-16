@@ -5,11 +5,8 @@
             [clojure.spec.alpha :as s]
             [clojure.tools.logging :as log]))
 
-
 (t/use-fixtures
   :each dsl/prepare-directory dsl/create-game)
-
-
 
 (deftest load-game-with-state
   (testing "Load a game"
@@ -24,6 +21,7 @@
                                           :xp 0
                                           :hp [10 10]
                                           :mp [3 3]
+                                          :spells #{}
                                           :equipment {}
                                           :items {}}})))]
       (dsl/game-is-initialized)
@@ -34,7 +32,6 @@
   (dsl/game-is-initialized)
   (dsl/load-game {})
   (is (s/valid? :game/game (dsl/get-state))))
-
 
 (deftest load-saved-game
   (dsl/prepare-save-game "load-test.edn")

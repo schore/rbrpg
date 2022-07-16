@@ -86,7 +86,7 @@
   (is (c/map-screen?))
   (is (seq (c/get-items))))
 
-(deftest ^:integratin flea-from-fight
+(deftest ^:integration flea-from-fight
   ;;(c/load-game "in-a-fight.edn")
   (c/retry (fn []
              (c/load-game "in-a-fight.edn")

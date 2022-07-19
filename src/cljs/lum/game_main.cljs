@@ -105,16 +105,17 @@
     (when (and (fight? db)
                (some #{action} [:up :down]))
       (let [{:keys [entries active]} (:action db)
-            n (count entries)]
-        (println entries active n)
-        {:db (assoc-in db [:action :active]
-                       (mod (if (= action :down)
-                              (inc active)
-                              (dec active)) n))}))
+            n (dec (count entries))]
+        (println entries "|" active "|" n)
+        {:db (update-in db [:action :active (dec (count active))]
+                        #(inc (mod (dec (if (= action :down)
+                                          (inc %)
+                                          (dec %))) n)))}))
     (when (and (fight? db)
                (= action :confirm))
       {:game/send-message (let [{:keys [entries active]} (:action db)
-                                action (nth entries active)]
+                                action (get-in entries active)]
+                            (println action)
                             (case action
                               "Attack" [:attack]
                               "Run" [:flea]))}))))
@@ -182,8 +183,8 @@
  (fn [db [_ game]]
    (let [db (assoc db :game game)]
      (if (fight? db)
-       (assoc db :action {:entries ["Attack" "Run"]
-                          :active 0})
+       (assoc db :action {:entries [0 "Attack" ["Magic" "Burning Hands"] "Run"]
+                          :active [1]})
        (dissoc db :action)))))
 
 (rf/reg-event-db
@@ -323,6 +324,32 @@
         [:<> [:p name]
          [:p [stat-style (:hp enemy) (:mp enemy)]]]))))
 
+(defn get-text
+  [e]
+  (if (coll? e)
+    (first e)
+    e))
+
+(defn menu
+  [entries active]
+  [:<> (for [i (range 1 (count entries))]
+         ^{:key (str "menu_" i)}
+         [:p
+          (when (= i active) {:style {:font-weight "bold"}})
+          (let [entry (nth entries i)]
+            (if (coll? entry)
+              (first entry)
+              entry))])])
+
+(defn fight-menu
+  [entry active]
+  (let [items (get-in entry (butlast active))]
+    [:<>
+     ;; [:p (str entry)]
+     ;; [:p (str (butlast active))]
+     ;; [:p (str items)]
+     [menu items (last active)]]))
+
 (defn fight-screen
   []
   (let [actions (rf/subscribe [:game/action])]
@@ -332,12 +359,14 @@
          [:h1 "FIGHT"]
          [:p>b "Enemy"]
          [enemy-stat]
-         (for [entry entries]
-           ^{:key (str "fightscreen" entry)}
-           [:p
-            (when (= entry (nth entries active))
-              {:style {:font-weight "bold"}})
-            entry])]))))
+         [fight-menu entries active]
+         ;; (for [entry entries]
+         ;;   ^{:key (str "fightscreen" entry)}
+         ;;   [:p
+         ;;    (when (= entry (nth entries active))
+         ;;      {:style {:font-weight "bold"}})
+         ;;    entry])
+         ]))))
 
 (defn game-over
   []

@@ -18,7 +18,8 @@
    [cljs.core.async :as a :refer [<! >! go-loop go]]
    [lum.game.game-database :as db]
    [lum.game.update-splitter :as update-splitter]
-   [lum.game.gamelogic :as gamelogic]))
+   [lum.game.gamelogic :as gamelogic]
+   [lum.game.fight :as fight]))
 
 (defn keyify-ws
   [msg]
@@ -181,11 +182,15 @@
 (rf/reg-event-db
  :game/update
  (fn [db [_ game]]
-   (let [db (assoc db :game game)]
-     (if (fight? db)
-       (assoc db :action {:entries [0 "Attack" ["Magic" "Burning Hands"] "Run"]
-                          :active [1]})
-       (dissoc db :action)))))
+   (let [fight-changed? (not= (contains? game :fight) (fight? db))
+         db (assoc db :game game)
+         fight-started? (and fight-changed? (fight? db))
+         fight-ended? (and fight-changed? (not fight-started?))]
+     (cond
+       fight-started? (assoc db :action {:entries [0 "Attack" ["Magic" "Burning Hands"] "Run"]
+                                         :active [1]})
+       fight-ended? (dissoc db :action)
+       :else db))))
 
 (rf/reg-event-db
  :game/board-update

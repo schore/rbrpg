@@ -103,3 +103,9 @@
   (get-two-batblood)
   (c/combine 2 "batblood")
   (is (= 1 (get (c/get-items) "small healing potion"))))
+
+(deftest ^:integration use-magic
+  (c/load-game "in-a-fight.edn")
+  (select-and-activate "Magic")
+  (select-and-activate "Burning Hands")
+  (is (c/map-screen?)))

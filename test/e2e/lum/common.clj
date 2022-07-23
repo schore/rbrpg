@@ -81,15 +81,16 @@
   []
   (e/click-visible *driver* {:tag :input :value "Load map"}))
 
-(defn map-screen?
-  []
-  (e/exists? *driver* [{:class "grid-container"}
-                       {:tag :img}]))
-
 (defn wait-map-screen
   []
   (e/wait-visible *driver* [{:class "grid-container"}
                             {:tag :img}]))
+
+(defn map-screen?
+  []
+  (wait-map-screen)
+  (e/exists? *driver* [{:class "grid-container"}
+                       {:tag :img}]))
 
 (defn fight-screen?
   []

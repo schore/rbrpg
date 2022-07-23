@@ -103,6 +103,7 @@
 (rf/reg-event-fx
  :game/key
  (fn [{:keys [db]} [_ action]]
+   (println action)
    (merge
     (when (and (not (fight? db))
                (some #{action} [:up :down :left :right]))
@@ -118,7 +119,8 @@
         {:db (update-in db [:action :active (dec (count active))]
                         #(add-clockwise 1 n % (if (= action :up) -1 1)))}))
     (when (and (fight? db)
-               (= action :confirm))
+               (or (= action :confirm)
+                   (= action :right)))
       (let [{:keys [entries active]} (:action db)
             action (get-in entries active)]
         (println action)
@@ -131,7 +133,13 @@
                           (println "ac" action " " ac)
                           (if (coll? action)
                             (conj ac 1)
-                            ac)))})))))
+                            ac)))}))
+    (when (and (fight? db)
+               (= action :left))
+      {:db (update-in db [:action :active]
+                      #(if (= 1 (count %))
+                         %
+                         (into [] (drop-last %))))}))))
 
 (rf/reg-event-fx
  :game/get-new-map

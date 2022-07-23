@@ -93,6 +93,13 @@
   [db]
   (some? (get-in db [:game :fight])))
 
+(defn add-clockwise
+  [min max & entries]
+  (println min " " max " " entries)
+  (let [n (+ max (- min) 1)
+        sum (reduce + entries)]
+    (+ (mod (- sum min) n) min)))
+
 (rf/reg-event-fx
  :game/key
  (fn [{:keys [db]} [_ action]]
@@ -106,20 +113,25 @@
     (when (and (fight? db)
                (some #{action} [:up :down]))
       (let [{:keys [entries active]} (:action db)
-            n (dec (count entries))]
+            n (dec (count (get-in entries (butlast active))))]
         (println entries "|" active "|" n)
         {:db (update-in db [:action :active (dec (count active))]
-                        #(inc (mod (dec (if (= action :down)
-                                          (inc %)
-                                          (dec %))) n)))}))
+                        #(add-clockwise 1 n % (if (= action :up) -1 1)))}))
     (when (and (fight? db)
                (= action :confirm))
-      {:game/send-message (let [{:keys [entries active]} (:action db)
-                                action (get-in entries active)]
-                            (println action)
-                            (case action
-                              "Attack" [:attack]
-                              "Run" [:flea]))}))))
+      (let [{:keys [entries active]} (:action db)
+            action (get-in entries active)]
+        (println action)
+        {:game/send-message  (case action
+                               "Attack" [:attack]
+                               "Run" [:flea]
+                               [:nop])
+         :db (update-in db [:action :active]
+                        (fn [ac]
+                          (println "ac" action " " ac)
+                          (if (coll? action)
+                            (conj ac 1)
+                            ac)))})))))
 
 (rf/reg-event-fx
  :game/get-new-map
@@ -187,7 +199,7 @@
          fight-started? (and fight-changed? (fight? db))
          fight-ended? (and fight-changed? (not fight-started?))]
      (cond
-       fight-started? (assoc db :action {:entries [0 "Attack" ["Magic" "Burning Hands"] "Run"]
+       fight-started? (assoc db :action {:entries [0 "Attack" ["Magic" "Burning Hands" "Force"] "Run"]
                                          :active [1]})
        fight-ended? (dissoc db :action)
        :else db))))
@@ -351,7 +363,7 @@
   (let [items (get-in entry (butlast active))]
     [:<>
      ;; [:p (str entry)]
-     ;; [:p (str (butlast active))]
+     ;; [:p (str active)]
      ;; [:p (str items)]
      [menu items (last active)]]))
 
@@ -364,14 +376,7 @@
          [:h1 "FIGHT"]
          [:p>b "Enemy"]
          [enemy-stat]
-         [fight-menu entries active]
-         ;; (for [entry entries]
-         ;;   ^{:key (str "fightscreen" entry)}
-         ;;   [:p
-         ;;    (when (= entry (nth entries active))
-         ;;      {:style {:font-weight "bold"}})
-         ;;    entry])
-         ]))))
+         [fight-menu entries active]]))))
 
 (defn game-over
   []

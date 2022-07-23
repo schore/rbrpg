@@ -68,7 +68,8 @@
  :game/send-message
  (fn [msg]
    (print msg)
-   (a/put! (:in gamelogic) msg)))
+   (when (some? msg)
+     (a/put! (:in gamelogic) msg))))
 ;; (rf/reg-fx
 ;;  :game/send-message
 ;;  (fn [msg] ((:send-message wsconn) msg)))
@@ -122,12 +123,16 @@
                (or (= action :confirm)
                    (= action :right)))
       (let [{:keys [entries active]} (:action db)
+            menu (first (get-in entries (butlast active)))
             action (get-in entries active)]
-        (println action)
-        {:game/send-message  (case action
-                               "Attack" [:attack]
-                               "Run" [:flea]
-                               [:nop])
+        (println menu action)
+        {:game/send-message  (case menu
+                               "Main" (case action
+                                        "Attack" [:attack]
+                                        "Run" [:flea]
+                                        nil)
+                               "Magic" [:cast-spell action]
+                               nil)
          :db (update-in db [:action :active]
                         (fn [ac]
                           (println "ac" action " " ac)
@@ -207,7 +212,7 @@
          fight-started? (and fight-changed? (fight? db))
          fight-ended? (and fight-changed? (not fight-started?))]
      (cond
-       fight-started? (assoc db :action {:entries [0 "Attack" ["Magic" "Burning Hands" "Force"] "Run"]
+       fight-started? (assoc db :action {:entries ["Main" "Attack" ["Magic" "Burning Hands"] "Run"]
                                          :active [1]})
        fight-ended? (dissoc db :action)
        :else db))))

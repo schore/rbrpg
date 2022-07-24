@@ -212,7 +212,7 @@
          fight-started? (and fight-changed? (fight? db))
          fight-ended? (and fight-changed? (not fight-started?))]
      (cond
-       fight-started? (assoc db :action {:entries ["Main" "Attack" ["Magic" "Burning Hands"] "Run"]
+       fight-started? (assoc db :action {:entries ["Main" "Attack" (concat ["Magic"] (sort (get-in db [:game :player :spells]))) "Run"]
                                          :active [1]})
        fight-ended? (dissoc db :action)
        :else db))))

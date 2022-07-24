@@ -88,7 +88,7 @@
 
 (defn map-screen?
   []
-  (wait-map-screen)
+  (e/wait *driver* 0.3)
   (e/exists? *driver* [{:class "grid-container"}
                        {:tag :img}]))
 

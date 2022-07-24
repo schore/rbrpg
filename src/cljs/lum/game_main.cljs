@@ -116,18 +116,13 @@
                (some #{action} [:up :down]))
       (let [{:keys [entries active]} (:action db)
             n (dec (count (get-in entries (butlast active))))]
-        (println entries "|" active "|" n)
         {:db (update-in db [:action :active (dec (count active))]
                         #(add-clockwise 1 n % (if (= action :up) -1 1)))}))
     (when (and (fight? db)
-               (or (= action :confirm)
-                   (= action :right)))
+               (= action :confirm))
       (let [{:keys [entries active]} (:action db)
             menu (first (get-in entries (butlast active)))
             action (get-in entries active)]
-        (println entries)
-        (println active)
-        (println menu action)
         {:game/send-message  (case menu
                                "Main" (case action
                                         "Attack" [:attack]

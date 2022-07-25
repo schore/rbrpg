@@ -273,6 +273,11 @@
   (let [state (game-is-initialized)]
     (load-game (assoc-in state [:player :hp 0] hp))))
 
+(defn player-has-mp
+  [mp]
+  (let [state (game-is-initialized)]
+    (load-game (assoc-in state [:player :mp 0] mp))))
+
 (defn player-equips
   [slot item]
   (exec *game* [:equip slot item]))

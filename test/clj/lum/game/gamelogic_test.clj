@@ -442,3 +442,9 @@
   (dsl/in-a-fight "Bandit")
   (dsl/cast-spell "Magic missle")
   (is (= 5 (dsl/get-enemy-hp))))
+
+(deftest can-not-cast-with-insufficen-mana
+  (dsl/player-has-mp 0)
+  (dsl/in-a-fight "Bandit")
+  (dsl/cast-spell "Burning Hands")
+  (is (dsl/in-fight?)))

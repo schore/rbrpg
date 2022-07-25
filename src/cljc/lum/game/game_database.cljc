@@ -35,6 +35,7 @@
 
 (def recipies {{"batblood" 2} "small healing potion"
                {"small healing potion" 2} "medium healing potion"
+               {"batblood" 2 "batwing" 1} "small mana potion"
                {"wooden stick" 2
                 "ratmeet" 2
                 "herb" 1} "roast beef"

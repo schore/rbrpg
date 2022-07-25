@@ -45,6 +45,8 @@
 
 (def item-effects {"small healing potion" {:target :player
                                            :hp 3}
+                   "small mana potion" {:target :player
+                                        :mp 3}
                    "medium healing potion" {:target :player
                                             :hp 30}
                    "batblood" {}

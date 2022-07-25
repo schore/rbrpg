@@ -448,3 +448,9 @@
   (dsl/in-a-fight "Bandit")
   (dsl/cast-spell "Burning Hands")
   (is (dsl/in-fight?)))
+
+(deftest restore-mp
+  (dsl/player-has-mp 0)
+  (dsl/player-has-items {"small mana potion" 1})
+  (dsl/use-item "small mana potion")
+  (is (= 3 (dsl/get-mp))))

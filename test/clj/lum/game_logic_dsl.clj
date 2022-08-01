@@ -184,6 +184,10 @@
   []
   (get-in (get-state) [:player :hp 1]))
 
+(defn get-max-mp
+  []
+  (get-in (get-state) [:player :mp 1]))
+
 (defn get-enemy-hp
   []
   (get-in (get-state) [:fight :enemy :hp 0]))

@@ -34,17 +34,19 @@
   [xp initial-xp]
   (> (xp-to-level xp) (xp-to-level initial-xp)))
 
-(defn add-max-hp-on-level-up
+(defn increase-stats-on-level-up
   [data initial-xp]
   (if (level-up? (get-in data [:player :xp]) initial-xp)
-    (update-in data [:player :hp 1] (partial + 6))
+    (-> data
+        (update-in [:player :hp 1] (partial + 6))
+        (update-in [:player :mp 1] (partial + 3)))
     data))
 
 (defn update-xp
   [data]
   (-> data
       (update-in [:player :xp] #(+ % (:xp (get-enemy data))))
-      (add-max-hp-on-level-up (get-in data [:player :xp]))))
+      (increase-stats-on-level-up (get-in data [:player :xp]))))
 
 (defn loot-items
   [data]

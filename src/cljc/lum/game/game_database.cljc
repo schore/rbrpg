@@ -57,6 +57,7 @@
                    "roast beef" {:target :player
                                  :maxhp 1}
                    "note" {:properties #{:hint}}
+                   "scroll" {:properties #{:spell}}
                    "wooden stick" {:target :player
                                    :damage [1 4]
                                    :slots #{:right-hand}}
@@ -84,7 +85,10 @@
 
 (def spells {"Burning Hands" {:target :enemy
                               :damage [3 6]
-                              :mp 3}})
+                              :mp 3}
+             "Force" {:target :enemy
+                      :damage [3 3]
+                      :mp 1}})
 
 (def spell-names (map first spells))
 
@@ -122,10 +126,10 @@
 (s/def ::slot slots)
 (s/def ::slots (s/coll-of ::slot :kind set?))
 (s/def ::target #{:player :enemy})
-(s/def ::propertie #{:digging :burning})
+(s/def ::propertie #{:digging :burning :hint :spell})
 (s/def ::properties (s/coll-of ::propertie
                                :kind set?))
-(s/def ::effect (s/keys :req-op [::target ::hp ::hpmax ::mp ::damage ::ac ::slots ::properties]))
+(s/def ::effect (s/keys :opt-un [::target ::hp ::hpmax ::mp ::damage ::ac ::slots ::properties]))
 (s/def ::item-effects (s/map-of ::item ::effect))
 
 ;; Item on grounds

@@ -57,7 +57,7 @@
                    "roast beef" {:target :player
                                  :maxhp 1}
                    "note" {:properties #{:hint}}
-                   "scroll" {:properties #{:spell}}
+                   "Force scroll" {:spell "Force"}
                    "wooden stick" {:target :player
                                    :damage [1 4]
                                    :slots #{:right-hand}}
@@ -126,10 +126,11 @@
 (s/def ::slot slots)
 (s/def ::slots (s/coll-of ::slot :kind set?))
 (s/def ::target #{:player :enemy})
-(s/def ::propertie #{:digging :burning :hint :spell})
+(s/def ::propertie #{:digging :burning :hint})
 (s/def ::properties (s/coll-of ::propertie
                                :kind set?))
-(s/def ::effect (s/keys :opt-un [::target ::hp ::hpmax ::mp ::damage ::ac ::slots ::properties]))
+(s/def ::spell (into #{} spell-names))
+(s/def ::effect (s/keys :opt-un [::target ::hp ::hpmax ::mp ::damage ::ac ::slots ::properties ::spell]))
 (s/def ::item-effects (s/map-of ::item ::effect))
 
 ;; Item on grounds

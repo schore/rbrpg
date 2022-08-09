@@ -346,3 +346,7 @@
   []
   (in-a-fight)
   (killed-the-enemy))
+
+(defn get-spells
+  []
+  (get-in (get-state) [:player :spells]))

@@ -454,6 +454,11 @@
   (dsl/cast-spell "Burning Hands")
   (is (dsl/in-fight?)))
 
+(deftest learning-new-spells-from-items
+  (dsl/player-has-items {"Force scroll" 1})
+  (dsl/use-item "Force scroll")
+  (is (contains? (dsl/get-spells) "Force")))
+
 (deftest restore-mp
   (dsl/player-has-mp 0)
   (dsl/player-has-items {"small mana potion" 1})

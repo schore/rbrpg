@@ -23,13 +23,22 @@
     (u/add-message data (rand-nth db/hints))
     data))
 
+(defn add-spell
+  [data item]
+  (if-let [spell (get-in db/item-effects [item :spell])]
+    (-> data
+        (u/add-message (str "Learned spell " spell))
+        (update-in [:player :spells] #(conj % spell)))
+    data))
+
 (defn use-item
   [data [_ item]]
   (if (enough-items? data {item 1})
     (-> data
         (u/add-items {item -1})
         (u/process-event [(str "Use item: " item) [(get db/item-effects item {})]])
-        (add-hint item))
+        (add-hint item)
+        (add-spell item))
     data))
 
 (defn combine

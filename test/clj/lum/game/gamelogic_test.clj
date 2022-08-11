@@ -464,3 +464,10 @@
   (dsl/player-has-items {"small mana potion" 1})
   (dsl/use-item "small mana potion")
   (is (= 3 (dsl/get-mp))))
+
+(deftest healing-spell-during-fight
+  (dsl/in-a-fight)
+  (dsl/player-has-hp 1)
+  (dsl/player-know-spell "Healing")
+  (dsl/cast-spell "Healing")
+  (is (> (dsl/get-hp) 1)))

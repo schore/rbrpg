@@ -88,7 +88,10 @@
                               :mp 3}
              "Force" {:target :enemy
                       :damage [3 3]
-                      :mp 1}})
+                      :mp 1}
+             "Healing" {:target :player
+                        :hp 5
+                        :mp 1}})
 
 (def spell-names (map first spells))
 

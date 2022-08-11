@@ -61,7 +61,7 @@
 (def fight-mode
   (merge basic-mode
          {:attack [fight/attack fight/check-fight-end]
-          :cast-spell [magic/attack-spell fight/check-fight-end]
+          :cast-spell [magic/cast-spell fight/check-fight-end]
           :flea [fight/flea]
           :use-item [item/use-item]}))
 

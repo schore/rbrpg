@@ -272,6 +272,11 @@
   (let [state (game-is-initialized)]
     (load-game (assoc-in state [:player :items] items))))
 
+(defn player-know-spell
+  [spell]
+  (let [state (game-is-initialized)]
+    (load-game (update-in state [:player :spells] #(conj % spell)))))
+
 (defn player-has-hp
   [hp]
   (let [state (game-is-initialized)]

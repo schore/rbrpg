@@ -14,15 +14,35 @@
         current-mp (get-in state [:player :mp 0])]
     (>= current-mp required-mp)))
 
+(defn calc-mp
+  [spell]
+  {:target :player
+   :mp (* -1 (:mp spell))})
+
+(defn calc-damage
+  [spell]
+  (when-let [damage (:damage spell)]
+    {:target (:target spell)
+     :hp (* -1 (apply u/roll-dice damage))}))
+
+(defn calc-hp
+  [spell]
+  (when-let [hp (:hp spell)]
+    {:target (:target spell)
+     :hp hp}))
+
+(defn calc-target
+  [spell]
+  (filter some? [(calc-mp spell)
+                 (calc-damage spell)
+                 (calc-hp spell)]))
+
 ;;
-(defn attack-spell
+(defn cast-spell
   [state [_ spell]]
   (if (and (known-spell? state spell)
            (enough-mp? state spell))
-    (let [{:keys [target damage mp]} (get db/spells spell)]
+    (let [spell-data (get db/spells spell)]
       (-> state
-          (u/process-event [spell [{:target :player
-                                    :mp (* -1 mp)}
-                                   {:target target
-                                    :hp (* -1 (apply u/roll-dice damage))}]])))
+          (u/process-event [spell (calc-target spell-data)])))
     state))

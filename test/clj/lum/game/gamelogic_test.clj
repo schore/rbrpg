@@ -471,3 +471,9 @@
   (dsl/player-know-spell "Healing")
   (dsl/cast-spell "Healing")
   (is (> (dsl/get-hp) 1)))
+
+(deftest healing-spell-during-moving
+  (dsl/player-has-hp 1)
+  (dsl/player-know-spell "Healing")
+  (dsl/cast-spell "Healing")
+  (is (> (dsl/get-hp) 1)))

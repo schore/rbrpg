@@ -159,6 +159,11 @@
    {:game/send-message [:use-item item]}))
 
 (rf/reg-event-fx
+ :game/cast
+ (fn [_ [_ spell]]
+   {:game/send-message [:cast-spell spell]}))
+
+(rf/reg-event-fx
  :game/load-map
  (fn [_ _]
    {:game/send-message [:load-map "docs/test.txt"]}))
@@ -281,6 +286,11 @@
  :game/equipment
  (fn [db _]
    (get-in db [:game :player :equipment])))
+
+(rf/reg-sub
+ :game/spells
+ (fn [db _]
+   (get-in db [:game :player :spells])))
 
 (defn position-css [x y]
   {:width "15px"
@@ -458,9 +468,7 @@
          (for [[k v] items]
            ^{:key (str "show_items_use_" k)}
            [:tr
-            [:td [:input {:type "button"
-                          :value "use"
-                          :on-click (fn [] (rf/dispatch [:game/use k]))}]]
+            [:td [button "use" [:game/use k]]]
             [:td k]
             [:td v]])]))))
 
@@ -498,6 +506,20 @@
                     ^{:key (str "item_slots_options_" item)}
                     [:option item])]]])]))))
 
+(defn player-spells
+  []
+  (let [spells (rf/subscribe [:game/spells])]
+    (fn []
+      (let [spells @spells]
+        [:table>tbody
+         (for [spell (sort (filter #(= :player
+                                       (get-in db/spells [% :target]))
+                                   spells))]
+           ^{:key (str "player_spells_" spell)}
+           [:tr
+            [:td [button "cast" [:game/cast spell]]]
+            [:td spell]])]))))
+
 (defn game []
   (let [fight? (rf/subscribe [:game/fight?])
         game-over? (rf/subscribe [:game/game-over?])]
@@ -516,6 +538,9 @@
         [:div.item-slots [item-slots]]
         [:div.messages [show-messages]]]
        [:div.items-use [items-for-use]]
+       [:hr]
+       [:div.spells [player-spells]]
+       [:hr]
        [button "New map" [:game/get-new-map]]
        [button "Load map" [:game/load-map]]
        [:br]

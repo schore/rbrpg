@@ -37,11 +37,17 @@
                  (calc-damage spell)
                  (calc-hp spell)]))
 
+(defn spell-possible-to-cast?
+  [state spell]
+  (or (= (:target (get db/spells spell)) :player)
+      (contains? state :fight)))
+
 ;;
 (defn cast-spell
   [state [_ spell]]
   (if (and (known-spell? state spell)
-           (enough-mp? state spell))
+           (enough-mp? state spell)
+           (spell-possible-to-cast? state spell))
     (let [spell-data (get db/spells spell)]
       (-> state
           (u/process-event [spell (calc-target spell-data)])))

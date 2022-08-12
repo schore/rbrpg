@@ -477,3 +477,8 @@
   (dsl/player-know-spell "Healing")
   (dsl/cast-spell "Healing")
   (is (> (dsl/get-hp) 1)))
+
+(deftest attack-spell-not-possible
+  (dsl/game-is-initialized)
+  (dsl/cast-spell "Burning Hands")
+  (is (= 3 (dsl/get-mp))))

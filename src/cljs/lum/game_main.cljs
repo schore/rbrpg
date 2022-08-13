@@ -537,10 +537,9 @@
         [:div.stats [stats]]
         [:div.item-slots [item-slots]]
         [:div.messages [show-messages]]]
-       [:div.items-use [items-for-use]]
-       [:hr]
-       [:div.spells [player-spells]]
-       [:hr]
+       [:div.outer-grid-container
+        [:div.items-use [items-for-use]]
+        [:div.spells [player-spells]]]
        [button "New map" [:game/get-new-map]]
        [button "Load map" [:game/load-map]]
        [:br]

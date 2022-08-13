@@ -63,6 +63,16 @@ body {
   grid-row: 3;
 }
 
+.items-use {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.spells {
+  grid-column: 2;
+  grid-row: 1;
+}
+
 .grid-container {
   display: grid;
   //background: lightblue;

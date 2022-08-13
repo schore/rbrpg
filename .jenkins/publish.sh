@@ -12,10 +12,11 @@ fi
 git clone git@github.com:schore/rbrpg-static-site.git
 
 npx shadow-cljs release app
+cp -f resources/public/css/screen.css rbrpg-static-site/css/
 cp -f target/cljsbuild/public/js/app.js rbrpg-static-site/
 
 cd rbrpg-static-site
-git add app.js
+git add .
 git config user.name "Jenkins"
 git config user.email "jenkisn@jenkins.com"
 git commit --amend -m 'automatic update'

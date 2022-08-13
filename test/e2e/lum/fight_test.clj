@@ -109,3 +109,8 @@
   (select-and-activate "Magic")
   (select-and-activate "Burning Hands")
   (is (c/map-screen?)))
+
+(deftest ^:integration use-magic-in-move-mode
+  (c/load-game "not-full-hp.edn")
+  (c/cast-spell "Healing")
+  (is (= 7 (c/get-hp))))

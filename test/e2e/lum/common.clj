@@ -58,6 +58,7 @@
   (prepare-save-game "in-a-fight.edn")
   (prepare-save-game "on-stairs.edn")
   (prepare-save-game "test-map.edn")
+  (prepare-save-game "not-full-hp.edn")
   (f)
   (delete-directory-recursive (io/file "tmp")))
 
@@ -182,6 +183,28 @@
               (e/child *driver* (get-use-item-row item)
                        {:tag :input
                         :value "use"})))
+
+(defn get-spell-item-row
+  [spell]
+  (->> (e/query-all *driver*
+                    [{:class "spells"}
+                     {:tag :table}
+                     {:tag :tr}])
+       (filter (fn [el]
+                 (let [x (e/get-element-text-el *driver* (e/child *driver* el
+                                                                  {:tag :td
+                                                                   :index 2}))]
+                   (= x spell))))
+       first))
+
+(defn cast-spell
+  [spell]
+  (click-menu-item "Home")
+  (e/click-el *driver*
+              (e/child *driver* (get-spell-item-row spell)
+                       {:tag :input
+                        :value "cast"})))
+
 (defn select-items
   [item n]
   (let [el (get-plus-el item)]

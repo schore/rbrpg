@@ -508,17 +508,20 @@
 
 (defn player-spells
   []
-  (let [spells (rf/subscribe [:game/spells])]
+  (let [spells (rf/subscribe [:game/spells])
+        fight? (rf/subscribe [:game/fight?])]
     (fn []
-      (let [spells @spells]
+      (let [spells @spells
+            fight? @fight?]
         [:table>tbody
-         (for [spell (sort (filter #(= :player
-                                       (get-in db/spells [% :target]))
-                                   spells))]
-           ^{:key (str "player_spells_" spell)}
-           [:tr
-            [:td [button "cast" [:game/cast spell]]]
-            [:td spell]])]))))
+         (when (not fight?)
+           (for [spell (sort (filter #(= :player
+                                         (get-in db/spells [% :target]))
+                                      spells))]
+             ^{:key (str "player_spells_" spell)}
+             [:tr
+              [:td [button "cast" [:game/cast spell]]]
+              [:td spell]]))]))))
 
 (defn game []
   (let [fight? (rf/subscribe [:game/fight?])

@@ -12,7 +12,9 @@
                      :stair-down
                      :tree})
 
-(s/def :game/tile (s/keys :req-un [:tile/type]))
+(s/def :game/items (s/map-of :game-database/item pos-int?))
+(s/def :game/tile (s/keys :req-un [:tile/type]
+                          :opt-un [:game/items]))
 
 (defn board-contains-element?
   [element board]
@@ -43,7 +45,6 @@
 
 (s/def ::slot db/slots)
 (s/def :player/equipment (s/map-of ::slot :game-database/item))
-(s/def :player/items (s/map-of :game-database/item pos-int?))
 
 (s/def :player/spell (into #{} db/spell-names))
 (s/def :player/spells (s/and (s/coll-of :player/spell)
@@ -56,7 +57,7 @@
                                      :player/mp
                                      :player/equipment
                                      :player/spells
-                                     :player/items]))
+                                     :game/items]))
 
 (s/def :enemy/name string?)
 (s/def :enemy/hp :game/stat)

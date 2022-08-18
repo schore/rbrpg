@@ -77,10 +77,13 @@
             (u/add-message s (str "You found " n " " item-name)))
           state item))
 
+(defn get-items-on-tile
+  [state]
+  (get (u/player-tile state) :items {}))
+
 (defn look-for-item
   [state]
-  (let [items (for [i (items-to-add (:level state) (u/disadvantage 20))]
-                [i 1])]
+  (let [items (get-items-on-tile state)]
     (-> state
         (u/add-items (into {} items))
         (add-found-item-messages items))))

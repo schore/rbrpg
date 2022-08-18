@@ -327,6 +327,13 @@
     (set-position x y))
   (is (= field (:type (get-current-field)))))
 
+(defn items-on-ground
+  [items]
+  (let [state (game-is-initialized)
+        level (dec (:level state))
+        [x y] (get-in state [:player :position])]
+    (load-game (assoc-in state [:boards level (mu/position-to-n x y) :items] items))))
+
 (defn player-is-on-level
   [level]
   (game-is-initialized)

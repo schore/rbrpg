@@ -309,28 +309,24 @@
   (dsl/activate)
   (is (s/valid? :game/game (dsl/get-state))))
 
+(deftest picking-on-empty-tile-gives-nothing
+  (dsl/player-is-on :ground)
+  (dsl/player-has-items {})
+  (dsl/activate)
+  (is (empty? (dsl/get-items))))
+
 (deftest activating-a-tile-can-give-item
-  (dsl/player-is-on-level 1)
   (dsl/player-is-on :ground)
-  (dsl/activate 20 20 20 20)
-  (is (= 1 (get (dsl/get-items) "herb"))))
-
-(deftest activation-doesnt-give-item-whith-no-luck
-  (dsl/game-is-initialized)
-  (dsl/player-is-on :ground)
-  (dsl/activate 20 14 20 20)
-  (is (not (contains? (dsl/get-items) "herb"))))
-
-(deftest no-sticks-on-level-30
-  (dsl/player-is-on-level 30)
-  (dsl/player-is-on :ground)
-  (dsl/activate 20 20 20 20)
-  (is (not (contains? (dsl/get-items) "wooden stick"))))
+  (dsl/player-has-items {})
+  (dsl/items-on-ground {"herb" 2})
+  (dsl/activate)
+  (is (= 2 (get (dsl/get-items) "herb"))))
 
 (deftest get-a-message-when-picking-up
-  (dsl/player-is-on-level 1)
   (dsl/player-is-on :ground)
-  (dsl/activate 20 20 20 20)
+  (dsl/player-has-items {})
+  (dsl/items-on-ground {"herb" 2})
+  (dsl/activate)
   (is (clojure.string/includes? (first (dsl/get-messages)) "found")))
 
 (deftest check-handling-of-items

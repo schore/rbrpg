@@ -43,6 +43,15 @@
         (assoc inp n new-field)
         (recur)))))
 
+(defn add-item-on-random-field
+  [input field items]
+  (loop []
+    (let [n (rand-int (* xsize ysize))]
+      (println (nth input n))
+      (if (= field (:type (nth input n)))
+        (assoc-in input [n :items] items)
+        (recur)))))
+
 (defn get-dungeon []
   (let [f (apply comp (repeat 5 populate-map))]
     (-> (random-board)
@@ -50,7 +59,9 @@
         (add-random-field :stair-up :ground)
         (add-random-field :stair-down :ground)
         m/to-map
-        vec)))
+        vec
+        (add-item-on-random-field :ground {"herb" 1})
+        (add-item-on-random-field :ground {"wooden stick" 1}))))
 
 (defn print-new-map
   ([] (print-new-map (get-dungeon)))

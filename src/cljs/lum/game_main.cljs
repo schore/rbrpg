@@ -309,10 +309,14 @@
                              :transform (str "rotate(" rotation "deg)"))}]))))
 
 (defn tile-to-graphic
-  [key]
-  (get {:wall "#"
-        :stair-up ">"
-        :stair-down "<"} key " "))
+  [tile]
+  (cond
+    (seq (get tile :items {})) "i"
+    (= :wall (:type tile)) "#"
+    (= :ground (:type tile)) " "
+    (= :stair-down (:type tile)) ">"
+    (= :stair-up (:type tile)) "<"
+    :else (str tile)))
 
 (defn board []
   (let [board (rf/subscribe [:game/board])]
@@ -322,7 +326,7 @@
          (for [i (range (* sizex sizey))]
            ^{:key (str "grid" i)}
            [:div.grid-item
-            (tile-to-graphic (keyword (get (maputil/get-tile board i) :type)))])]))))
+            (tile-to-graphic (maputil/get-tile board i))])]))))
 
 (defn button
   [value event]
@@ -517,7 +521,7 @@
          (when (not fight?)
            (for [spell (sort (filter #(= :player
                                          (get-in db/spells [% :target]))
-                                      spells))]
+                                     spells))]
              ^{:key (str "player_spells_" spell)}
              [:tr
               [:td [button "cast" [:game/cast spell]]]

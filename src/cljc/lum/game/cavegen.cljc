@@ -47,7 +47,6 @@
   [input field items]
   (loop []
     (let [n (rand-int (* xsize ysize))]
-      (println (nth input n))
       (if (= field (:type (nth input n)))
         (assoc-in input [n :items] items)
         (recur)))))

@@ -86,6 +86,7 @@
   (let [items (get-items-on-tile state)]
     (-> state
         (u/add-items (into {} items))
+        (u/update-active-tile #(dissoc % :items))
         (add-found-item-messages items))))
 
 ;; High level

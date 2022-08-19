@@ -87,14 +87,17 @@
        (nat-int? y)
        (< y mu/sizey)))
 
+(defn update-active-tile
+  [data f]
+  (let [[x y] (get-in data [:player :position])]
+    (update-in data [:boards
+                     (dec (:level data))
+                     (mu/position-to-n x y)]
+               f)))
+
 (defn change-active-tile
   [data new-type]
-  (let [[x y] (get-in data [:player :position])]
-    (assoc-in data [:boards
-                    (dec (:level data))
-                    (mu/position-to-n x y)
-                    :type]
-              new-type)))
+  (update-active-tile data #(assoc % :type new-type)))
 
 (defn get-active-board
   [state]

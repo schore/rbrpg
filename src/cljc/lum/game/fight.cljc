@@ -86,14 +86,14 @@
    ["Beat"
     [(let [enemy-ac (get-in data [:fight :enemy :ac])
            weapon (get-in data [:player :equipment :right-hand])
-           weapon-damage (get-in db/item-effects [weapon :damage] [1 2])]
+           weapon-damage (get-in db/item-data [weapon :damage] [1 2])]
        {:target :enemy
         :hp (* -1 (attack-calc enemy-ac weapon-damage))})]]))
 
 (defn get-armor-class
   [data]
   (let [equipment (get-in data [:player :equipment :body])]
-    (get-in db/item-effects [equipment :ac]
+    (get-in db/item-data [equipment :ac]
             (get-in data [:player :ac]))))
 
 (defn get-enemy-attack-roles

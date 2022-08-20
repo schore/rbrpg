@@ -19,13 +19,13 @@
 
 (defn add-hint
   [data item]
-  (if (contains? (get-in db/item-effects [item :properties]) :hint)
+  (if (contains? (get-in db/item-data [item :properties]) :hint)
     (u/add-message data (rand-nth db/hints))
     data))
 
 (defn add-spell
   [data item]
-  (if-let [spell (get-in db/item-effects [item :spell])]
+  (if-let [spell (get-in db/item-data [item :spell])]
     (-> data
         (u/add-message (str "Learned spell " spell))
         (update-in [:player :spells] #(conj % spell)))
@@ -36,7 +36,7 @@
   (if (enough-items? data {item 1})
     (-> data
         (u/add-items {item -1})
-        (u/process-event [(str "Use item: " item) [(get db/item-effects item {})]])
+        (u/process-event [(str "Use item: " item) [(get db/item-data item {})]])
         (add-hint item)
         (add-spell item))
     data))

@@ -10,7 +10,7 @@
 (defn active-item-can-dig?
   [data]
   (let [weapon (get-in data [:player :equipment :right-hand])
-        function (get-in db/item-effects [weapon :properties])]
+        function (get-in db/item-data [weapon :properties])]
     (some #{:digging} function)))
 
 (defn pick-wall

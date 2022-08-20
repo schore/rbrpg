@@ -44,39 +44,39 @@
                {"knife" 1
                 "wooden stick" 1} "spear"})
 
-(def item-effects {"small healing potion" {:target :player
-                                           :hp 3}
-                   "small mana potion" {:target :player
-                                        :mp 3}
-                   "medium healing potion" {:target :player
-                                            :hp 30}
-                   "batblood" {}
-                   "batwing" {}
-                   "ratmeet" {}
-                   "herb" {}
-                   "roast beef" {:target :player
-                                 :maxhp 1}
-                   "note" {:properties #{:hint}}
-                   "Force scroll" {:spell "Force"}
-                   "wooden stick" {:target :player
-                                   :damage [1 4]
-                                   :slots #{:right-hand}}
-                   "sword" {:target :player
-                            :damage [1 6]
-                            :slots #{:right-hand}}
-                   "knife" {:target :player
-                            :damage [1 3]
-                            :slots #{:right-hand}}
-                   "spear" {:target :player
-                            :damage [2 3]
-                            :slots #{:right-hand}}
-                   "pickaxe" {:target :player
-                              :damage [1 4]
-                              :slots #{:right-hand}
-                              :properties #{:digging}}
-                   "leather armor" {:target :player
-                                    :ac 11
-                                    :slots #{:body}}})
+(def item-data {"small healing potion" {:target :player
+                                        :hp 3}
+                "small mana potion" {:target :player
+                                     :mp 3}
+                "medium healing potion" {:target :player
+                                         :hp 30}
+                "batblood" {}
+                "batwing" {}
+                "ratmeet" {}
+                "herb" {}
+                "roast beef" {:target :player
+                              :maxhp 1}
+                "note" {:properties #{:hint}}
+                "Force scroll" {:spell "Force"}
+                "wooden stick" {:target :player
+                                :damage [1 4]
+                                :slots #{:right-hand}}
+                "sword" {:target :player
+                         :damage [1 6]
+                         :slots #{:right-hand}}
+                "knife" {:target :player
+                         :damage [1 3]
+                         :slots #{:right-hand}}
+                "spear" {:target :player
+                         :damage [2 3]
+                         :slots #{:right-hand}}
+                "pickaxe" {:target :player
+                           :damage [1 4]
+                           :slots #{:right-hand}
+                           :properties #{:digging}}
+                "leather armor" {:target :player
+                                 :ac 11
+                                 :slots #{:body}}})
 
 (def items-on-ground {"herb" {:level [1 20]
                               :dice 20}
@@ -100,7 +100,7 @@
             "A spear is a knife with a long handle"
             "Two ratmeet and a herb give an excellent meal"])
 
-(s/def ::item (into #{} (map first item-effects)))
+(s/def ::item (into #{} (map first item-data)))
 (s/def :game-database/item ::item)
 
 ;;enemie database
@@ -154,4 +154,4 @@
 (defn get-items-for-slot
   [slot]
   (map key (filter (fn [[_ v]] (contains? (:slots v) slot))
-                   item-effects)))
+                   item-data)))

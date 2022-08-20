@@ -10,7 +10,7 @@
   (t/is (s/valid? :lum.game.game-database/recipies sut/recipies)))
 
 (t/deftest valid-item-db
-  (t/is (s/valid? :lum.game.game-database/item-effects sut/item-effects)))
+  (t/is (s/valid? :lum.game.game-database/item-effects sut/item-data)))
 
 (t/deftest valid-items-on-ground
   (t/is (s/valid? :lum.game.game-database/ground-items sut/items-on-ground)))

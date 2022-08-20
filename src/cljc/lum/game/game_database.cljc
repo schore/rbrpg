@@ -45,38 +45,55 @@
                 "wooden stick" 1} "spear"})
 
 (def item-data {"small healing potion" {:target :player
-                                        :hp 3}
+                                        :hp 3
+                                        :rarity 5}
                 "small mana potion" {:target :player
-                                     :mp 3}
+                                     :mp 3
+                                     :rarity 5}
                 "medium healing potion" {:target :player
-                                         :hp 30}
+                                         :hp 30
+                                         :rarity 3}
                 "batblood" {}
                 "batwing" {}
-                "ratmeet" {}
-                "herb" {}
+                "ratmeet" {:rarity 7}
+                "herb" {:rarity 3}
                 "roast beef" {:target :player
                               :maxhp 1}
-                "note" {:properties #{:hint}}
-                "Force scroll" {:spell "Force"}
+                "note" {:properties #{:hint}
+                        :rarity 4}
+                "Force scroll" {:spell "Force"
+                                :rarity 1}
                 "wooden stick" {:target :player
                                 :damage [1 4]
-                                :slots #{:right-hand}}
+                                :slots #{:right-hand}
+                                :rarity 15}
                 "sword" {:target :player
                          :damage [1 6]
-                         :slots #{:right-hand}}
+                         :slots #{:right-hand}
+                         :rarity 1}
                 "knife" {:target :player
                          :damage [1 3]
-                         :slots #{:right-hand}}
+                         :slots #{:right-hand}
+                         :rarity 4}
                 "spear" {:target :player
                          :damage [2 3]
-                         :slots #{:right-hand}}
+                         :slots #{:right-hand}
+                         :rarity 4}
                 "pickaxe" {:target :player
                            :damage [1 4]
                            :slots #{:right-hand}
-                           :properties #{:digging}}
+                           :properties #{:digging}
+                           :rarity 4}
                 "leather armor" {:target :player
                                  :ac 11
-                                 :slots #{:body}}})
+                                 :slots #{:body}
+                                 :rarity 4}})
+
+(def itemlist
+  (->> item-data
+       (filter #(contains? (second %) :rarity))
+       (map (fn [[k v]] (repeat (:rarity v) k)))
+       flatten))
 
 (def items-on-ground {"herb" {:level [1 20]
                               :dice 20}
@@ -119,12 +136,14 @@
 (s/def ::recipie (s/map-of ::item pos-int?))
 (s/def ::recipies (s/map-of ::recipie ::item))
 
-;;item-effects
+;;item-data
 ;;
 
 (def slots #{:left-hand
              :right-hand
              :body})
+
+(s/def ::rarity nat-int?)
 
 (s/def ::slot slots)
 (s/def ::slots (s/coll-of ::slot :kind set?))
@@ -133,7 +152,17 @@
 (s/def ::properties (s/coll-of ::propertie
                                :kind set?))
 (s/def ::spell (into #{} spell-names))
-(s/def ::effect (s/keys :opt-un [::target ::hp ::hpmax ::mp ::damage ::ac ::slots ::properties ::spell]))
+(s/def ::effect (s/keys
+                 :opt-un [::target
+                          ::rarity
+                          ::hp
+                          ::hpmax
+                          ::mp
+                          ::damage
+                          ::ac
+                          ::slots
+                          ::properties
+                          ::spell]))
 (s/def ::item-effects (s/map-of ::item ::effect))
 
 ;; Item on grounds

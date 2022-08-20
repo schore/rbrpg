@@ -1,5 +1,6 @@
 (ns lum.game.cavegen
-  (:require [lum.maputil :as m]))
+  (:require [lum.maputil :as m]
+            [lum.game.game-database :as db]))
 
 (def xsize m/sizex)
 (def ysize m/sizey)
@@ -44,6 +45,10 @@
         (recur)))))
 
 (defn add-item-on-random-field
+  ([input n]
+   (if (= 0 n)
+     input
+     (recur (add-item-on-random-field input 1 {(rand-nth db/itemlist) 1}) (dec n))))
   ([input n items]
    (if (= 0 n)
      input
@@ -64,8 +69,8 @@
 (defn place-items
   [state]
   (-> state
-      (add-item-on-random-field 1 :ground {"herb" 1})
-      (add-item-on-random-field 5 {"wooden stick" 1})))
+      (add-item-on-random-field 5 {"wooden stick" 1})
+      (add-item-on-random-field 5)))
 
 (defn get-dungeon []
   (let [f (apply comp (repeat 5 populate-map))]

@@ -66,7 +66,7 @@
                 "wooden stick" {:target :player
                                 :damage [1 4]
                                 :slots #{:right-hand}
-                                :rarity 15}
+                                :rarity 10}
                 "sword" {:target :player
                          :damage [1 6]
                          :slots #{:right-hand}

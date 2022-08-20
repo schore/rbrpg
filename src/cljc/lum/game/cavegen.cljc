@@ -44,12 +44,28 @@
         (recur)))))
 
 (defn add-item-on-random-field
-  [input field items]
-  (loop []
-    (let [n (rand-int (* xsize ysize))]
-      (if (= field (:type (nth input n)))
-        (assoc-in input [n :items] items)
-        (recur)))))
+  ([input n items]
+   (if (= 0 n)
+     input
+     (recur (assoc-in input [(rand-int (* xsize ysize)) :items] items) (dec n) items)))
+  ([input n field items]
+   (if (= 0 n)
+     input
+     (recur
+      (loop []
+        (let [i (rand-int (* xsize ysize))]
+          (if (= field (:type (nth input i)))
+            (assoc-in input [i :items] items)
+            (recur))))
+      (dec n)
+      field
+      items))))
+
+(defn place-items
+  [state]
+  (-> state
+      (add-item-on-random-field 1 :ground {"herb" 1})
+      (add-item-on-random-field 5 {"wooden stick" 1})))
 
 (defn get-dungeon []
   (let [f (apply comp (repeat 5 populate-map))]
@@ -59,8 +75,7 @@
         (add-random-field :stair-down :ground)
         m/to-map
         vec
-        (add-item-on-random-field :ground {"herb" 1})
-        (add-item-on-random-field :ground {"wooden stick" 1}))))
+        place-items)))
 
 (defn print-new-map
   ([] (print-new-map (get-dungeon)))

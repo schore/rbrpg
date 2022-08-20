@@ -319,22 +319,22 @@
   (dsl/player-is-on :ground)
   (dsl/player-has-items {})
   (dsl/items-on-ground {"herb" 2})
-  (dsl/activate)
+  (dsl/activate 20 20)
   (is (= 2 (get (dsl/get-items) "herb"))))
 
 (deftest pick-up-only-once
   (dsl/player-is-on :ground)
   (dsl/player-has-items {})
   (dsl/items-on-ground {"herb" 1})
-  (dsl/activate)
-  (dsl/activate)
+  (dsl/activate 20 20)
+  (dsl/activate 20 20)
   (is (= 1 (get (dsl/get-items) "herb"))))
 
 (deftest get-a-message-when-picking-up
   (dsl/player-is-on :ground)
   (dsl/player-has-items {})
   (dsl/items-on-ground {"herb" 2})
-  (dsl/activate)
+  (dsl/activate 20 20)
   (is (clojure.string/includes? (first (dsl/get-messages)) "found")))
 
 (deftest check-handling-of-items

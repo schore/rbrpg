@@ -26,7 +26,8 @@
         (map (fn [line]
                (pad mu/sizex {:type :wall} line)))
         flatten
-        (pad (* mu/sizex mu/sizey) {:type :wall}))))
+        (pad (* mu/sizex mu/sizey) {:type :wall})
+        (map #(assoc % :visible? false)))))
 
 #?(:clj
    (defn load-map

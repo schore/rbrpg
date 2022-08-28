@@ -12,8 +12,10 @@
                      :stair-down
                      :tree})
 
+(s/def :tile/visible? boolean?)
+
 (s/def :game/items (s/map-of :game-database/item pos-int?))
-(s/def :game/tile (s/keys :req-un [:tile/type]
+(s/def :game/tile (s/keys :req-un [:tile/type :tile/visible?]
                           :opt-un [:game/items]))
 
 (defn board-contains-element?

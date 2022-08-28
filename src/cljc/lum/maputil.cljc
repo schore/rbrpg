@@ -22,7 +22,7 @@
 
 (defn to-map
   [col]
-  (map (fn [i] {:type i}) col))
+  (map (fn [i] {:type i :visible? false}) col))
 
 (defn to-map2
   [col]

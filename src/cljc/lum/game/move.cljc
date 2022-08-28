@@ -33,9 +33,15 @@
       new-data
       data)))
 
+(defn find-index
+  [c f]
+  (first (keep-indexed (fn [index element]
+                         (when (f element) index))
+                       c)))
+
 (defn find-tile
   [board tile]
-  (mu/n-to-position (.indexOf board {:type tile})))
+  (mu/n-to-position (find-index board #(= tile (:type %)))))
 
 (defn set-to-tile
   [state tile]

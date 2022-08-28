@@ -309,10 +309,14 @@
   []
   (exec *game* [:new-board]))
 
+(defn find-index
+  [coll f]
+  (first (keep-indexed (fn [index e] (when (f e) index)) coll)))
+
 (defn get-coordinates
   [state field]
   (let [board (get-in state [:boards (dec (:level state))])]
-    (mu/n-to-position (.indexOf board {:type field}))))
+    (mu/n-to-position (find-index board #(= field (:type %))))))
 
 (defn get-current-field
   []

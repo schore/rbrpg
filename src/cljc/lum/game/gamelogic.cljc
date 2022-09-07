@@ -2,6 +2,7 @@
   (:require
    [clojure.core.async :as a :refer [<! >! chan close! go-loop]]
    [clojure.string]
+   [lum.game.view :as view]
    [lum.game.cavegen :as cavegen]
    [lum.game.load-save :as load-save]
    [lum.game.dataspec]
@@ -92,13 +93,18 @@
           data (get (get-mode-map data)
                     (keyword (first action)) [])))
 
+(defn process-round
+  [data action]
+  (-> data
+      (process-actions action)
+      (view/process-view)))
+
 (defn game-master
   [input-chan]
   (let [out (chan)]
     (go-loop [data {}]
       (let [action (<! input-chan)
-            new-data (-> data
-                         (process-actions action))]
+            new-data (process-round data action)]
         (if (some? action)
           (do
             (>! out new-data)

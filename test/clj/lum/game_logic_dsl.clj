@@ -64,7 +64,7 @@
   (exec [_ command]
     ;(log/info "Execute command" command)
     (swap! state (fn [state]
-                   (gamelogic/process-actions state command)))
+                   (gamelogic/process-round state command)))
     @state)
 
   (close [_]))
@@ -366,3 +366,7 @@
 (defn get-spells
   []
   (get-in (get-state) [:player :spells]))
+
+(defn field-visible?
+  [x y]
+  (:visible? (mu/get-tile (get-board) x y)))

@@ -3,27 +3,31 @@
             [lum.game.cavegen :as cavegen]
             [clojure.test :as t :refer [deftest testing is]]
             [clojure.spec.alpha :as s]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [lum.game.utilities :as u]
+            [lum.game.view :as view]))
 
 (t/use-fixtures
   :each dsl/prepare-directory dsl/create-game)
 
 (deftest load-game-with-state
   (testing "Load a game"
-    (let [game-state (loop [game-state nil]
-                       (if (s/valid? :game/game game-state)
-                         game-state
-                         (recur {:boards [(cavegen/get-dungeon)]
-                                 :level 1
-                                 :messages '("")
-                                 :player {:position [12 12]
-                                          :ac 5
-                                          :xp 0
-                                          :hp [10 10]
-                                          :mp [3 3]
-                                          :spells #{}
-                                          :equipment {}
-                                          :items {}}})))]
+    (let [game-state
+          (view/process-view
+           (loop [game-state nil]
+             (if (s/valid? :game/game game-state)
+               game-state
+               (recur {:boards [(cavegen/get-dungeon)]
+                       :level 1
+                       :messages '("")
+                       :player {:position [12 12]
+                                :ac 5
+                                :xp 0
+                                :hp [10 10]
+                                :mp [3 3]
+                                :spells #{}
+                                :equipment {}
+                                :items {}}}))))]
       (dsl/game-is-initialized)
       (dsl/load-game game-state)
       (is (= game-state (dsl/get-state))))))

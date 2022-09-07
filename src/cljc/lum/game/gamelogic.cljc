@@ -97,7 +97,7 @@
   [data action]
   (-> data
       (process-actions action)
-      (view/process-view)))
+      view/process-view))
 
 (defn game-master
   [input-chan]

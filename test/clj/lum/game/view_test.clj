@@ -7,7 +7,10 @@
   :each dsl/create-game)
 
 (deftest can-view-field
-  (doseq [[x y] [[10 10]]]
+  (doseq [[x y] [[10 10]
+                 [10 15]
+                 [12 12]
+                 [15 10]]]
     (testing (str [x y])
       (dsl/test-map-loaded 10 10)
       (is (dsl/field-visible? x y)))))

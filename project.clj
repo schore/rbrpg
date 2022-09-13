@@ -23,8 +23,8 @@
                  [metosin/ring-http-response "0.9.2"]
                  [mount "0.1.16"]
                  [nrepl "0.8.3"]
-                 [org.clojure/clojure "1.10.3"]
-                 [org.clojure/clojurescript "1.10.879" :scope "provided"]
+                 [org.clojure/clojure "1.11.1"]
+                 [org.clojure/clojurescript "1.11.60" :scope "provided"]
                  [org.clojure/core.async "1.3.618"]
                  [org.clojure/tools.cli "1.0.206"]
                  [org.webjars.npm/bulma "0.9.2"]
@@ -40,7 +40,7 @@
                  [selmer "1.12.44"]
                  [etaoin "0.4.6"]
                  [haslett "0.1.6"]
-                 [thheller/shadow-cljs "2.15.2" :scope "provided"]]
+                 [thheller/shadow-cljs "2.20.1" :scope "provided"]]
 
   :min-lein-version "2.0.0"
 

@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "shadow-cljs": "^2.14.3"
+    "shadow-cljs": "^2.20.1"
   },
   "dependencies": {
     "geckodriver": "^3.0.2",

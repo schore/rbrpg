@@ -27,3 +27,9 @@
     (testing (str [x y])
       (dsl/test-map-loaded 10 10)
       (is (not (dsl/field-visible? x y))))))
+
+;; (deftest view-blocked
+;;   (doseq [[x y] [[1 3]]]
+;;     (testing (str [x y])
+;;       (dsl/test-map-loaded 2 5)
+;;       (is (not (dsl/field-visible? x y))))))

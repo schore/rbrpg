@@ -1,6 +1,7 @@
 (ns lum.game.view
   (:require
    [clojure.spec.alpha :as s]
+;;   [clojure.math :as math]
    [lum.maputil :as mu]
    [lum.game.dataspec]))
 
@@ -13,6 +14,14 @@
     (>= (* view-radius view-radius)
         (+ (* diffx diffx)
            (* diffy diffy)))))
+
+;; (defn relevant-boxes
+;;   [x y]
+;;   (let [q (/ y x)]
+;;     (->> (range 10)
+;;          (map #(* % (/ x 9)))
+;;          (map (fn [i] [i (* q i)]))
+;;          (map (fn [[x y]] [(math/round x) (math/round y)])))))
 
 (defn update-board
   [board player-x player-y]

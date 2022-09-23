@@ -370,3 +370,11 @@
 (defn field-visible?
   [x y]
   (:visible? (mu/get-tile (get-board) x y)))
+
+(defn remove-visible
+  [b]
+  (map #(dissoc % :visible?) b))
+
+(defn same-boards?
+  [b1 b2]
+  (= (remove-visible b1) (remove-visible b2)))

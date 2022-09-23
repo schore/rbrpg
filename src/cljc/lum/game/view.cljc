@@ -1,11 +1,11 @@
 (ns lum.game.view
   (:require
    [clojure.spec.alpha :as s]
-;;   [clojure.math :as math]
+   [clojure.math :as math]
    [lum.maputil :as mu]
    [lum.game.dataspec]))
 
-(def view-radius 5)
+(def view-radius 10)
 
 (defn in-view?
   [player-x player-y x y]
@@ -15,19 +15,39 @@
         (+ (* diffx diffx)
            (* diffy diffy)))))
 
-;; (defn relevant-boxes
-;;   [x y]
-;;   (let [q (/ y x)]
-;;     (->> (range 10)
-;;          (map #(* % (/ x 9)))
-;;          (map (fn [i] [i (* q i)]))
-;;          (map (fn [[x y]] [(math/round x) (math/round y)])))))
+(defn relevant-boxes
+  ([x y]
+   (if (= x 0)
+     (map (fn [e] [0 e]) (range 0
+                                (if (pos? y) (inc y) (dec y))
+                                (if (pos? y) 1 -1)))
+     (let [q (/ y x)]
+       (->> (range 10)
+            (map #(* % (/ x 9)))
+            (map (fn [i] [i (* q i)]))
+            (map (fn [[x y]] [(math/round x) (math/round y)]))
+            (distinct)))))
+  ([x y player-x player-y]
+   (->>
+    (relevant-boxes (- x player-x) (- y player-y))
+    (map (fn [[x y]] [(+ x player-x) (+ y player-y)])))))
+
+(defn visible-box?
+  [board x y player-x player-y]
+  (let [boxes (relevant-boxes x y player-x player-y)
+        number-of-obstacles (->> boxes
+                                 (map (fn [[x y]] (mu/get-tile board x y)))
+                                 (reduce (fn [a e] (if (not= (:type e) :ground)
+                                                     (inc a)
+                                                     a)) 0))]
+    (<= number-of-obstacles 1)))
 
 (defn update-board
   [board player-x player-y]
   (vec (for [y (range mu/sizey)
              x (range mu/sizex)]
-         (if (in-view? player-x player-y x y)
+         (if (and (in-view? player-x player-y x y)
+                  (visible-box? board x y player-x player-y))
            (assoc (mu/get-tile board x y) :visible? true)
            (mu/get-tile board x y)))))
 

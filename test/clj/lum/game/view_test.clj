@@ -7,29 +7,35 @@
   :each dsl/create-game)
 
 (deftest can-view-field
-  (doseq [[x y] [[10 10]
-                 [10 15]
-                 [13 13]
-                 [13 14]
-                 [15 10]]]
+  (doseq [[x y] [[20 20]
+                 [20 25]
+                 [23 23]
+                 [23 24]
+                 [25 20]]]
     (testing (str [x y])
-      (dsl/test-map-loaded 10 10)
+      (dsl/test-map-loaded 20 20)
       (is (dsl/field-visible? x y)))))
 
 (deftest can-not-view-field
   (doseq [[x y] [[1 1]
-                 [5 1]
-                 [10 1]
-                 [14 14]
-                 [16 10]
-                 [10 16]
-                 [10 4]]]
+                 [20 9]
+                 [28 28]]]
     (testing (str [x y])
-      (dsl/test-map-loaded 10 10)
+      (dsl/test-map-loaded 20 20)
       (is (not (dsl/field-visible? x y))))))
 
-;; (deftest view-blocked
-;;   (doseq [[x y] [[1 3]]]
-;;     (testing (str [x y])
-;;       (dsl/test-map-loaded 2 5)
-;;       (is (not (dsl/field-visible? x y))))))
+(deftest view-blocked
+  (doseq [[x y] [[1 3]
+                 [17 20]
+                 [18 20]
+                 [18 21]]]
+    (testing (str [x y])
+      (dsl/test-map-loaded 20 20)
+      (is (not (dsl/field-visible? x y))))))
+
+(deftest can-view-first-wall
+  (doseq [[x y] [[19 20]
+                 [19 21]]]
+    (testing (str [x y])
+      (dsl/test-map-loaded 20 20)
+      (is  (dsl/field-visible? x y)))))

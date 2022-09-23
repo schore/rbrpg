@@ -311,7 +311,7 @@
 (defn tile-to-graphic
   [tile]
   (cond
-    (not (:visible? tile)) "X"
+    (not (:visible? tile)) "+"
     (seq (get tile :items {})) "i"
     (= :wall (:type tile)) "#"
     (= :ground (:type tile)) " "

@@ -294,7 +294,7 @@
   (let [board (dsl/get-board)]
     (dsl/activate);;go-up
     (dsl/activate);;go-down
-    (is (= board (dsl/get-board)))))
+    (is (dsl/same-boards? board (dsl/get-board)))))
 
 (deftest create-only-necessary-boards-when-going-down
   (dsl/player-is-on-level 2)

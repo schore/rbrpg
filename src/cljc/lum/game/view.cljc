@@ -37,7 +37,8 @@
   (let [boxes (relevant-boxes x y player-x player-y)
         number-of-obstacles (->> boxes
                                  (map (fn [[x y]] (mu/get-tile board x y)))
-                                 (reduce (fn [a e] (if (not= (:type e) :ground)
+                                 (reduce (fn [a e] (if (or (> a 0)
+                                                           (not= (:type e) :ground))
                                                      (inc a)
                                                      a)) 0))]
     (<= number-of-obstacles 1)))

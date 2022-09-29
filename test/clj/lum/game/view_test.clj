@@ -28,9 +28,11 @@
   (doseq [[x y] [[1 3]
                  [17 20]
                  [18 20]
-                 [18 21]]]
+                 [18 21]
+                 [18 19]
+                 [17 19]]]
     (testing (str [x y])
-      (dsl/test-map-loaded 20 20)
+      (dsl/test-map-loaded 20 19)
       (is (not (dsl/field-visible? x y))))))
 
 (deftest can-view-first-wall

@@ -308,11 +308,23 @@
                :style (assoc (position-css x y)
                              :transform (str "rotate(" rotation "deg)"))}]))))
 
+(defn item-color
+  [item]
+  (let [rarity (get-in db/item-data [item :rarity] 20)]
+    (cond
+      (> rarity 9) :light-gray
+      (> rarity 6) :gray
+      (> rarity 4) :green
+      (> rarity 2) :blue
+      :else :gold)))
+
 (defn tile-to-graphic
   [tile]
   (cond
     (not (:visible? tile)) "+"
-    (seq (get tile :items {})) "i"
+    (seq (get tile :items {})) [:p {:style {:background-color
+                                            (item-color (first (keys (get tile :items))))}}
+                                "i"]
     (= :wall (:type tile)) "#"
     (= :ground (:type tile)) " "
     (= :stair-down (:type tile)) ">"

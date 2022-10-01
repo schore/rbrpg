@@ -47,8 +47,8 @@
 (defn create-game
   []
   (let [in (a/chan)
-        out (update-splitter/update-splitter
-             (gamelogic/game-master in))]
+        out (-> in
+                gamelogic/game-master)]
     [in out]))
 
 (defonce gamelogic (let [[in out] (create-game)]
@@ -57,11 +57,7 @@
 
 (go-loop []
   (when-let [msg (<! (:out gamelogic))]
-    (print msg)
-    (rf/dispatch
-     (case (first msg)
-       :data [:game/update (second msg)]
-       :boards [:game/board-update (second msg)]))
+    (rf/dispatch [:game/update msg])
     (recur)))
 
 (rf/reg-fx
@@ -235,7 +231,7 @@
 (rf/reg-sub
  :game/board
  (fn [db _]
-   (get-in db [:boards (dec (get-in db [:game :level]))])))
+   (get-in db [:game :boards (dec (get-in db [:game :level]))])))
 
 (rf/reg-sub
  :game/fight?

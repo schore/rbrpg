@@ -35,6 +35,10 @@
       (dsl/test-map-loaded 20 19)
       (is (not (dsl/field-visible? x y))))))
 
+(deftest stairs-don't-block-view
+  (dsl/test-map-loaded 20 19)
+  (is (dsl/field-visible? 24 19)))
+
 (deftest can-view-first-wall
   (doseq [[x y] [[19 20]
                  [19 21]]]

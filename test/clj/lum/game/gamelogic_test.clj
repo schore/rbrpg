@@ -54,8 +54,8 @@
       (is (= :ground (:type (first m))))
       (is (= :wall (:type (mu/get-tile m 3 5))))
       (is (= :ground (:type (mu/get-tile m 0 2))))
-      (is (= :stair-down (:type (mu/get-tile m 10 10))))
-      (is (= :stair-up (:type (mu/get-tile m 10 11)))))))
+      (is (= :stair-down (:type (mu/get-tile m 21 19))))
+      (is (= :stair-up (:type (mu/get-tile m 22 19)))))))
 
 (deftest create-new-board
   (dsl/game-is-initialized)
@@ -67,8 +67,8 @@
 
 (deftest player-can-stand-on-tile
   (doseq [[x y tile] [[0 0 :ground]
-                      [10 10 :stair-down]
-                      [10 11 :stair-up]]]
+                      [21 19 :stair-down]
+                      [22 19 :stair-up]]]
     (testing (str x y tile)
       (dsl/test-map-loaded x y)
       (is (= tile (:type (mu/get-tile (dsl/get-board) x y))))

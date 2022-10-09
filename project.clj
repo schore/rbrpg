@@ -3,9 +3,9 @@
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
 
-  :dependencies [[ch.qos.logback/logback-classic "1.4.0"]
+  :dependencies [[ch.qos.logback/logback-classic "1.4.3"]
                  [cljs-ajax "0.8.4"]
-                 [clojure.java-time "0.3.3"]
+                 [clojure.java-time "1.1.0"]
                  [com.cognitect/transit-clj "1.0.329"]
                  [com.cognitect/transit-cljs "0.8.280"]
                  [cprop "0.1.19"]
@@ -36,11 +36,12 @@
                  [reagent "1.1.1"]
                  [ring-webjars "0.2.0"]
                  [ring/ring-core "1.9.6"]
-                 [ring/ring-defaults "0.3.3"]
-                 [selmer "1.12.54"]
+                 [ring/ring-defaults "0.3.4"]
+                 [selmer "1.12.55"]
+                 [juji/editscript "0.6.2"]
                  [etaoin "1.0.38"]
                  [haslett "0.1.7"]
-                 [thheller/shadow-cljs "2.20.1" :scope "provided"]]
+                 [thheller/shadow-cljs "2.20.2" :scope "provided"]]
 
   :min-lein-version "2.0.0"
 
@@ -77,8 +78,7 @@
                                  [ring/ring-devel "1.9.6"]
                                  [ring/ring-mock "0.4.0"]]
                   :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
-                                 [jonase/eastwood "0.3.5"]
-                                 ]
+                                 [jonase/eastwood "0.3.5"]]
 
                   :source-paths ["env/dev/clj"  "env/dev/cljs" "test/cljs"]
                   :resource-paths ["env/dev/resources"]
@@ -86,8 +86,7 @@
                                  :timeout 120000}
                   :injections [(require 'pjstadig.humane-test-output)
                                (pjstadig.humane-test-output/activate!)]}
-   :project/test {
-                  :prep-tasks ["compile" ["run" "-m" "shadow.cljs.devtools.cli" "compile" "app"]]
+   :project/test {:prep-tasks ["compile" ["run" "-m" "shadow.cljs.devtools.cli" "compile" "app"]]
                   :jvm-opts ["-Dconf=test-config.edn"]
                   :resource-paths ["env/test/resources"]}
 

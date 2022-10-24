@@ -61,7 +61,7 @@
 
 (defn process-view
   [data]
-  (if (s/valid? :game/game data)
+  (if (seq data)
     (-> data
         update-data)
     data))

@@ -63,6 +63,8 @@
                         :rarity 4}
                 "Force scroll" {:spell "Force"
                                 :rarity 1}
+                "Magic Mapping scroll" {:spell "Magic Mapping"
+                                        :rarity 1}
                 "wooden stick" {:target :player
                                 :damage [1 4]
                                 :slots #{:right-hand}
@@ -108,7 +110,10 @@
                       :mp 1}
              "Healing" {:target :player
                         :hp 5
-                        :mp 1}})
+                        :mp 1}
+             "Magic Mapping" {:target :player
+                              :mp 3
+                              :mapping? true}})
 
 (def spell-names (map first spells))
 

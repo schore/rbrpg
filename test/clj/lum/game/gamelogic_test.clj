@@ -486,3 +486,9 @@
   (dsl/game-is-initialized)
   (dsl/cast-spell "Burning Hands")
   (is (= 3 (dsl/get-mp))))
+
+(deftest magic-mapping-spell
+  (dsl/player-know-spell "Magic Mapping")
+  (dsl/cast-spell "Magic Mapping")
+  (println (dsl/get-board))
+  (is (dsl/board-completly-visible?)))

@@ -42,6 +42,13 @@
   (or (= (:target (get db/spells spell)) :player)
       (contains? state :fight)))
 
+(defn map-effect
+  [state spell]
+  (if (:mapping? spell)
+    (u/update-active-board state (fn [b]
+                                   (into [] (map #(assoc % :visible? true) b))))
+    state))
+
 ;;
 (defn cast-spell
   [state [_ spell]]
@@ -50,5 +57,6 @@
            (spell-possible-to-cast? state spell))
     (let [spell-data (get db/spells spell)]
       (-> state
+          (map-effect spell-data)
           (u/process-event [spell (calc-target spell-data)])))
     state))

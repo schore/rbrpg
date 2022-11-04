@@ -95,6 +95,10 @@
                      (mu/position-to-n x y)]
                f)))
 
+(defn update-active-board
+  [data f]
+  (update-in data [:boards (dec (:level data))] f))
+
 (defn change-active-tile
   [data new-type]
   (update-active-tile data #(assoc % :type new-type)))

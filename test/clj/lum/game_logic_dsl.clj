@@ -378,3 +378,10 @@
 (defn same-boards?
   [b1 b2]
   (= (remove-visible b1) (remove-visible b2)))
+
+(defn board-completly-visible?
+  []
+  (let [board (get-board)]
+    (reduce (fn [a tile]
+              (and (:visible? tile) a))
+            true board)))

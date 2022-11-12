@@ -3,7 +3,11 @@
             [clojure.string]
             [lum.maputil :as mu]
             [lum.game.dataspec]
-            [lum.game.move :as move]))
+            [lum.game.move :as move])
+  (:require-macros [lum.game.load-save :as m]))
+
+(def testmap
+  (m/static-load-file "resources/docs/test.txt"))
 
 (defn pad [n pad coll]
   (take n (concat coll (repeat pad))))
@@ -27,6 +31,14 @@
         flatten
         (pad (* mu/sizex mu/sizey) {:type :wall})
         (map #(assoc % :visible? false)))))
+
+(defn load-map
+  [data [_ file]]
+  (if-let [mf testmap]
+    (-> data
+        (assoc-in [:boards (dec (:level data))] (load-map-from-string mf))
+        (assoc-in [:player :position] [10 10]))
+    data))
 
 (defn load-game
   [state [_ input]]

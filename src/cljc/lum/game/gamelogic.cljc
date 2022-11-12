@@ -70,7 +70,7 @@
   (merge basic-mode
          {:activate [move/activate fight/check-fight]
           :cast-spell [magic/cast-spell]
-          :load-map [#?(:clj load-save/load-map)]
+          :load-map [load-save/load-map]
           :move [move/move fight/check-fight]
           :set-position [move/set-position]
           :new-board [new-board]

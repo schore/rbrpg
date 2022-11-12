@@ -29,7 +29,7 @@
         (pad (* mu/sizex mu/sizey) {:type :wall})
         (map #(assoc % :visible? false)))))
 
-(defmacro load-fils
+(defmacro static-load-file
   [file]
   (slurp file))
 

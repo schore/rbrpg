@@ -1,6 +1,6 @@
 (ns lum.game.game-database
   (:require [clojure.spec.alpha :as s]
-            [clojure.test :as t]))
+            [lum.game.load-save :as load]))
 
 (def enemies {"Bat" {:ac 10
                      :damage [1 3]
@@ -121,6 +121,9 @@
             "Two batblood and a wing bring happieness"
             "A spear is a knife with a long handle"
             "Two ratmeet and a herb give an excellent meal"])
+
+(def special-maps
+  {5 (load/static-load-file "resources/docs/test.txt")})
 
 (s/def ::item (into #{} (map first item-data)))
 (s/def :game-database/item ::item)

@@ -1,9 +1,7 @@
 (ns lum.game.load-save
   (:require [clojure.spec.alpha :as s]
             [clojure.string]
-            [lum.maputil :as mu]
-            [lum.game.dataspec]
-            [lum.game.move :as move])
+            [lum.maputil :as mu])
   (:require-macros [lum.game.load-save :as m]))
 
 (def testmap

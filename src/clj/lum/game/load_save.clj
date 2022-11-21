@@ -2,8 +2,6 @@
   (:require [clojure.spec.alpha :as s]
             [clojure.string]
             [lum.maputil :as mu]
-            [lum.game.dataspec]
-            [lum.game.move :as move]
             [clojure.java.io :as io]))
 
 (defn pad [n pad coll]

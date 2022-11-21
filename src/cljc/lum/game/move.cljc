@@ -4,7 +4,7 @@
    [lum.game.game-database :as db]
    [lum.maputil :as mu]
    [lum.game.cavegen :as cavegen]
-   [lum.game.item :as item]
+   [lum.game.load-save :as load]
    [clojure.spec.alpha :as s]))
 
 (defn active-item-can-dig?
@@ -48,11 +48,17 @@
   (assoc-in state [:player :position]
             (find-tile (u/get-active-board state) tile)))
 
+(defn add-map
+  [state map]
+  (update state :boards #(conj (into [] %) map)))
+
 (defn cavegen-when-required
   [state]
-  (if (> (:level state) (count (:boards state)))
-    (update state :boards #(conj (into [] %) (cavegen/get-dungeon)))
-    state))
+  (let [level (:level state)]
+    (cond
+      (<= level (count (:boards state))) state
+      (contains? db/special-maps level) (add-map state (load/load-map-from-string (get db/special-maps level)))
+      :else (add-map state (cavegen/get-dungeon)))))
 
 (defn enter-next-level
   [state]

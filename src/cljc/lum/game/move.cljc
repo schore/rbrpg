@@ -5,7 +5,8 @@
    [lum.maputil :as mu]
    [lum.game.cavegen :as cavegen]
    [lum.game.load-save :as load]
-   [clojure.spec.alpha :as s]))
+   [clojure.spec.alpha :as s]
+   [lum.game.utilities :as util]))
 
 (defn active-item-can-dig?
   [data]
@@ -52,12 +53,29 @@
   [state map]
   (update state :boards #(conj (into [] %) map)))
 
+(defn load-effect
+  [data]
+  (let [level (:level data)
+        effects (get-in db/special-maps [level :effects] [])
+        effect (partition 3 effects)]
+    (reduce (fn [state [[x y] type data]]
+              (case type
+                :message (update-in state [:boards (dec level) (mu/position-to-n x y)]
+                                    #(assoc % :message data)))) data effect)))
+
+(defn load-special-map
+  [data]
+  (let [level (:level data)]
+    (-> data
+        (add-map (load/load-map-from-string (get-in db/special-maps [level :map])))
+        (load-effect))))
+
 (defn cavegen-when-required
   [state]
   (let [level (:level state)]
     (cond
       (<= level (count (:boards state))) state
-      (contains? db/special-maps level) (add-map state (load/load-map-from-string (get db/special-maps level)))
+      (contains? db/special-maps level) (load-special-map state)
       :else (add-map state (cavegen/get-dungeon)))))
 
 (defn enter-next-level
@@ -101,6 +119,17 @@
         (u/update-active-tile #(dissoc % :items))
         (add-found-item-messages items))))
 
+(defn scripted-message
+  [data]
+  (if-some [message (:message (u/player-tile data))]
+    (u/add-message data message)
+    data))
+
+(defn execute-scripts
+  [data]
+  (-> data
+      scripted-message))
+
 ;; High level
 (defn move
   [data [_ direction]]
@@ -109,7 +138,7 @@
 ;;    (s/explain :game/game new-data)
     (if (contains? #{:ground :stair-down :stair-up}
                    (u/get-active-tile new-data))
-      new-data
+      (execute-scripts new-data)
       data)))
 
 (defn activate

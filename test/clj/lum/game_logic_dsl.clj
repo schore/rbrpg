@@ -163,6 +163,10 @@
   []
   (:messages (get-state)))
 
+(defn get-last-message
+  []
+  (first (get-messages)))
+
 (defn get-position
   []
   (get-in (get-state) [:player :position]))
@@ -385,3 +389,12 @@
     (reduce (fn [a tile]
               (and (:visible? tile) a))
             true board)))
+
+(defn player-is-on-special-map
+  []
+  (player-is-on-level 5))
+
+(defn player-steps-on-message-trigger
+  []
+  (set-position 10 10)
+  (move :right))

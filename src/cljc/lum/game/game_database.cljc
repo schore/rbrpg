@@ -123,7 +123,9 @@
             "Two ratmeet and a herb give an excellent meal"])
 
 (def special-maps
-  {5 (load/static-load-file "resources/docs/test.txt")})
+  {5 {:map (load/static-load-file "resources/docs/test.txt")
+      :effects [[11 10] :message "A board squeezes"
+                [0 0] :message "Bla"]}})
 
 (s/def ::item (into #{} (map first item-data)))
 (s/def :game-database/item ::item)

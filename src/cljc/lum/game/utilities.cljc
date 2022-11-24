@@ -158,3 +158,7 @@
   (reduce (fn [data [item n]] (add-item data item n))
           data
           used-items))
+
+(defn update-if
+  [m cond f]
+  (if cond (f m) m))

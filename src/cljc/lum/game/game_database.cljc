@@ -210,5 +210,3 @@
 (s/def ::special-map (s/keys :req-un [::map ::effects]))
 
 (s/def ::map-db (s/map-of nat-int? ::special-map))
-
-(s/explain ::map-db special-maps)

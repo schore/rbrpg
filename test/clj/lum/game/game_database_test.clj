@@ -17,3 +17,6 @@
 
 (t/deftest valid-spells
   (t/is (s/valid? :lum.game.game-database/spells sut/spells)))
+
+(t/deftest valid-map-db
+  (t/is (s/valid? :lum.game.game-database/map-db sut/special-maps)))

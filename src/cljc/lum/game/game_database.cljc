@@ -1,6 +1,7 @@
 (ns lum.game.game-database
   (:require [clojure.spec.alpha :as s]
-            [lum.game.load-save :as load]))
+            [lum.game.load-save :as load]
+            [clojure.string :as string]))
 
 (def enemies {"Bat" {:ac 10
                      :damage [1 3]
@@ -194,3 +195,20 @@
   [slot]
   (map key (filter (fn [[_ v]] (contains? (:slots v) slot))
                    item-data)))
+
+;; special maps
+;;
+
+(s/def ::map string?)
+(s/def ::map-tile (s/cat :x nat-int? :y nat-int?))
+
+(s/def ::message-effect (s/cat :type #{:message} :string string?))
+(s/def ::effect-types (s/alt :message ::message-effect))
+
+(s/def ::effects (s/* (s/cat :tile (s/spec ::map-tile)
+                             :effect ::effect-types)))
+(s/def ::special-map (s/keys :req-un [::map ::effects]))
+
+(s/def ::map-db (s/map-of nat-int? ::special-map))
+
+(s/explain ::map-db special-maps)

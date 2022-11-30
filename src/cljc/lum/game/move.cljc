@@ -53,15 +53,26 @@
   [state map]
   (update state :boards #(conj (into [] %) map)))
 
+(defn apply-map-effect
+  [data effect]
+  (let [[[x y] type & effect] effect]
+    (case type
+      :message (let [[message & rest] effect]
+                 [(update-in data [:boards (dec (:level data)) (mu/position-to-n x y)]
+                             #(assoc % :message message))
+                  rest])
+      [data []])))
+
 (defn load-effect
   [data]
   (let [level (:level data)
-        effects (get-in db/special-maps [level :effects] [])
-        effect (partition 3 effects)]
-    (reduce (fn [state [[x y] type data]]
-              (case type
-                :message (update-in state [:boards (dec level) (mu/position-to-n x y)]
-                                    #(assoc % :message data)))) data effect)))
+        effects (get-in db/special-maps [level :effects] [])]
+    (loop [data data
+           effects effects]
+      (if (empty? effects)
+        data
+        (let [[data effects] (apply-map-effect data effects)]
+          (recur data effects))))))
 
 (defn load-special-map
   [data]

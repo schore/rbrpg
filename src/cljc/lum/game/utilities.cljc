@@ -1,5 +1,6 @@
 (ns lum.game.utilities
-  (:require [lum.maputil :as mu]))
+  (:require [lum.maputil :as mu]
+            [lum.game.game-database :as db]))
 
 (defn add-message
   [data message]
@@ -166,3 +167,18 @@
 (defn update-if
   [m cond f]
   (if cond (f m) m))
+
+(defn get-enemy-stat
+  [k]
+  (let [enemy (get db/enemies k)]
+    {:name k
+     :ac (:ac enemy)
+     :hp [(:hp enemy) (:hp enemy)]
+     :mp [(:mp enemy) (:mp enemy)]}))
+
+(defn start-fight
+  [data enemy]
+  (-> data
+      (assoc :fight {:enemy (get-enemy-stat enemy)
+                     :actions []})
+      (add-message (str "You got attacked by a " enemy))))

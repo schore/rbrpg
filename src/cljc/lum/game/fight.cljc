@@ -117,11 +117,7 @@
   [data _]
   (if (< (u/advantage 20) 5)
     ;;Start a fight every 20 turns
-    (let [enemy (choose-enemy)]
-      (-> data
-          (assoc :fight {:enemy (get-enemy-stat enemy)
-                         :actions []})
-          (u/add-message (str "You got attacked by a " enemy))))
+    (u/start-fight data (choose-enemy))
     data))
 
 (defn check-fight-end

@@ -126,7 +126,8 @@
 (def special-maps
   {5 {:map (load/static-load-file "resources/docs/test.txt")
       :effects [[11 10] :message "A board squeezes"
-                [0 0] :message "Bla"]}})
+                [0 0] :message "Bla"
+                [11 11] :enemy "Bandit"]}})
 
 (s/def ::item (into #{} (map first item-data)))
 (s/def :game-database/item ::item)
@@ -198,12 +199,17 @@
 
 ;; special maps
 ;;
+;;
+
+(s/def ::enemies-name (into #{} (map first enemies)))
 
 (s/def ::map string?)
 (s/def ::map-tile (s/cat :x nat-int? :y nat-int?))
 
 (s/def ::message-effect (s/cat :type #{:message} :string string?))
-(s/def ::effect-types (s/alt :message ::message-effect))
+(s/def ::fight-effect (s/cat :type #{:enemy} :enemy ::enemies-name))
+(s/def ::effect-types (s/alt :message ::message-effect
+                             :fight ::fight-effect))
 
 (s/def ::effects (s/* (s/cat :tile (s/spec ::map-tile)
                              :effect ::effect-types)))

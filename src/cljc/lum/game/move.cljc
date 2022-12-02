@@ -60,6 +60,9 @@
       :message (let [[message & rest] effect]
                  [(util/change-tile data x y #(assoc % :message message))
                   rest])
+      :enemy (let [[enemy & rest] effect]
+               [(util/change-tile data x y #(assoc % :enemy enemy))
+                rest])
       [data []])))
 
 (defn load-effect
@@ -135,10 +138,17 @@
     (u/add-message data message)
     data))
 
+(defn enemy-encounter
+  [data]
+  (if-some [enemy (:enemy (u/player-tile data))]
+    (u/start-fight data enemy)
+    data))
+
 (defn execute-scripts
   [data]
   (-> data
-      scripted-message))
+      scripted-message
+      enemy-encounter))
 
 ;; High level
 (defn move

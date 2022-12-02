@@ -21,3 +21,8 @@
   (dsl/player-is-on-special-map)
   (dsl/move :right)
   (is (not= "A board squeezes" (dsl/get-last-message))))
+
+(deftest trigger-a-fight
+  (dsl/player-is-on-special-map)
+  (dsl/player-steps-on-fight-trigger)
+  (is (dsl/in-fight?)))

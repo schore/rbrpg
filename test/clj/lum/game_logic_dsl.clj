@@ -398,3 +398,8 @@
   []
   (set-position 10 10)
   (move :right))
+
+(defn player-steps-on-fight-trigger
+  []
+  (set-position 10 11)
+  (move :right))

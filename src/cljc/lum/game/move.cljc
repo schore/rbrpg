@@ -58,8 +58,7 @@
   (let [[[x y] type & effect] effect]
     (case type
       :message (let [[message & rest] effect]
-                 [(update-in data [:boards (dec (:level data)) (mu/position-to-n x y)]
-                             #(assoc % :message message))
+                 [(util/change-tile data x y #(assoc % :message message))
                   rest])
       [data []])))
 

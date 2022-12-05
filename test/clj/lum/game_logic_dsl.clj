@@ -353,9 +353,11 @@
   (is (not (in-fight?))))
 
 (defn get-tile
-  []
-  (let [[x y] (get-position)]
-    (mu/get-tile (get-board) x y)))
+  ([]
+   (let [[x y] (get-position)]
+     (mu/get-tile (get-board) x y)))
+  ([x y]
+   (mu/get-tile (get-board) x y)))
 
 (defn player-has-xp
   [xp]

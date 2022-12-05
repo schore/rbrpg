@@ -26,3 +26,7 @@
   (dsl/player-is-on-special-map)
   (dsl/player-steps-on-fight-trigger)
   (is (dsl/in-fight?)))
+
+(deftest special-item-on-field
+  (dsl/player-is-on-special-map)
+  (is (contains? (:items (dsl/get-tile 15 15)) "Magic Mapping scroll")))

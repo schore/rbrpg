@@ -63,6 +63,9 @@
       :enemy (let [[enemy & rest] effect]
                [(util/change-tile data x y #(assoc % :enemy enemy))
                 rest])
+      :item (let [[item & rest] effect]
+              [(util/change-tile data x y #(assoc-in % [:items item] 1))
+               rest])
       [data []])))
 
 (defn load-effect

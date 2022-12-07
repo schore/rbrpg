@@ -462,7 +462,7 @@
       (let [items @items
             sitems @selected-items]
         [:<>
-         [:table>tbody (for [[k v] items]
+         [:table>tbody (for [[k v] (sort items)]
                          ^{:key (str "show_item_" k)}
                          [:tr
                           [:td k]
@@ -478,7 +478,7 @@
     (fn []
       (let [items @items]
         [:table>tbody
-         (for [[k v] items]
+         (for [[k v] (sort items)]
            ^{:key (str "show_items_use_" k)}
            [:tr
             [:td [button "use" [:game/use k]]]

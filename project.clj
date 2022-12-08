@@ -24,7 +24,7 @@
                  [mount "0.1.16"]
                  [nrepl "1.0.0"]
                  [org.clojure/clojure "1.11.1"]
-                 [org.clojure/clojurescript "1.11.60" :scope "provided"]
+                 [org.clojure/clojurescript "1.11.60"]
                  [org.clojure/core.async "1.6.673"]
                  [org.clojure/tools.cli "1.0.214"]
                  [org.webjars.npm/bulma "0.9.4"]
@@ -41,7 +41,7 @@
                  [juji/editscript "0.6.2"]
                  [etaoin "1.0.38"]
                  [haslett "0.1.7"]
-                 [thheller/shadow-cljs "2.20.2" :scope "provided"]]
+                 [thheller/shadow-cljs "2.20.2"]]
 
   :min-lein-version "2.0.0"
 

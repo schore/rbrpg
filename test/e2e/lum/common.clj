@@ -109,7 +109,7 @@
   []
   (let [query  [{:class "grid-container"}
                 {:tag :img}]]
-    (e/wait-exists *driver* query [:timeout 5])
+    (e/wait-exists *driver* query [:timeout 60])
     (->> (e/get-element-csss *driver* query  :left :top)
          (map (fn [inp] (apply str (filter #(Character/isDigit %) inp))))
          (map #(Integer/parseInt %))

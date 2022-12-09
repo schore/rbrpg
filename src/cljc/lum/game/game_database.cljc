@@ -117,6 +117,7 @@
                               :mapping? true}})
 
 (def spell-names (map first spells))
+(def enemy-names (map first enemies))
 
 (def hints ["Mixing batblood may help"
             "Two batblood and a wing bring happieness"

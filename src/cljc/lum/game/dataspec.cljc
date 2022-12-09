@@ -13,10 +13,18 @@
                      :tree})
 
 (s/def :tile/visible? boolean?)
+(s/def :tile/message string?)
+
+(s/def :enemy/name (into #{} db/enemy-names))
+
+(s/def :tile/enemy :enemy/name)
 
 (s/def :game/items (s/map-of :game-database/item pos-int?))
+
 (s/def :game/tile (s/keys :req-un [:tile/type :tile/visible?]
-                          :opt-un [:game/items]))
+                          :opt-un [:game/items
+                                   :tile/message
+                                   :tile/enemy]))
 
 (defn board-contains-element?
   [element board]
@@ -61,7 +69,6 @@
                                      :player/spells
                                      :game/items]))
 
-(s/def :enemy/name string?)
 (s/def :enemy/hp :game/stat)
 (s/def :enemy/mp :game/stat)
 (s/def :enemy/ac pos-int?)

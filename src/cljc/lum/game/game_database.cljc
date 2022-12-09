@@ -37,6 +37,8 @@
 (def recipies {{"batblood" 2} "small healing potion"
                {"small healing potion" 2} "medium healing potion"
                {"batblood" 2 "batwing" 1} "small mana potion"
+               {"small healing potion" 1
+                "batwing" 1} "small mana potion"
                {"wooden stick" 2
                 "ratmeet" 2
                 "herb" 1} "roast beef"
@@ -120,6 +122,7 @@
 (def enemy-names (map first enemies))
 
 (def hints ["Mixing batblood may help"
+            "Life and wings let you fly"
             "Two batblood and a wing bring happieness"
             "A spear is a knife with a long handle"
             "Two ratmeet and a herb give an excellent meal"])

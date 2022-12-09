@@ -32,7 +32,13 @@
                         :items ["leather armor" 15
                                 "note" 17
                                 "medium healing potion" 5
-                                "small healing potion" 1]}})
+                                "small healing potion" 1]}
+              "Deamon" {:ac 13
+                        :damage [2 6]
+                        :hp 20
+                        :mp 0
+                        :xp 20
+                        :items ["fire sword" 1]}})
 
 (def recipies {{"batblood" 2} "small healing potion"
                {"small healing potion" 2} "medium healing potion"
@@ -76,6 +82,9 @@
                          :damage [1 6]
                          :slots #{:right-hand}
                          :rarity 1}
+                "fire sword" {:target :player
+                              :damage [2 6]
+                              :slots #{:right-hand}}
                 "knife" {:target :player
                          :damage [1 3]
                          :slots #{:right-hand}
@@ -132,7 +141,8 @@
       :effects [[11 10] :message "A board squeezes"
                 [0 0] :message "Bla"
                 [11 11] :enemy "Bandit"
-                [15 15] :item "Magic Mapping scroll"]}})
+                [15 15] :item "Magic Mapping scroll"
+                [20 24] :enemy "Deamon"]}})
 
 (s/def ::item (into #{} (map first item-data)))
 (s/def :game-database/item ::item)

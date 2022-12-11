@@ -35,6 +35,7 @@
                                 "small healing potion" 1]}
               "Deamon" {:ac 13
                         :damage [2 6]
+                        :level 5
                         :hp 20
                         :mp 0
                         :xp 20

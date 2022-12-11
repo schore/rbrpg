@@ -62,5 +62,6 @@
   [level]
   (into [] (f/possible-enemies {:level (dec level)})))
 
-;; (deftest daemon-not-before-level-5
-;;   (is (not (some #{"Deamon"} (possible-enemis-on-level 1)))))
+(deftest daemon-not-before-level-5
+  (is (not (some #{"Deamon"} (possible-enemis-on-level 1))))
+  (is  (some #{"Deamon"} (possible-enemis-on-level 5))))

@@ -5,7 +5,11 @@
 
 (defn possible-enemies
   [data]
-  (map first db/enemies))
+  (let [level (inc (:level data))]
+    (->> db/enemies
+         (filter (fn [[_ enemie]]
+                   (>= level (get enemie :level 0))))
+         (map first))))
 
 (defn choose-enemy
   [data]

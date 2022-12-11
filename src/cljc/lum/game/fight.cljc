@@ -1,12 +1,15 @@
 (ns lum.game.fight
   (:require
    [lum.game.game-database :as db]
-   [lum.game.utilities :as u]
-   [lum.game.item :as item]))
+   [lum.game.utilities :as u]))
+
+(defn possible-enemies
+  [data]
+  (map first db/enemies))
 
 (defn choose-enemy
-  []
-  (let [enemies (map first db/enemies)]
+  [data]
+  (let [enemies (possible-enemies data)]
     (rand-nth enemies)))
 
 (defn get-enemy-stat
@@ -117,7 +120,7 @@
   [data _]
   (if (< (u/advantage 20) 5)
     ;;Start a fight every 20 turns
-    (u/start-fight data (choose-enemy))
+    (u/start-fight data (choose-enemy data))
     data))
 
 (defn check-fight-end

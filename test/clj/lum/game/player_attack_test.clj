@@ -4,7 +4,6 @@
              [lum.game.utilities :as u]
              [lum.game.fight :as f]))
 
-
 (defn attack
   [f data & rolls]
   (let [r (atom rolls)]
@@ -15,10 +14,8 @@
       (f data))))
 
 (def gamestate
-  {:fight { :enemy {:hp [1 1]
-                    :ac 10} }})
-
-
+  {:fight {:enemy {:hp [1 1]
+                   :ac 10}}})
 
 (deftest attack-role
   (defn get-damage [& rolls]
@@ -30,8 +27,7 @@
   (testing "Miss because of AC"
     (is (= 1 (get-damage 10 1 1))))
   (testing "Regular hit"
-    (is (= 0(get-damage 12 1 2)))))
-
+    (is (= 0 (get-damage 12 1 2)))))
 
 (deftest check-enemy-hit
   (defn hit? [ac roll]
@@ -47,7 +43,6 @@
   (is (not (hit? -1 1)))
   (is (not (hit? 10 1))))
 
-
 (deftest check-player-hit
   (defn hit? [ac roll]
     (= 0
@@ -62,3 +57,10 @@
   (is (hit? 50 20))
   (is (not (hit? -10 1)))
   (is (not (hit? 2 2))))
+
+(defn possible-enemis-on-level
+  [level]
+  (into [] (f/possible-enemies {:level (dec level)})))
+
+;; (deftest daemon-not-before-level-5
+;;   (is (not (some #{"Deamon"} (possible-enemis-on-level 1)))))

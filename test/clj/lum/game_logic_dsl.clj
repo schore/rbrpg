@@ -239,7 +239,7 @@
 (defn move-and-get-attacked
   ([] (move-and-get-attacked "Bat"))
   ([name]
-   (with-redefs [fight/choose-enemy (fn [] name)]
+   (with-redefs [fight/choose-enemy (fn [_] name)]
      (exec-with-rolls #(move :down) [1 2]))))
 
 (defn in-a-fight

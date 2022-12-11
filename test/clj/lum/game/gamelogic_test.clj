@@ -439,7 +439,7 @@
 
 (deftest magic-makes-damage-according-to-rolls
   (dsl/in-a-fight "Bandit")
-  (dsl/cast-spell "Burning Hands" 1 1 1)
+  (dsl/cast-spell "Burning Hands" 1 1 1 1)
   (is (= 2 (dsl/get-enemy-hp))))
 
 (deftest magic-burns-hp

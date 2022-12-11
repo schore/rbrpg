@@ -13,7 +13,6 @@
         (+ n g -1))
      (* n n)))
 
-
 ;;(g-1)(2n-g+1)
 (defn disadvantage
   [g n]
@@ -28,6 +27,12 @@
      (float (disadvantage i n))
      (float (normal i n))
      (float (advantage i n))]))
+
+(defn median-damage
+  [n d]
+  (let [med (/ (reduce + (range 1 (inc d)))
+               d)]
+    (float (* n med))))
 
 ;;11 1: 4/4 4/4
 ;;12 2: 3/4 1/4

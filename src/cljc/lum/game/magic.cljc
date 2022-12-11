@@ -1,7 +1,8 @@
 (ns lum.game.magic
   (:require
    [lum.game.utilities :as u]
-   [lum.game.game-database :as db]))
+   [lum.game.game-database :as db]
+   [lum.game.fight :as fight]))
 
 (defn known-spell?
   [state spell]
@@ -60,3 +61,9 @@
           (map-effect spell-data)
           (u/process-event [spell (calc-target spell-data)])))
     state))
+
+(defn cast-spell-during-fight
+  [state [_ spell]]
+  (-> state
+      (cast-spell [_ spell])
+      (fight/enemy-attacks)))

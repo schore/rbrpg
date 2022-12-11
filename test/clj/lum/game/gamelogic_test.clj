@@ -447,6 +447,11 @@
   (dsl/cast-spell "Burning Hands")
   (is (= 0 (dsl/get-mp))))
 
+(deftest attacked-after-magic
+  (dsl/in-a-fight "Bandit")
+  (dsl/cast-spell "Burning Hands" 1 1 1 15 1)
+  (is (< (dsl/get-hp) 10)))
+
 (deftest can-not-cast-unknown-spells
   (dsl/in-a-fight "Bandit")
   (dsl/cast-spell "Magic missle")

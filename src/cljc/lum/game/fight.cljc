@@ -3,12 +3,19 @@
    [lum.game.game-database :as db]
    [lum.game.utilities :as u]))
 
+(defn enemy-allowed?
+  [level [_ enemy-data]]
+  (let [[from to] (get enemy-data :level [0 0])]
+    (and (or (= 0 from)
+             (>= level from))
+         (or (= 0 to)
+             (<= level to)))))
+
 (defn possible-enemies
   [data]
   (let [level (:level data)]
     (->> db/enemies
-         (filter (fn [[_ enemie]]
-                   (>= level (get enemie :level 0))))
+         (filter #(enemy-allowed? level %))
          (map first))))
 
 (defn choose-enemy

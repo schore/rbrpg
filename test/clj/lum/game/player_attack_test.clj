@@ -65,3 +65,20 @@
 (deftest daemon-not-before-level-5
   (is (not (some #{"Deamon"} (possible-enemis-on-level 1))))
   (is  (some #{"Deamon"} (possible-enemis-on-level 5))))
+
+(deftest bat-at-all-levels
+  (is (some #{"Bat"} (possible-enemis-on-level 1)))
+  (is (some #{"Bat"} (possible-enemis-on-level 10)))
+  (is (some #{"Bat"} (possible-enemis-on-level 100)))
+  (is (some #{"Bat"} (possible-enemis-on-level 9999999999999999999))))
+
+(deftest crazy-from-2-20
+  (is (not (some #{"Crazy"} (possible-enemis-on-level 1))))
+  (is (some #{"Crazy"} (possible-enemis-on-level 2)))
+  (is (some #{"Crazy"} (possible-enemis-on-level 20)))
+  (is (not (some #{"Crazy"} (possible-enemis-on-level 21)))))
+
+(deftest rat-until-level-10
+  (is (some #{"Rat"} (possible-enemis-on-level 1)))
+  (is (some #{"Rat"} (possible-enemis-on-level 10)))
+  (is (not (some #{"Rat"} (possible-enemis-on-level 11)))))

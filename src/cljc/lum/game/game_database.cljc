@@ -11,12 +11,14 @@
                      :items ["batblood" 1 "batwing" 1]}
               "Rat" {:ac 3
                      :damage [1 2]
+                     :level [0 10]
                      :hp 1
                      :mp 0
                      :xp 1
                      :items ["ratmeet" 1]}
               "Crazy" {:ac 7
                        :damage [3 2]
+                       :level [2 20]
                        :hp 4
                        :mp 0
                        :xp 2
@@ -35,7 +37,7 @@
                                 "small healing potion" 1]}
               "Deamon" {:ac 13
                         :damage [2 6]
-                        :level 5
+                        :level [5 0]
                         :hp 20
                         :mp 0
                         :xp 20

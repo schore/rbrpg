@@ -288,6 +288,11 @@
  (fn [db _]
    (get-in db [:game :player :spells])))
 
+(rf/reg-sub
+ :game/level
+ (fn [db _]
+   (get-in db [:game :level])))
+
 (defn position-css [x y]
   {:width "15px"
    :height "15px"
@@ -421,12 +426,16 @@
   []
   (let [hp (rf/subscribe [:player/hp])
         mp (rf/subscribe [:player/mp])
-        xp (rf/subscribe [:player/xp])]
+        xp (rf/subscribe [:player/xp])
+        level (rf/subscribe [:game/level])]
     (fn []
       (let [hp @hp
             mp @mp
-            xp @xp]
-        [stat-style xp hp mp]))))
+            xp @xp
+            level @level]
+        [:<>
+         [stat-style xp hp mp]
+         "level: " level]))))
 
 (defn show-messages
   []

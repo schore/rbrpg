@@ -5,7 +5,7 @@
 
 (defn possible-enemies
   [data]
-  (let [level (inc (:level data))]
+  (let [level (:level data)]
     (->> db/enemies
          (filter (fn [[_ enemie]]
                    (>= level (get enemie :level 0))))

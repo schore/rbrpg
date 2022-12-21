@@ -140,6 +140,11 @@
                          (into [] (drop-last %))))}))))
 
 (rf/reg-event-fx
+ :game/new-game
+ (fn [_ _]
+   {:game/send-message [:initialize]}))
+
+(rf/reg-event-fx
  :game/get-new-map
  (fn [_ _]
    {:game/send-message [:new-board]}))
@@ -565,6 +570,7 @@
        [:div.outer-grid-container
         [:div.items-use [items-for-use]]
         [:div.spells [player-spells]]]
+       [button "New game" [:game/new-game]]
        [button "New map" [:game/get-new-map]]
        [button "Load map" [:game/load-map]]
        [:br]

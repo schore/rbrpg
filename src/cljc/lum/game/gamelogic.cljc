@@ -74,7 +74,7 @@
           :move [move/move fight/check-fight]
           :set-position [move/set-position]
           :new-board [new-board]
-          :combine [item/combine item/remember-recipies]
+          :combine [item/remember-recipies item/combine]
           :use-item [item/use-item]}))
 
 (defn get-mode-map

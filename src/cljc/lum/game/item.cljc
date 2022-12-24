@@ -55,6 +55,7 @@
 
 (defn remember-recipies
   [data [_ used-items]]
-  (if (contains? db/recipies used-items)
+  (if (and (enough-items? data used-items)
+           (contains? db/recipies used-items))
     (update data :recepies #(distinct (conj % used-items)))
     data))

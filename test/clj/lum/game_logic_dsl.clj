@@ -11,7 +11,7 @@
             [lum.maputil :as mu]))
 
 (defn delete-directory-recursive
-  "Recursively delete a directory."
+  "Recursively delete a director ."
   [^java.io.File file]
   ;; when `file` is a directory, list its entries and call this
   ;; function with each entry. can't `recur` here as it's not a tail
@@ -405,3 +405,7 @@
   []
   (set-position 10 11)
   (move :right))
+
+(defn get-known-recepies
+  []
+  (:recepies (get-state)))

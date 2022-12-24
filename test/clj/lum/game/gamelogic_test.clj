@@ -174,6 +174,11 @@
   (is (nil? (get (dsl/get-items) "batblood")))
   (is (= 1 (get (dsl/get-items) "small healing potion"))))
 
+(deftest remember-recipies
+  (dsl/player-has-items {"batblood" 2})
+  (dsl/combine "batblood" "batblood")
+  (is (some #{{"batblood" 2}} (dsl/get-known-recepies))))
+
 (deftest combine-items-already-some-in-stock
   (dsl/player-has-items {"batblood" 2
                          "small healing potion" 1})

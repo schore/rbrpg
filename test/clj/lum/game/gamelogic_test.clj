@@ -179,6 +179,12 @@
   (dsl/combine "batblood" "batblood")
   (is (some #{{"batblood" 2}} (dsl/get-known-recepies))))
 
+(deftest recipies-stored-only-once
+  (dsl/player-has-items {"batblood" 4})
+  (dsl/combine "batblood" "batblood")
+  (dsl/combine "batblood" "batblood")
+  (is (= 1 (count (dsl/get-known-recepies)))))
+
 (deftest combine-items-already-some-in-stock
   (dsl/player-has-items {"batblood" 2
                          "small healing potion" 1})

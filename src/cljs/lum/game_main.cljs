@@ -19,7 +19,8 @@
    [lum.game.game-database :as db]
    [lum.game.update-splitter :as update-splitter]
    [lum.game.gamelogic :as gamelogic]
-   [lum.game.fight :as fight]))
+   [lum.game.fight :as fight]
+   [lum.game.utilities :as u]))
 
 (defn keyify-ws
   [msg]
@@ -283,10 +284,18 @@
  (fn [db _]
    (get-in db [:game :player :items])))
 
+(defn enough-items?
+  [data required-items]
+  (every? (fn [[k v]] (<= v (get-in data [:player :items k] 0))) required-items))
+
 (rf/reg-sub
  :game/recepies
  (fn [db _]
-   (get-in db [:game :recepies] [])))
+   (->> (get-in db [:game :recepies] [])
+        (map (fn [incriedients]
+               {:incriedients incriedients
+                :item (get db/recipies incriedients)
+                :possible? (enough-items? (:game db) incriedients)})))))
 
 (rf/reg-sub
  :game/equipment
@@ -497,10 +506,13 @@
     (fn []
       (let [recipies @recipies]
         [:<>
-         [:h2 "Known recipies"]
-         [:p "All " (str recipies)]
-         (for [recipie recipies]
-           [:p "F: " (str recipie)])]))))
+         [:h4 "Known recipies"]
+         [:table>tbody
+          (for [recipie recipies]
+            [:tr
+             [:td (str (:possible? recipie))]
+             [:td (:item recipie)]
+             [:td (str (:incriedients recipie))]])]]))))
 
 (defn items-for-use
   []
@@ -595,5 +607,6 @@
 (defn item []
   [:section.section>div.container>div.content
    [:div.items
-    ;;[recipies]
+    [recipies]
+    [:hr]
     [show-items]]])

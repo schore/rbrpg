@@ -95,6 +95,12 @@
 (s/def :game/messages (s/coll-of string?
                                  :max-count 10))
 
+(def recepie (into #{}
+                   (map first db/recipies)))
+
+(s/def :game/recepie recepie)
+(s/def :game/recepies (s/coll-of :game/recepie))
+
 (defn valid-position?
   [data]
   (let [data (s/unform :game/game data)
@@ -112,7 +118,8 @@
 (s/def :game/game (s/and (s/keys :req-un [:game/player
                                           :game/boards
                                           :game/level
-                                          :game/messages]
+                                          :game/messages
+                                          :game/recepies]
                                  :opt-un [:game/fight])
                          valid-position?
                          valid-level?))

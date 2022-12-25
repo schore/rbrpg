@@ -40,7 +40,8 @@
                 :mp [3 3]
                 :equipment {}
                 :spells #{"Burning Hands" "Healing"}
-                :items inital-items}}
+                :items inital-items}
+       :recepies []}
       (move/set-to-tile :ground)))
 
 (defn game-over?

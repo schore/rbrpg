@@ -41,9 +41,13 @@
         (add-spell item))
     data))
 
+(defn clear-empty-items
+  [items]
+  (u/filter-map (fn [[_ v]] (pos-int? v)) items))
+
 (defn combine
   [data [_ used-items]]
-  (let [used-items (u/filter-map (fn [[_ v]] (pos-int? v)) used-items)
+  (let [used-items (clear-empty-items used-items)
         new-item (get db/recipies used-items)]
     (if (enough-items? data used-items)
       (-> data
@@ -55,7 +59,9 @@
 
 (defn remember-recipies
   [data [_ used-items]]
-  (if (and (enough-items? data used-items)
-           (contains? db/recipies used-items))
-    (update data :recepies #(distinct (conj % used-items)))
-    data))
+  (let [used-items (clear-empty-items used-items)]
+    (println used-items)
+    (if (and (enough-items? data used-items)
+             (contains? db/recipies used-items))
+      (update data :recepies #(distinct (conj % used-items)))
+      data)))

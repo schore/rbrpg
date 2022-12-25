@@ -153,6 +153,10 @@
   [& s]
   (exec *game* [:combine (frequencies s)]))
 
+(defn combine-map
+  [m]
+  (exec *game* [:combine m]))
+
 (defn flea
   ([]
    (exec *game* [:flea]))

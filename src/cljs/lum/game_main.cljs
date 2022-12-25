@@ -284,6 +284,11 @@
    (get-in db [:game :player :items])))
 
 (rf/reg-sub
+ :game/recepies
+ (fn [db _]
+   (get-in db [:game :recepies] [])))
+
+(rf/reg-sub
  :game/equipment
  (fn [db _]
    (get-in db [:game :player :equipment])))
@@ -486,6 +491,17 @@
                   :value "combine"
                   :on-click (fn [] (rf/dispatch [:game/combine sitems]))}]]))))
 
+(defn recipies
+  []
+  (let [recipies (rf/subscribe [:game/recepies])]
+    (fn []
+      (let [recipies @recipies]
+        [:<>
+         [:h2 "Known recipies"]
+         [:p "All " (str recipies)]
+         (for [recipie recipies]
+           [:p "F: " (str recipie)])]))))
+
 (defn items-for-use
   []
   (let [items (rf/subscribe [:game/items])]
@@ -579,4 +595,5 @@
 (defn item []
   [:section.section>div.container>div.content
    [:div.items
+    ;;[recipies]
     [show-items]]])

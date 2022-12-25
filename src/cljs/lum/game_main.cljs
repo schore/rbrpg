@@ -607,6 +607,6 @@
 (defn item []
   [:section.section>div.container>div.content
    [:div.items
-    [recipies]
+    [show-items]
     [:hr]
-    [show-items]]])
+    [recipies]]])

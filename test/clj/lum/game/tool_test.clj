@@ -15,17 +15,23 @@
    (map add-visible-to-board boards)))
 
 (defn update-save-game
-  [file]
-  (let [state (edn/read-string (slurp file))]
-    (spit file (update state :boards add-visible-to-boards))))
+  ([file update-function]
+   (let [state (edn/read-string (slurp file))]
+     (spit file (update-function state)))))
 
 (defn convert
+  ([]
+   (convert #(update % :boards add-visible-to-boards)))
+  ([update-function]
+   (let [directory (io/file "resources/savegames/")
+         files (file-seq directory)]
+     (doseq [file files]
+       (when (.isFile file)
+         (println file)
+         (update-save-game (.getPath file) update-function))))))
+
+(defn add-empty-recipies
   []
-  (let [directory (io/file "resources/savegames/")
-        files (file-seq directory)]
-    (doseq [file files]
-      (when (.isFile file)
-        (println file)
-        (update-save-game (.getPath file))))))
+  (convert #(assoc % :recepies [])))
 
 (s/explain :game/game (edn/read-string  (slurp "resources/savegames/got-two-batblood.edn")))

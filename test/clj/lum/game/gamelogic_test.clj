@@ -185,6 +185,13 @@
   (dsl/combine "batblood" "batblood")
   (is (= 1 (count (dsl/get-known-recepies)))))
 
+(deftest two-recipies-stored
+  (dsl/player-has-items {"batblood" 2
+                         "batwing" 1})
+  (dsl/combine "batblood" "batblood")
+  (dsl/combine "small healing potion" "batwing")
+  (is (= 2 (count (dsl/get-known-recepies)))))
+
 (deftest recipie-stored-only-on-success
   (dsl/player-has-items {"batblood" 1})
   (dsl/combine "batblood" "batblood")

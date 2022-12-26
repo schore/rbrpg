@@ -510,7 +510,7 @@
          [:table>tbody
           (for [recipie recipies]
             [:tr
-             [:td (str (:possible? recipie))]
+             [:td [button "Combine" [:game/combine (:incriedients recipie)]]]
              [:td (:item recipie)]
              [:td (str (:incriedients recipie))]])]]))))
 

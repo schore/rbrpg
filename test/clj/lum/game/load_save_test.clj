@@ -20,6 +20,7 @@
                (recur {:boards [(cavegen/get-dungeon)]
                        :level 1
                        :messages '("")
+                       :recepies []
                        :player {:position [12 12]
                                 :ac 5
                                 :xp 0

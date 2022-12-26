@@ -14,7 +14,9 @@
   (testing "Load a game"
     (let [game-state
           (view/process-view
-           (loop [game-state nil]
+           (loop [game-state nil
+                  tries 0]
+             (assert (< tries 10) "No valid game state created")
              (if (s/valid? :game/game game-state)
                game-state
                (recur {:boards [(cavegen/get-dungeon)]
@@ -28,7 +30,8 @@
                                 :mp [3 3]
                                 :spells #{}
                                 :equipment {}
-                                :items {}}}))))]
+                                :items {}}}
+                      (inc tries)))))]
       (dsl/game-is-initialized)
       (dsl/load-game game-state)
       (is (= game-state (dsl/get-state))))))

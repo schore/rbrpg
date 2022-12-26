@@ -123,8 +123,8 @@
 (defn get-items
   []
   (click-menu-item "Items")
-  (let [query [{:class "items"}
-               {:tag :table}
+  (let [query [{:tag :table
+                :class "items"}
                {:tag :tr}]]
     (e/wait-visible *driver* query)
     (->> (e/query-all *driver* query)
@@ -143,8 +143,8 @@
 (defn get-item-row
   [item]
   (->> (e/query-all *driver*
-                    [{:class "items"}
-                     {:tag :table}
+                    [{:tag :table
+                      :class "items"}
                      {:tag :tr}])
        (filter (fn [el]
                  (let [x (e/get-element-text-el *driver*

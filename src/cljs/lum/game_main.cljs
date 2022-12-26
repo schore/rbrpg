@@ -490,12 +490,12 @@
       (let [items @items
             sitems @selected-items]
         [:<>
-         [:table>tbody (for [[k v] (sort items)]
-                         ^{:key (str "show_item_" k)}
-                         [:tr
-                          [:td k]
-                          [:td v]
-                          [:td [plus-minus-counter selected-items k (get sitems k)]]])]
+         [:table.items>tbody (for [[k v] (sort items)]
+                               ^{:key (str "show_item_" k)}
+                               [:tr
+                                [:td k]
+                                [:td v]
+                                [:td [plus-minus-counter selected-items k (get sitems k)]]])]
          [:input {:type "button"
                   :value "combine"
                   :on-click (fn [] (rf/dispatch [:game/combine sitems]))}]]))))
@@ -606,7 +606,7 @@
 
 (defn item []
   [:section.section>div.container>div.content
-   [:div.items
-    [show-items]
+   [:div
+    [recipies]
     [:hr]
-    [recipies]]])
+    [show-items]]])

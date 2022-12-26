@@ -20,7 +20,7 @@
     (c/refresh #())
     (c/load-game "test-map.edn")
     (c/move direction)
-    (when (and (> i 10)
+    (when (and (> i 20)
                (c/fight-screen?))
       (recur (inc i)))))
 

@@ -187,8 +187,7 @@
   (is (some #{{"batblood" 2}} (dsl/get-known-recepies))))
 
 (deftest remember-recipies-something-is-0
-  (dsl/player-has-items {"batblood" 2
-                         "batwing" 0})
+  (dsl/player-has-items {"batblood" 2})
   (dsl/combine-map {"batblood" 2
                     "batwing" 0})
   (is (some #{{"batblood" 2}} (dsl/get-known-recepies))))

@@ -192,8 +192,7 @@
 (rf/reg-event-fx
  :game/save
  (fn [{:keys [:db]} [_ fn]]
-   (let [gamestate (-> (:game db)
-                       (assoc :boards (:boards db)))]
+   (let [gamestate (-> (:game db))]
      {:http-xhrio {:method :put
                    :headers {"Content-Type" "text/plain"}
                    :uri (str "/game/data/" fn)

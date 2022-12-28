@@ -104,6 +104,11 @@
   (c/combine 2 "batblood")
   (is (= 1 (get (c/get-items) "small healing potion"))))
 
+(deftest ^:integration recipie-remembered
+  (c/load-game "items-two-combine.edn")
+  (c/combine  2 "small healing potion")
+  (is (some #{"medium healing potion"} (c/get-recepies))))
+
 (deftest ^:integration use-magic
   (c/load-game "in-a-fight.edn")
   (select-and-activate "Magic")

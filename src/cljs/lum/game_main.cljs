@@ -506,7 +506,7 @@
       (let [recipies @recipies]
         [:<>
          [:h4 "Known recipies"]
-         [:table>tbody
+         [:table.recepies>tbody
           (for [recipie recipies]
             [:tr
              [:td [button "Combine" [:game/combine (:incriedients recipie)]]]

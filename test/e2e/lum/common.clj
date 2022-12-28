@@ -59,6 +59,7 @@
   (prepare-save-game "on-stairs.edn")
   (prepare-save-game "test-map.edn")
   (prepare-save-game "not-full-hp.edn")
+  (prepare-save-game "items-two-combine.edn")
   (f)
   (delete-directory-recursive (io/file "tmp")))
 
@@ -264,3 +265,22 @@
   [slot]
   (click-menu-item "Home")
   (e/get-element-value *driver* (keyword slot)))
+
+(defn get-recepies-table
+  []
+  (click-menu-item "Items")
+  (let [query [{:tag :table
+                :class "recepies"}
+               {:tag :tr}]]
+    (e/wait-visible *driver* query)
+    (->> (e/query-all *driver* query)
+         (map (fn [el]
+                {:button (e/child *driver* el {:tag :input})
+                 :item (e/get-element-text-el *driver*
+                                              (e/child *driver* el {:tag :td :index 2}))
+                 :recepie (e/get-element-text-el *driver*
+                                                 (e/child *driver* el {:tag :td :index 3}))})))))
+
+(defn get-recepies
+  []
+  (map #(:item %) (get-recepies-table)))

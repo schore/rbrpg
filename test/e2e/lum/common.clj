@@ -284,3 +284,10 @@
 (defn get-recepies
   []
   (map #(:item %) (get-recepies-table)))
+
+(defn use-recipie
+  [recipie]
+  (let [t (->> (get-recepies-table)
+               (filter #(= recipie (:item %)))
+               first)]
+    (e/click-el *driver* (:button t))))

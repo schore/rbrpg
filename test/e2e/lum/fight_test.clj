@@ -109,6 +109,12 @@
   (c/combine  2 "small healing potion")
   (is (some #{"medium healing potion"} (c/get-recepies))))
 
+(deftest ^:integration use-recipie
+  (c/load-game "items-two-combine.edn")
+  (c/combine 2 "small healing potion");;learn a recipe
+  (c/use-recipie "medium healing potion")
+  (is (= 4 (get (c/get-items) "medium healing potion"))))
+
 (deftest ^:integration use-magic
   (c/load-game "in-a-fight.edn")
   (select-and-activate "Magic")

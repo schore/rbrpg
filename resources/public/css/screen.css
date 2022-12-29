@@ -86,3 +86,7 @@ body {
   font-size: 12px;
   background-color: lightgray;
 }
+
+.inactivebutton {
+  color: gray;
+}

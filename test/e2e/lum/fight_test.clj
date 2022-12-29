@@ -115,6 +115,17 @@
   (c/use-recipie "medium healing potion")
   (is (= 4 (get (c/get-items) "medium healing potion"))))
 
+(deftest ^:integration recipie-deactivated-when-not-enough-items
+  (c/load-game "items-two-combine.edn")
+  (c/combine 2 "small healing potion");;learn a recipe
+  (c/use-recipie "medium healing potion")
+  (is (= :inactive (c/get-recipie-state "medium healing potion"))))
+
+(deftest ^:integration recipie-button-active
+  (c/load-game "items-two-combine.edn")
+  (c/combine  2 "small healing potion")
+  (is (= :normal (c/get-recipie-state "medium healing potion"))))
+
 (deftest ^:integration use-magic
   (c/load-game "in-a-fight.edn")
   (select-and-activate "Magic")

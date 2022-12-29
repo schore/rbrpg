@@ -267,19 +267,21 @@
   (e/get-element-value *driver* (keyword slot)))
 
 (defn get-recepies-table
-  []
-  (click-menu-item "Items")
-  (let [query [{:tag :table
-                :class "recepies"}
-               {:tag :tr}]]
-    (e/wait-visible *driver* query)
-    (->> (e/query-all *driver* query)
-         (map (fn [el]
-                {:button (e/child *driver* el {:tag :input})
-                 :item (e/get-element-text-el *driver*
-                                              (e/child *driver* el {:tag :td :index 2}))
-                 :recepie (e/get-element-text-el *driver*
-                                                 (e/child *driver* el {:tag :td :index 3}))})))))
+  ([]
+   (click-menu-item "Items")
+   (let [query [{:tag :table
+                 :class "recepies"}
+                {:tag :tr}]]
+     (e/wait-visible *driver* query)
+     (->> (e/query-all *driver* query)
+          (map (fn [el]
+                 {:button (e/child *driver* el {:tag :input})
+                  :item (e/get-element-text-el *driver*
+                                               (e/child *driver* el {:tag :td :index 2}))
+                  :recepie (e/get-element-text-el *driver*
+                                                  (e/child *driver* el {:tag :td :index 3}))})))))
+  ([item]
+   (filter #(= item (:item %))) (get-recepies-table)))
 
 (defn get-recepies
   []
@@ -291,3 +293,13 @@
                (filter #(= recipie (:item %)))
                first)]
     (e/click-el *driver* (:button t))))
+
+(defn get-recipie-state
+  [item]
+  (let [attr (e/get-element-attr-el *driver*
+                                    (:button (first (get-recepies-table item)))
+                                    :class)]
+    (println (str attr))
+    (case attr
+      "inactivebutton" :inactive
+      :normal)))

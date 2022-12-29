@@ -361,12 +361,15 @@
             (tile-to-graphic (maputil/get-tile board i))])]))))
 
 (defn button
-  [value event]
-  [:input {:type :button
-           :defaultValue value
-           :on-click (fn [e]
-                       (-> e .-target .blur)
-                       (rf/dispatch event))}])
+  ([value event]
+   [button value event nil])
+  ([value event class]
+   [:input {:type :button
+            :class class
+            :defaultValue value
+            :on-click (fn [e]
+                        (-> e .-target .blur)
+                        (rf/dispatch event))}]))
 
 (defn new-map-button []
   [:input {:type "Button"
@@ -509,7 +512,8 @@
          [:table.recepies>tbody
           (for [recipie recipies]
             [:tr
-             [:td [button "Combine" [:game/combine (:incriedients recipie)]]]
+             [:td [button "Combine" [:game/combine (:incriedients recipie)]
+                   (when (not (:possible? recipie)) :inactivebutton)]]
              [:td (:item recipie)]
              [:td (str (:incriedients recipie))]])]]))))
 

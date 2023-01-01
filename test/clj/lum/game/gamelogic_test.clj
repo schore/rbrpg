@@ -396,17 +396,17 @@
   (is (= [1 4] (dsl/get-position))))
 
 (deftest player-can-increase-level
-  (dsl/player-has-xp 299)
+  (dsl/player-has-xp 99)
   (dsl/get-one-xp)
   (is (= 16 (dsl/get-max-hp))))
 
 (deftest player-increase-mp-by-leveling-up
-  (dsl/player-has-xp 299)
+  (dsl/player-has-xp 99)
   (dsl/get-one-xp)
   (is (= 6 (dsl/get-max-mp))))
 
 (deftest player-hp-does-not-increase-on-regular-xp-updates
-  (dsl/player-has-xp 260)
+  (dsl/player-has-xp 80)
   (dsl/get-one-xp)
   (is (= 10 (dsl/get-max-hp))))
 

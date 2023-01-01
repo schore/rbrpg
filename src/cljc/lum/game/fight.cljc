@@ -41,7 +41,7 @@
 
 (defn xp-to-level
   [xp]
-  (let [required-xp [0 300 900 2700]]
+  (let [required-xp [0 100 300 900 2700]]
     (count (filter #(>= xp %) required-xp))))
 
 (defn level-up?

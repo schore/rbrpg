@@ -45,6 +45,7 @@
 
 (def recipies {{"batblood" 2} "small healing potion"
                {"small healing potion" 2} "medium healing potion"
+               {"small mana potion" 2} "medium mana potion"
                {"batblood" 2 "batwing" 1} "small mana potion"
                {"small healing potion" 1
                 "batwing" 1} "small mana potion"
@@ -62,6 +63,9 @@
                 "small mana potion" {:target :player
                                      :mp 3
                                      :rarity 5}
+                "medium mana potion" {:target :player
+                                      :mp 30
+                                      :rarity 2}
                 "medium healing potion" {:target :player
                                          :hp 30
                                          :rarity 3}

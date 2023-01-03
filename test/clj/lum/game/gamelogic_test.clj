@@ -500,8 +500,8 @@
   (is (dsl/in-fight?)))
 
 (deftest learning-new-spells-from-items
-  (dsl/player-has-items {"Force scroll" 1})
-  (dsl/use-item "Force scroll")
+  (dsl/player-has-items {"force scroll" 1})
+  (dsl/use-item "force scroll")
   (is (contains? (dsl/get-spells) "Force")))
 
 (deftest restore-mp

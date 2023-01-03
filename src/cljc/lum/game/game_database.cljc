@@ -35,13 +35,24 @@
                                 "note" 17
                                 "medium healing potion" 5
                                 "small healing potion" 1]}
+              "Imp" {:ac 10
+                     :damage [2 3]
+                     :level [5 0]
+                     :hp 10
+                     :mp 0
+                     :xp 10
+                     :items ["small mana potion" 10
+                             "small mana potion" 10
+                             "medium mana potion" 15
+                             "medium healing potion" 18]}
               "Deamon" {:ac 13
                         :damage [2 6]
                         :level [5 0]
                         :hp 20
                         :mp 0
                         :xp 20
-                        :items ["fire sword" 1]}})
+                        :items ["fire sword" 15
+                                "ore" 5]}})
 
 (def recipies {{"batblood" 2} "small healing potion"
                {"small healing potion" 2} "medium healing potion"
@@ -71,15 +82,16 @@
                                          :rarity 3}
                 "batblood" {}
                 "batwing" {}
+                "ore" {}
                 "ratmeet" {:rarity 7}
                 "herb" {:rarity 3}
                 "roast beef" {:target :player
                               :maxhp 1}
                 "note" {:properties #{:hint}
                         :rarity 4}
-                "Force scroll" {:spell "Force"
+                "force scroll" {:spell "Force"
                                 :rarity 1}
-                "Magic Mapping scroll" {:spell "Magic Mapping"
+                "magic mapping scroll" {:spell "Magic Mapping"
                                         :rarity 1}
                 "wooden stick" {:target :player
                                 :damage [1 4]
@@ -148,7 +160,7 @@
       :effects [[11 10] :message "A board squeezes"
                 [0 0] :message "Bla"
                 [11 11] :enemy "Bandit"
-                [15 15] :item "Magic Mapping scroll"
+                [15 15] :item "magic mapping scroll"
                 [20 24] :enemy "Deamon"]}})
 
 (s/def ::item (into #{} (map first item-data)))

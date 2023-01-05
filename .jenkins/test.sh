@@ -1,5 +1,14 @@
-#!/bin/bash -e
+#!/bin/bash
+#
+#
 
-cd "$(dirname "$0")/.."
+run_tests () {
+    cd $1
+    npx --call='lein test :all'
+    return $?
+}
 
-npx --call='lein test :all'
+if [ $0 == ${BASH_SOURCE} ]
+then
+    run_tests "$(dirname "$0")/.."
+fi

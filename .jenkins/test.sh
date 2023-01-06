@@ -6,7 +6,8 @@ run_tests () {
     pushd $1
 
     local result
-    result= npx --call='lein test :all'
+    npx --call='lein test :all'
+    result=$?
     popd
     return $result
 }

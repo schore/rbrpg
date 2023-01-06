@@ -4,10 +4,11 @@ pushd "$(dirname "$0")"
 
 source .jenkins/test.sh
 
-
+rm ./target/test-reports/*.xml
 
 run_tests .
 testresult=$?
+
 generate_allure_report . ./target/test-reports
 
 if  [[ $testresult == 0 ]]

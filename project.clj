@@ -5,13 +5,14 @@
 
   :dependencies [[ch.qos.logback/logback-classic "1.4.5"]
                  [cljs-ajax "0.8.4"]
-                 [clojure.java-time "1.1.0"]
+                 [clojure.java-time "1.2.0"]
                  [com.cognitect/transit-clj "1.0.329"]
                  [com.cognitect/transit-cljs "0.8.280"]
                  [cprop "0.1.19"]
                  [day8.re-frame/http-fx "0.2.4"]
                  [expound "0.9.0"]
                  [funcool/struct "1.4.0"]
+                 [com.google.javascript/closure-compiler-unshaded "v20221102"]
                  [json-html "0.4.7"]
                  [luminus-transit "0.1.5"]
                  ;; [luminus-undertow "0.1.11"]
@@ -21,7 +22,7 @@
                  [metosin/muuntaja "0.6.8"]
                  [metosin/reitit "0.5.18"]
                  [metosin/ring-http-response "0.9.3"]
-                 [mount "0.1.16"]
+                 [mount "0.1.17"]
                  [nrepl "1.0.0"]
                  [org.clojure/clojure "1.11.1"]
                  [org.clojure/clojurescript "1.11.60"]
@@ -39,9 +40,9 @@
                  [ring/ring-defaults "0.3.4"]
                  [selmer "1.12.55"]
                  [juji/editscript "0.6.2"]
-                 [etaoin "1.0.38"]
+                 [etaoin "1.0.39"]
                  [haslett "0.1.7"]
-                 [thheller/shadow-cljs "2.20.10"]]
+                 [thheller/shadow-cljs "2.20.17"]]
 
   :min-lein-version "2.0.0"
 

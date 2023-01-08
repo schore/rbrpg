@@ -143,6 +143,8 @@
 
 (defn get-item-row
   [item]
+  (e/wait-visible *driver* [{:tag :table
+                             :class "items"}])
   (->> (e/query-all *driver*
                     [{:tag :table
                       :class "items"}

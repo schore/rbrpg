@@ -23,24 +23,25 @@
    title])
 
 (defn navbar []
-  (r/with-let [expanded? (r/atom false)]
-    [:nav.navbar.is-info>div.container
-     [:div.navbar-brand
-      [:a.navbar-item {:href "/" :style {:font-weight :bold}} "lum"]
-      [:span.navbar-burger.burger
-       {:data-target :nav-menu
-        :on-click #(swap! expanded? not)
-        :class (when @expanded? :is-active)}
-       [:span] [:span] [:span]]]
-     [:div#nav-menu.navbar-menu
-      {:class (when @expanded? :is-active)}
-      [:div.navbar-start
-       [nav-link "#/" "Home" :home]
-       [nav-link "#/item" "Items" :item]
-       ;;[nav-link "#/about" "About" :about]
-       ;;[nav-link "#/test" "Test" :test]
-       ;;[nav-link "#/game" "Game" :game]
-       ]]]))
+  (let [expanded? (r/atom false)]
+    (fn []
+      [:nav.navbar.is-info>div.container
+       [:div.navbar-brand
+        [:a.navbar-item {:href "/" :style {:font-weight :bold}} "lum"]
+        [:span.navbar-burger.burger
+         {:data-target :nav-menu
+          :on-click #(swap! expanded? not)
+          :class (when @expanded? :is-active)}
+         [:span] [:span] [:span]]]
+       [:div#nav-menu.navbar-menu
+        {:class (when @expanded? :is-active)}
+        [:div.navbar-start
+         [nav-link "#/" "Home" :home]
+         [nav-link "#/item" "Items" :item]
+         ;;[nav-link "#/about" "About" :about]
+         ;;[nav-link "#/test" "Test" :test]
+         ;;[nav-link "#/game" "Game" :game]
+         ]]])))
 
 (defn about-page []
   [:section.section>div.container>div.content

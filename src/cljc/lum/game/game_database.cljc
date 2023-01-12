@@ -66,7 +66,8 @@
                {"wooden stick" 1
                 "knife" 2} "pickaxe"
                {"knife" 1
-                "wooden stick" 1} "spear"})
+                "wooden stick" 1} "spear"
+               {"leather armor" 2} "studded leather armor"})
 
 (def item-data {"small healing potion" {:target :player
                                         :hp 3
@@ -120,7 +121,11 @@
                 "leather armor" {:target :player
                                  :ac 11
                                  :slots #{:body}
-                                 :rarity 4}})
+                                 :rarity 4}
+                "studded leather armor" {:target :player
+                                         :ac 12
+                                         :slots #{:body}
+                                         :rarity 2}})
 
 (def itemlist
   (->> item-data

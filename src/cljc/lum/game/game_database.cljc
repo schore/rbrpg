@@ -1,7 +1,6 @@
 (ns lum.game.game-database
   (:require [clojure.spec.alpha :as s]
-            [lum.game.load-save :as load]
-            [clojure.string :as string]))
+            [lum.game.load-save :as load]))
 
 (def enemies {"Bat" {:ac 10
                      :damage [1 3]
@@ -67,7 +66,9 @@
                 "knife" 2} "pickaxe"
                {"knife" 1
                 "wooden stick" 1} "spear"
-               {"leather armor" 2} "studded leather armor"})
+               {"leather armor" 2} "enhanced leather armor"
+               {"enhanced leather armor" 1
+                "ore" 10} "scale mail"})
 
 (def item-data {"small healing potion" {:target :player
                                         :hp 3
@@ -122,10 +123,13 @@
                                  :ac 11
                                  :slots #{:body}
                                  :rarity 4}
-                "studded leather armor" {:target :player
-                                         :ac 12
-                                         :slots #{:body}
-                                         :rarity 2}})
+                "enhanced leather armor" {:target :player
+                                          :ac 12
+                                          :slots #{:body}
+                                          :rarity 2}
+                "scale mail" {:target :player
+                              :ac 14
+                              :slots #{:body}}})
 
 (def itemlist
   (->> item-data

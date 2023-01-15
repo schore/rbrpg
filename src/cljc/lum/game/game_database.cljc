@@ -68,7 +68,8 @@
                 "wooden stick" 1} "spear"
                {"leather armor" 2} "enhanced leather armor"
                {"enhanced leather armor" 1
-                "ore" 10} "scale mail"})
+                "ore" 10} "scale mail"
+               {"wooden stick" 10} "wooden shield"})
 
 (def item-data {"small healing potion" {:target :player
                                         :hp 3
@@ -119,6 +120,9 @@
                            :slots #{:right-hand}
                            :properties #{:digging}
                            :rarity 4}
+                "wooden shield" {:target :player
+                                 :ac 2
+                                 :slots #{:left-hand}}
                 "leather armor" {:target :player
                                  :ac 11
                                  :slots #{:body}

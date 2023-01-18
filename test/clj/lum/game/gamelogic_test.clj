@@ -147,6 +147,13 @@
   (dsl/attack 1 10 1)
   (is (= 10 (dsl/get-hp))))
 
+(deftest armor-and-shield-protects
+  (dsl/player-is-equipped :body "leather armor")
+  (dsl/player-is-equipped  :left-hand "wooden shield")
+  (dsl/move-and-get-attacked "Bat")
+  (dsl/attack 1 12 1)
+  (is (= 10 (dsl/get-hp))))
+
 (deftest enemy-makes-correct-damage
   (doseq [[enemy rolls hp] [["Rat" [2] 8]
                             ["Bat" [3] 7]]]

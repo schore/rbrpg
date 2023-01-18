@@ -305,7 +305,8 @@
 
 (defn player-is-equipped
   [slot item]
-  (player-has-items {item 1})
+  (game-is-initialized)
+  (player-has-items (assoc (get-items) item 1))
   (player-equips slot item)
   (is (= item (get (get-equipped-items) slot))))
 

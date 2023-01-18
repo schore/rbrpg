@@ -106,9 +106,13 @@
 
 (defn get-armor-class
   [data]
-  (let [equipment (get-in data [:player :equipment :body])]
-    (get-in db/item-data [equipment :ac]
-            (get-in data [:player :ac]))))
+  (let [equipment (get-in data [:player :equipment])]
+    (max
+     (reduce (fn [a [k item]]
+               (println 0 k item)
+               (+ a (get-in db/item-data [item :ac] 0)))
+             0 equipment)
+     (get-in data [:player :ac] 0))))
 
 (defn get-enemy-attack-roles
   [data]
@@ -122,6 +126,7 @@
      data
      (let [player-ac (get-armor-class data)
            weapon-damage (get-enemy-attack-roles data)]
+       (println "ac" player-ac)
        ["Bite" [{:target :player
                  :hp (* -1 (attack-calc player-ac weapon-damage))}]]))
     data))

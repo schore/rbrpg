@@ -538,5 +538,4 @@
 (deftest magic-mapping-spell
   (dsl/player-know-spell "Magic Mapping")
   (dsl/cast-spell "Magic Mapping")
-  (println (dsl/get-board))
   (is (dsl/board-completly-visible?)))

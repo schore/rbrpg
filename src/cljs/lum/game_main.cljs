@@ -293,7 +293,7 @@
    (->> (get-in db [:game :recepies] [])
         (map (fn [incriedients]
                {:incriedients incriedients
-                :item (get db/recipies incriedients)
+                :item (get-in db/recipies [incriedients 0])
                 :possible? (enough-items? (:game db) incriedients)})))))
 
 (rf/reg-sub

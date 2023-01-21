@@ -6,6 +6,10 @@
   [data required-items]
   (every? (fn [[k v]] (<= v (get-in data [:player :items k] 0))) required-items))
 
+(defn incriedients-2-item
+  [incriedients]
+  (get-in db/recipies [incriedients 0]))
+
 ;; High level functions
 (defn equip-item
   [state [_ slot item]]
@@ -48,7 +52,7 @@
 (defn combine
   [data [_ used-items]]
   (let [used-items (clear-empty-items used-items)
-        new-item (get db/recipies used-items)]
+        new-item (incriedients-2-item used-items)]
     (if (enough-items? data used-items)
       (-> data
           (u/add-items (u/map-map (fn [[k v]] [k (* -1 v)]) used-items))

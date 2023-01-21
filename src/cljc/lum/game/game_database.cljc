@@ -53,23 +53,23 @@
                         :items ["fire sword" 15
                                 "ore" 5]}})
 
-(def recipies {{"batblood" 2} "small healing potion"
-               {"small healing potion" 2} "medium healing potion"
-               {"small mana potion" 2} "medium mana potion"
-               {"batblood" 2 "batwing" 1} "small mana potion"
+(def recipies {{"batblood" 2} ["small healing potion" "Mixing batblood may help"]
+               {"small healing potion" 2} ["medium healing potion" "More is stronger"]
+               {"small mana potion" 2} ["medium mana potion" "Two are better than one"]
+               {"batblood" 2 "batwing" 1} ["small mana potion" "May the spirtit be with you"]
                {"small healing potion" 1
-                "batwing" 1} "small mana potion"
+                "batwing" 1} ["small mana potion" "A wing bringth the spirit"]
                {"wooden stick" 2
                 "ratmeet" 2
-                "herb" 1} "roast beef"
+                "herb" 1} ["roast beef" "Ratmeat and a herb"]
                {"wooden stick" 1
-                "knife" 2} "pickaxe"
+                "knife" 2} ["pickaxe"  "Two knife on a wooden stick help to dig"]
                {"knife" 1
-                "wooden stick" 1} "spear"
-               {"leather armor" 2} "enhanced leather armor"
+                "wooden stick" 1} ["spear" "A spear is a knife with a long handle"]
+               {"leather armor" 2} ["enhanced leather armor" "How to make a great leather armor"]
                {"enhanced leather armor" 1
-                "ore" 10} "scale mail"
-               {"wooden stick" 10} "wooden shield"})
+                "ore" 10} ["scale mail" "Heavy metal protects"]
+               {"wooden stick" 10} ["wooden shield" "Protect yourself with wood"]})
 
 (def item-data {"small healing potion" {:target :player
                                         :hp 3
@@ -193,7 +193,8 @@
 ;;recipie database
 
 (s/def ::recipie (s/map-of ::item pos-int?))
-(s/def ::recipies (s/map-of ::recipie ::item))
+(s/def ::recipies (s/map-of ::recipie (s/cat :item ::item
+                                             :message string?)))
 
 ;;item-data
 ;;

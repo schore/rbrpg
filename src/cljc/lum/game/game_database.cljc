@@ -90,7 +90,7 @@
                 "herb" {:rarity 3}
                 "roast beef" {:target :player
                               :maxhp 1}
-                "note" {:properties #{:hint}
+                "note" {:properties #{:recipie}
                         :rarity 4}
                 "force scroll" {:spell "Force"
                                 :rarity 1}
@@ -204,7 +204,7 @@
 (s/def ::slot slots)
 (s/def ::slots (s/coll-of ::slot :kind set?))
 (s/def ::target #{:player :enemy})
-(s/def ::propertie #{:digging :burning :hint})
+(s/def ::propertie #{:digging :burning :recipie})
 (s/def ::properties (s/coll-of ::propertie
                                :kind set?))
 (s/def ::spell (into #{} spell-names))

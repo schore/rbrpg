@@ -442,6 +442,11 @@
        #{(first (dsl/get-messages))}
        db/hints)))
 
+(deftest reading-a-note-learns-a-recipie
+  (dsl/player-has-items {"note" 1})
+  (dsl/use-item "note")
+  (is (not (empty? (dsl/get-known-recepies)))))
+
 (deftest using-regular-items-does-not-give-hint
   (dsl/player-has-items {"herb" 1})
   (dsl/use-item "herb")

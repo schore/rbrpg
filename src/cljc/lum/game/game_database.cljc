@@ -162,11 +162,7 @@
 (def spell-names (map first spells))
 (def enemy-names (map first enemies))
 
-(def hints ["Mixing batblood may help"
-            "Life and wings let you fly"
-            "Two batblood and a wing bring happieness"
-            "A spear is a knife with a long handle"
-            "Two ratmeet and a herb give an excellent meal"])
+(def hints (map (fn [[_ [_ m]]] m) recipies))
 
 (def special-maps
   {5 {:map (load/static-load-file "resources/docs/test.txt")

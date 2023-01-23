@@ -305,3 +305,7 @@
     (case attr
       "inactivebutton" :inactive
       :normal)))
+
+(defn get-heading
+  []
+  (e/get-element-text *driver* {:tag :h1}))

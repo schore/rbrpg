@@ -13,6 +13,7 @@
    [reagent.dom :as rdom]
    [reitit.core :as reitit]
    [reitit.frontend.easy :as rfe])
+  (:require-macros [lum.game.load-save :as m])
   (:import
    (goog History)))
 
@@ -38,14 +39,13 @@
         [:div.navbar-start
          [nav-link "#/" "Home" :home]
          [nav-link "#/item" "Items" :item]
-         ;;[nav-link "#/about" "About" :about]
-         ;;[nav-link "#/test" "Test" :test]
-         ;;[nav-link "#/game" "Game" :game]
-         ]]])))
+         [nav-link "#/help" "Help" :help]]]])))
 
-(defn about-page []
+(def help-text (m/static-load-file "resources/docs/docs.md"))
+
+(defn help-page []
   [:section.section>div.container>div.content
-   [:img {:src "/img/warning_clojure.png"}]])
+   {:dangerouslySetInnerHTML {:__html (md->html help-text)}}])
 
 (defn home-page []
   [:section.section>div.container>div.content
@@ -77,10 +77,8 @@
    [["/" {:name        :home
           :view        #'game
           :controllers [{:start (fn [_] (rf/dispatch [:page/init-home]))}]}]
-    ;; ["/about" {:name :about
-    ;;            :view #'about-page}]
-    ;; ["/test" {:name :test
-    ;;           :view #'test-page}]
+    ["/help" {:name :help
+              :view #'help-page}]
     ["/item" {:name :item
               :view #'item}]]))
 

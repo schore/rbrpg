@@ -308,4 +308,5 @@
 
 (defn get-heading
   []
+  (e/wait-visible *driver* {:tag :h1})
   (e/get-element-text *driver* {:tag :h1}))

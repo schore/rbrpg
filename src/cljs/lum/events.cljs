@@ -34,7 +34,7 @@
  :fetch-docs
  (fn [_ _]
    {:http-xhrio {:method          :get
-                 :uri             "/docs.md"
+                 :uri             "/rbrpg-static-site/docs.md"
                  :response-format (ajax/raw-response-format)
                  :on-success       [:set-docs]}}))
 

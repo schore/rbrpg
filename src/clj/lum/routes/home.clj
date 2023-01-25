@@ -18,9 +18,9 @@
    {:middleware [;middleware/wrap-csrf
                  middleware/wrap-formats]}
    ["/" {:get home-page}]
-   ["/docs.md" {:get (fn [_]
-                       (-> (response/ok (-> "docs/docs.md" io/resource slurp))
-                           (response/header "Content-Type" "text/plain; charset=utf-8")))}]
+   ["/rbrpg-static-site/docs.md" {:get (fn [_]
+                                         (-> (response/ok (-> "docs/docs.md" io/resource slurp))
+                                             (response/header "Content-Type" "text/plain; charset=utf-8")))}]
    ["/game/data/:id" {:get (fn [req]
                              (let [id (get-in req [:path-params :id])
                                    savegame (load-save/load-rest-interface id)]

@@ -41,11 +41,12 @@
          [nav-link "#/item" "Items" :item]
          [nav-link "#/help" "Help" :help]]]])))
 
-(def help-text (m/static-load-file "resources/docs/docs.md"))
-
 (defn help-page []
-  [:section.section>div.container>div.content
-   {:dangerouslySetInnerHTML {:__html (md->html help-text)}}])
+  (let [docs (rf/subscribe [:docs])]
+    (fn []
+      (let [docs @docs]
+        [:section.section>div.container>div.content
+         {:dangerouslySetInnerHTML {:__html (md->html docs)}}]))))
 
 (defn home-page []
   [:section.section>div.container>div.content

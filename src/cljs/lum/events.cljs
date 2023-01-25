@@ -34,7 +34,7 @@
  :fetch-docs
  (fn [_ _]
    {:http-xhrio {:method          :get
-                 :uri             "/docs"
+                 :uri             "/docs.md"
                  :response-format (ajax/raw-response-format)
                  :on-success       [:set-docs]}}))
 
@@ -53,8 +53,7 @@
  (fn [_ _]
    {:dispatch-n (list ;;[:test/initialize-plus]
                  [:game/initialize]
-                      ;; [:fetch-docs]
-                 )}))
+                 [:fetch-docs])}))
 
 (rf/reg-event-db
  :test/initialize-plus

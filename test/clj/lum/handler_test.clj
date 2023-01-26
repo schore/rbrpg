@@ -12,7 +12,8 @@
    [mount.core :as mount]
    [clojure.edn :as edn]
    [ring.util.http-response :as response]
-   [lum.game.load-save :as load-save]))
+   [lum.game.load-save :as load-save]
+   [lum.game-config :as config]))
 
 (defn parse-json [body]
   (m/decode formats/instance "application/json" body))
@@ -37,27 +38,27 @@
 
 (deftest gamestorage-load
   (dsl/prepare-save-game "load-test.edn")
-  (let [response ((app) (request :get "/game/data/load-test.edn"))]
+  (let [response ((app) (request :get (str  "/" config/path "/game/data/load-test.edn")))]
     (is (= 200 (:status response)))
     (is (s/valid? :game/game
                   (edn/read-string  (:body response))))))
 
 (deftest gamestorage-load-not-found
-  (let [response ((app) (request :get "/game/data/not-available.edn"))]
+  (let [response ((app) (request :get (str "/" config/path  "/game/data/not-available.edn")))]
     (is (= 404 (:status response)))))
 
 (deftest save-not-conformant-to-spec
   (is (= 400 (:status ((app)
-                       (body (request :put "/game/data/foo.edn")
+                       (body (request :put (str "/" config/path "/game/data/foo.edn"))
                              "[1 2 3]"))))))
 
 (deftest save-and-load
   (dsl/prepare-save-game "load-test.edn")
   (dsl/prepare-save-game "in-a-fight.edn")
   (let [valid-game (edn/read-string (slurp "tmp/load-test.edn"))
-        response-save ((app) (-> (request :put "/game/data/in-a-fight.edn")
+        response-save ((app) (-> (request :put (str "/" config/path "/game/data/in-a-fight.edn"))
                                  (body (str valid-game))))
-        response-load ((app) (request :get "/game/data/in-a-fight.edn"))
+        response-load ((app) (request :get (str "/" config/path "/game/data/in-a-fight.edn")))
         loaded-game (edn/read-string (:body response-load))]
     (is (= 200 (:status response-save)))
     (is (= 200 (:status response-load)))

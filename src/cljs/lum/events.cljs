@@ -4,7 +4,8 @@
    [re-frame.core :as rf]
    [ajax.core :as ajax]
    [reitit.frontend.easy :as rfe]
-   [reitit.frontend.controllers :as rfc]))
+   [reitit.frontend.controllers :as rfc]
+   [lum.game-config :as config]))
 
 ;;dispatchers
 (rf/reg-event-db
@@ -34,7 +35,7 @@
  :fetch-docs
  (fn [_ _]
    {:http-xhrio {:method          :get
-                 :uri             "/rbrpg-static-site/docs.md"
+                 :uri             (str "/" config/path "/docs.md")
                  :response-format (ajax/raw-response-format)
                  :on-success       [:set-docs]}}))
 

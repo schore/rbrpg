@@ -20,7 +20,8 @@
    [lum.game.update-splitter :as update-splitter]
    [lum.game.gamelogic :as gamelogic]
    [lum.game.fight :as fight]
-   [lum.game.utilities :as u]))
+   [lum.game.utilities :as u]
+   [lum.game-config :as config]))
 
 (defn keyify-ws
   [msg]
@@ -174,7 +175,7 @@
  :game/load
  (fn [_ [_ fn]]
    {:http-xhrio {:method :get
-                 :uri (str "/game/data/" fn)
+                 :uri (str "/"  config/path "/game/data/" fn)
                  :timeout 10000
                  :response-format (ajax/text-response-format)
                  :on-success [:game/load-response]}}))
@@ -195,7 +196,7 @@
    (let [gamestate (-> (:game db))]
      {:http-xhrio {:method :put
                    :headers {"Content-Type" "text/plain"}
-                   :uri (str "/game/data/" fn)
+                   :uri (str "/" config/path "/game/data/" fn)
                    :response-format (ajax/text-response-format)
                    :on-success [:nop]
                    :body gamestate}})))

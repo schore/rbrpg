@@ -100,7 +100,7 @@
       (process-actions action)
       view/process-view))
 
-(defn game-master
+(defn game-logic
   [input-chan]
   (let [out (chan)]
     (go-loop [data {}]
@@ -113,4 +113,9 @@
           (do
             (close! out)
             data))))
+    out))
+
+(defn game-master
+  [input-chan]
+  (let [out (game-logic input-chan)]
     out))

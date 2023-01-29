@@ -108,14 +108,27 @@
             new-data (process-round data action)]
         (if (some? action)
           (do
-            (>! out new-data)
+            (>! out [:new-state new-data])
             (recur new-data))
           (do
             (close! out)
             data))))
     out))
 
+(defn output-router
+  [in]
+  (let [out (chan)]
+    (go-loop []
+      (if-let [msg (<! in)]
+        (do
+          (case (first msg)
+            :new-state (>! out (second msg)))
+          (recur))
+        (close! out)))
+    out))
+
 (defn game-master
   [input-chan]
-  (let [out (game-logic input-chan)]
-    out))
+  (-> input-chan
+      game-logic
+      output-router))

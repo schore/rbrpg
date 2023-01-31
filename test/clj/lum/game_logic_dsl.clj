@@ -88,7 +88,7 @@
 
 (defn create-game
   [f]
-  (create-game-without-chan f))
+  (create-game-with-chan f))
 
 (t/use-fixtures
   :each create-game)

@@ -41,7 +41,8 @@
                 :equipment {}
                 :spells #{"Burning Hands" "Healing"}
                 :items inital-items}
-       :recepies []}
+       :recepies []
+       :coeffects []}
       (move/set-to-tile :ground)))
 
 (defn game-over?
@@ -108,8 +109,11 @@
             new-data (process-round data action)]
         (if (some? action)
           (do
-            (>! out [:new-state new-data])
-            (recur new-data))
+            (if (empty? (:coeffects new-data))
+              (>! out [:new-state new-data])
+              (for [effect (:coeffects new-data)]
+                (>! out effect)))
+            (recur (assoc new-data :coeffects [])))
           (do
             (close! out)
             data))))

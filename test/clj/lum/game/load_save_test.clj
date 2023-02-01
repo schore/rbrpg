@@ -23,6 +23,7 @@
                        :level 1
                        :messages '("")
                        :recepies []
+                       :coeffects []
                        :player {:position [12 12]
                                 :ac 5
                                 :xp 0

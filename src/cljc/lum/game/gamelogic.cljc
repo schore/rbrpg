@@ -119,10 +119,10 @@
   [in]
   (let [out (chan)]
     (go-loop []
-      (if-let [msg (<! in)]
+      (if-let [[command & data] (<! in)]
         (do
-          (case (first msg)
-            :new-state (>! out (second msg)))
+          (case command
+            :new-state (>! out (first data)))
           (recur))
         (close! out)))
     out))

@@ -114,34 +114,30 @@
   [input-chan]
   (let [out (chan)]
     (go-loop [data {}]
-      (let [action (<! input-chan)
-            new-data (process-round data action)]
-        (if (some? action)
-          (do
-            (if (empty? (:coeffects new-data))
-              (>! out [:new-state new-data])
-              (doseq [effect (:coeffects new-data)]
-                (>! out effect)))
-            (recur (assoc new-data :coeffects [])))
-          (do
-            (close! out)
-            data))))
+      (if-let [action (<! input-chan)]
+        (let [new-data (process-round data action)]
+          (if (empty? (:coeffects new-data))
+            (>! out [:new-state new-data])
+            (doseq [effect (:coeffects new-data)]
+              (>! out effect)))
+          (recur (assoc new-data :coeffects [])))
+        (close! out)))
     out))
 
 (defn game-logic-decorater
   [in game-logic]
-  (let [gl-in (chan)
-        gl-out (game-logic gl-in)
+  (let [;;gl-in (chan)
+        gl-out (game-logic in)
         out (chan)]
-    (a/pipe in gl-in)
+    ;;(a/pipe in gl-in)
     (go-loop []
       (if-let [[command & data] (<! gl-out)]
         (do
           (case command
             :new-state (>! out (first data))
             :new-board (go (let [[level next-event] data]
-                             (>! gl-in [:load-board level (cavegen/get-dungeon)])
-                             (>! gl-in next-event)))
+                             (>! in [:load-board level (cavegen/get-dungeon)])
+                             (>! in next-event)))
             (println "Default reached" command))
           (recur))
         (close! out)))

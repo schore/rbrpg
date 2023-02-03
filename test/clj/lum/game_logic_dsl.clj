@@ -50,12 +50,10 @@
   IGame
 
   (exec [_ command]
-    (log/info "Execute command" command)
     (a/put! in command)
     (first (a/alts!! [out (a/timeout 1000)])))
 
   (close [_]
-    (log/info "Close Test")
     (a/close! in)))
 
 (deftype GameNoChan [state]

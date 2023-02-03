@@ -1,6 +1,6 @@
 (ns lum.game.gamelogic
   (:require
-   [clojure.core.async :as a :refer [<! >! chan close! go-loop]]
+   [clojure.core.async :as a :refer [<! >! chan close! go-loop go]]
    [clojure.string]
    [lum.game.view :as view]
    [lum.game.cavegen :as cavegen]
@@ -17,9 +17,16 @@
 
 (defn new-board
   [data _]
-  (-> data
-      (assoc-in [:boards (dec (:level data))] (cavegen/get-dungeon))
-      (move/set-to-tile :ground)))
+  (update data :coeffects
+          #(conj % [:new-board (get data :level) [:set-to-tile :stair-down]])))
+
+(defn load-board
+  [data [_ level board]]
+  (assoc-in data [:boards (dec level)] board))
+
+(defn set-to-tile
+  [data [_ tile]]
+  (move/set-to-tile data tile))
 
 (defn initialize
   [_ _]
@@ -52,6 +59,8 @@
 (def basic-mode
   {:initialize [initialize]
    :load [load-save/load-game]
+   :load-board [load-board]
+   :set-to-tile [set-to-tile]
    :save [#?(:clj load-save/save-game)]
    :equip [item/equip-item]
    :unequip [item/unequip-item]
@@ -111,7 +120,7 @@
           (do
             (if (empty? (:coeffects new-data))
               (>! out [:new-state new-data])
-              (for [effect (:coeffects new-data)]
+              (doseq [effect (:coeffects new-data)]
                 (>! out effect)))
             (recur (assoc new-data :coeffects [])))
           (do
@@ -119,20 +128,25 @@
             data))))
     out))
 
-(defn output-router
-  [in]
-  (let [out (chan)]
+(defn game-logic-decorater
+  [in game-logic]
+  (let [gl-in (chan)
+        gl-out (game-logic gl-in)
+        out (chan)]
+    (a/pipe in gl-in)
     (go-loop []
-      (if-let [[command & data] (<! in)]
+      (if-let [[command & data] (<! gl-out)]
         (do
           (case command
-            :new-state (>! out (first data)))
+            :new-state (>! out (first data))
+            :new-board (go (let [[level next-event] data]
+                             (>! gl-in [:load-board level (cavegen/get-dungeon)])
+                             (>! gl-in next-event)))
+            (println "Default reached" command))
           (recur))
         (close! out)))
     out))
 
 (defn game-master
   [input-chan]
-  (-> input-chan
-      game-logic
-      output-router))
+  (game-logic-decorater input-chan game-logic))

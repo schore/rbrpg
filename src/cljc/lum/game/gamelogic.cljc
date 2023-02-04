@@ -10,7 +10,8 @@
    [lum.game.item :as item]
    [lum.game.move :as move]
    [lum.game.fight :as fight]
-   [lum.game.magic :as magic]))
+   [lum.game.magic :as magic]
+   [lum.game.game-database :as db]))
 
 (def inital-items
   {"small healing potion" 2})
@@ -128,6 +129,13 @@
       :initialize [:initialize (cavegen/get-dungeon)]
       input)))
 
+(defn get-map
+  [level]
+  (if (contains? db/special-maps level)
+    (-> (move/load-special-map level)
+        (move/load-effect level))
+    (cavegen/get-dungeon)))
+
 (defn game-logic-decorater
   [in game-logic]
   (let [gl-in (a/map input-map [in])
@@ -138,9 +146,10 @@
         (do
           (case command
             :new-state (>! out (first data))
-            :enter-unknown-level (go (>! in [:enter-unknown-level
-                                             (first data)
-                                             (cavegen/get-dungeon)]))
+            :enter-unknown-level (go
+                                   (>! in [:enter-unknown-level
+                                           (first data)
+                                           (get-map (first data))]))
             (println "Default reached" command))
           (recur))
         (close! out)))

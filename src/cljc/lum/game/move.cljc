@@ -49,54 +49,33 @@
   (assoc-in state [:player :position]
             (find-tile (u/get-active-board state) tile)))
 
-(defn add-map
-  [state map]
-  (update state :boards #(conj (into [] %) map)))
-
 (defn apply-map-effect
-  [data effect]
+  [board effect]
   (let [[[x y] type & effect] effect]
     (case type
-      :message (let [[message & rest] effect]
-                 [(util/change-tile data x y #(assoc % :message message))
-                  rest])
-      :enemy (let [[enemy & rest] effect]
-               [(util/change-tile data x y #(assoc % :enemy enemy))
-                rest])
-      :item (let [[item & rest] effect]
-              [(util/change-tile data x y #(assoc-in % [:items item] 1))
-               rest])
-      [data []])))
+      :message (let [[message] effect]
+                 (assoc-in board [(mu/position-to-n x y) :message] message))
+      :enemy (let [[enemy] effect]
+               (assoc-in board [(mu/position-to-n x y) :enemy] enemy))
+      :item (let [[item] effect]
+              (assoc-in board [(mu/position-to-n x y) :items item] 1))
+      board)))
 
 (defn load-effect
-  [data]
-  (let [level (:level data)
-        effects (get-in db/special-maps [level :effects] [])]
-    (loop [data data
-           effects effects]
-      (if (empty? effects)
-        data
-        (let [[data effects] (apply-map-effect data effects)]
-          (recur data effects))))))
+  [board level]
+  (reduce apply-map-effect
+          board
+          (partition 3
+                     (get-in db/special-maps [level :effects]
+                             []))))
 
 (defn load-special-map
-  [data]
-  (let [level (:level data)]
-    (-> data
-        (add-map (load/load-map-from-string (get-in db/special-maps [level :map])))
-        (load-effect))))
+  [level]
+  (load/load-map-from-string (get-in db/special-maps [level :map])))
 
 (defn cavegen-required?
   [state]
   (> (inc (:level state)) (count (:boards state))))
-
-(defn cavegen-when-required
-  [state]
-  (let [level (:level state)]
-    (cond
-      (<= level (count (:boards state))) state
-      (contains? db/special-maps level) (load-special-map state)
-      :else (add-map state (cavegen/get-dungeon)))))
 
 (defn enter-next-level
   [state]
@@ -113,14 +92,6 @@
         (update :level dec)
         (set-to-tile :stair-down))
     state))
-
-(defn items-to-add
-  [current-level thrown-dice]
-  (->> db/items-on-ground
-       (filter (fn [[_ {:keys [level dice]}]] (and (>= current-level (first level))
-                                                   (<= current-level (second level))
-                                                   (>= thrown-dice dice))))
-       (map first)))
 
 (defn add-found-item-messages
   [state item]

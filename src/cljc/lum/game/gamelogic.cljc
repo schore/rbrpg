@@ -16,13 +16,10 @@
   {"small healing potion" 2})
 
 (defn new-board
-  [data _]
-  (update data :coeffects
-          #(conj % [:new-board (get data :level) [:set-to-tile :stair-down]])))
-
-(defn load-board
-  [data [_ level board]]
-  (assoc-in data [:boards (dec level)] board))
+  ([data [_ board]]
+   (-> data
+       (assoc-in [:boards (dec (:level data))] board)
+       (move/set-to-tile :stair-down))))
 
 (defn set-to-tile
   [data [_ tile]]
@@ -59,7 +56,6 @@
 (def basic-mode
   {:initialize [initialize]
    :load [load-save/load-game]
-   :load-board [load-board]
    :set-to-tile [set-to-tile]
    :save [#?(:clj load-save/save-game)]
    :equip [item/equip-item]
@@ -124,20 +120,23 @@
         (close! out)))
     out))
 
+(defn input-map
+  [input]
+  (let [[command & _] input]
+    (case command
+      :new-board [:new-board (cavegen/get-dungeon)]
+      input)))
+
 (defn game-logic-decorater
   [in game-logic]
-  (let [;;gl-in (chan)
-        gl-out (game-logic in)
+  (let [gl-in (a/map input-map [in])
+        gl-out (game-logic gl-in)
         out (chan)]
-    ;;(a/pipe in gl-in)
     (go-loop []
       (if-let [[command & data] (<! gl-out)]
         (do
           (case command
             :new-state (>! out (first data))
-            :new-board (go (let [[level next-event] data]
-                             (>! in [:load-board level (cavegen/get-dungeon)])
-                             (>! in next-event)))
             (println "Default reached" command))
           (recur))
         (close! out)))

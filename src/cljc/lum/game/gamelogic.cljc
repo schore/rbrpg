@@ -26,8 +26,8 @@
   (move/set-to-tile data tile))
 
 (defn initialize
-  [_ _]
-  (-> {:boards [(cavegen/get-dungeon)]
+  [_ [_ board]]
+  (-> {:boards [board]
        :level 1
        :messages '("Hello adventurer"
                    ""
@@ -47,7 +47,7 @@
                 :items inital-items}
        :recepies []
        :coeffects []}
-      (move/set-to-tile :ground)))
+      (move/set-to-tile :stair-down)))
 
 (defn game-over?
   [data]
@@ -125,6 +125,7 @@
   (let [[command & _] input]
     (case command
       :new-board [:new-board (cavegen/get-dungeon)]
+      :initialize [:initialize (cavegen/get-dungeon)]
       input)))
 
 (defn game-logic-decorater

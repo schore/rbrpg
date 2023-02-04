@@ -56,7 +56,7 @@
 (def basic-mode
   {:initialize [initialize]
    :load [load-save/load-game]
-   :set-to-tile [set-to-tile]
+   :enter-unknown-level [move/enter-unknown-level]
    :save [#?(:clj load-save/save-game)]
    :equip [item/equip-item]
    :unequip [item/unequip-item]
@@ -138,6 +138,9 @@
         (do
           (case command
             :new-state (>! out (first data))
+            :enter-unknown-level (go (>! in [:enter-unknown-level
+                                             (first data)
+                                             (cavegen/get-dungeon)]))
             (println "Default reached" command))
           (recur))
         (close! out)))

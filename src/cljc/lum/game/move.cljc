@@ -86,6 +86,10 @@
         (add-map (load/load-map-from-string (get-in db/special-maps [level :map])))
         (load-effect))))
 
+(defn cavegen-required?
+  [state]
+  (> (inc (:level state)) (count (:boards state))))
+
 (defn cavegen-when-required
   [state]
   (let [level (:level state)]
@@ -96,10 +100,11 @@
 
 (defn enter-next-level
   [state]
-  (-> state
-      (update :level inc)
-      (cavegen-when-required)
-      (set-to-tile :stair-up)))
+  (if (cavegen-required? state)
+    (update state :coeffects #(conj % [:enter-unknown-level (inc (:level state))]))
+    (-> state
+        (update :level inc)
+        (set-to-tile :stair-up))))
 
 (defn enter-previous-level
   [state]
@@ -179,3 +184,10 @@
       (if (s/valid? :game/game data)
         data
         (recur (assoc-in data [:boards (dec (:level data))] (cavegen/get-dungeon)))))))
+
+(defn enter-unknown-level
+  [data [_ level board]]
+  (-> data
+      (assoc-in [:boards (dec level)] board)
+      (assoc :level level)
+      (set-to-tile :stair-up)))

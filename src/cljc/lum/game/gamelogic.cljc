@@ -20,7 +20,7 @@
   ([data [_ board]]
    (-> data
        (assoc-in [:boards (dec (:level data))] board)
-       (move/set-to-tile :stair-down))))
+       (move/set-to-tile :stair-up))))
 
 (defn set-to-tile
   [data [_ tile]]
@@ -48,7 +48,7 @@
                 :items inital-items}
        :recepies []
        :coeffects []}
-      (move/set-to-tile :stair-down)))
+      (move/set-to-tile :stair-up)))
 
 (defn game-over?
   [data]

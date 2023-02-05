@@ -8,7 +8,8 @@
             [lum.game.fight :as fight]
             [lum.game.utilities :as util]
             [clojure.java.io :as io]
-            [lum.maputil :as mu]))
+            [lum.maputil :as mu]
+            [lum.game.cavegen :as cavegen]))
 
 (defn delete-directory-recursive
   "Recursively delete a director ."
@@ -60,7 +61,7 @@
   IGame
 
   (exec [_ command]
-    ;(log/info "Execute command" command)
+    ;; (log/info "Execute command" command)
     (swap! state (fn [state]
                    (gamelogic/process-round state command)))
     @state)
@@ -86,7 +87,7 @@
 
 (defn create-game
   [f]
-  (create-game-with-chan f))
+  (create-game-without-chan f))
 
 (t/use-fixtures
   :each create-game)
@@ -113,7 +114,7 @@
 
 (defn initalize-game
   []
-  (exec *game* [:initialize]))
+  (exec *game* [:initialize (cavegen/get-dungeon)]))
 
 (defn activate
   ([]
@@ -314,7 +315,7 @@
 
 (defn new-board
   []
-  (exec *game* [:new-board]))
+  (exec *game* [:new-board (cavegen/get-dungeon)]))
 
 (defn find-index
   [coll f]
@@ -345,13 +346,16 @@
         [x y] (get-in state [:player :position])]
     (load-game (assoc-in state [:boards level (mu/position-to-n x y) :items] items))))
 
+(defn enter-level
+  [level]
+  (game-is-initialized)
+  (exec *game* [:enter-unknown-level level (cavegen/get-dungeon)]))
+
 (defn player-is-on-level
   [level]
   (game-is-initialized)
-  (while (and (> level (get-level))
-              (not (in-fight?)))
-    (player-is-on :stair-down)
-    (activate 20 20))
+  (doseq [i (range 2 (inc level))]
+    (enter-level i))
   (is (= level (get-level)))
   (is (not (in-fight?))))
 
@@ -397,7 +401,12 @@
 
 (defn player-is-on-special-map
   []
-  (player-is-on-level 5))
+  (game-is-initialized)
+  (let [level 5]
+    (while (and (> level (get-level))
+                (not (in-fight?)))
+      (player-is-on :stair-down)
+      (activate 20 20))))
 
 (defn player-steps-on-message-trigger
   []

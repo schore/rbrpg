@@ -304,20 +304,9 @@
   (dsl/attack 19 5 1 1 1)
   (is (not (dsl/in-fight?))))
 
-(deftest level-2-can-be-entered-entered
-  (dsl/player-is-on :stair-down)
-  (dsl/activate)
-  (is (= 2 (dsl/get-level))))
-
 (deftest on-stairs-up-when-entering-next-level
-  (dsl/player-is-on :stair-down)
-  (dsl/activate)
+  (dsl/enter-level 2)
   (is (= :stair-up (:type (dsl/get-tile)))))
-
-(deftest level-2-not-entered-on-ground
-  (dsl/player-is-on :ground)
-  (dsl/activate)
-  (is (= 1 (dsl/get-level))))
 
 (deftest can-go-one-level-up
   (dsl/player-is-on-level 2)

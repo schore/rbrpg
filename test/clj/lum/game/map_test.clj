@@ -6,10 +6,10 @@
    [lum.game.dataspec]))
 
 (t/use-fixtures
-  :each dsl/create-game)
+  :each dsl/create-game-with-chan)
 
 (deftest level-5-is-special-map
-  (dsl/player-is-on-level 5)
+  (dsl/player-is-on-special-map)
   (is (= [22 19] (dsl/get-position))))
 
 (deftest trigger-a-message

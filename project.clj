@@ -58,38 +58,40 @@
   :clean-targets ^{:protect false}
   [:target-path "target/cljsbuild"]
 
-  :profiles
-  {:uberjar {:omit-source true
+  :profiles {:uberjar {:omit-source true
 
-             :prep-tasks ["compile" ["run" "-m" "shadow.cljs.devtools.cli" "release" "app"]]
-             :aot :all
-             :uberjar-name "lum.jar"
-             :source-paths ["env/prod/clj"  "env/prod/cljs"]
-             :resource-paths ["env/prod/resources"]}
+                       :prep-tasks ["compile" ["run" "-m" "shadow.cljs.devtools.cli" "release" "app"]]
+                       :aot :all
+                       :uberjar-name "lum.jar"
+                       :source-paths ["env/prod/clj"  "env/prod/cljs"]
+                       :resource-paths ["env/prod/resources"]}
 
-   :dev           [:project/dev :profiles/dev]
-   :test          [:project/dev :project/test :profiles/test]
+             :dev           [:project/dev :profiles/dev]
+             :test          [:project/dev :project/test :profiles/test]
 
-   :project/dev  {:jvm-opts ["-Dconf=dev-config.edn" "-XX:-OmitStackTraceInFastThrow"]
-                  :dependencies [[binaryage/devtools "1.0.6"]
-                                 [cider/piggieback "0.5.3"]
-                                 [pjstadig/humane-test-output "0.11.0"]
-                                 [prone "2021-04-23"]
-                                 [re-frisk "1.6.0"]
-                                 [ring/ring-devel "1.9.6"]
-                                 [ring/ring-mock "0.4.0"]]
-                  :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
-                                 [jonase/eastwood "0.3.5"]]
+             :project/dev  {:jvm-opts ["-Dconf=dev-config.edn" "-XX:-OmitStackTraceInFastThrow"]
+                            :dependencies [[binaryage/devtools "1.0.6"]
+                                           [cider/piggieback "0.5.3"]
+                                           [pjstadig/humane-test-output "0.11.0"]
+                                           [prone "2021-04-23"]
+                                           [re-frisk "1.6.0"]
+                                           [ring/ring-devel "1.9.6"]
+                                           [ring/ring-mock "0.4.0"]]
+                            :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
+                                           [jonase/eastwood "0.3.5"]]
 
-                  :source-paths ["env/dev/clj"  "env/dev/cljs" "test/cljs"]
-                  :resource-paths ["env/dev/resources"]
-                  :repl-options {:init-ns user
-                                 :timeout 120000}
-                  :injections [(require 'pjstadig.humane-test-output)
-                               (pjstadig.humane-test-output/activate!)]}
-   :project/test {:prep-tasks ["compile" ["run" "-m" "shadow.cljs.devtools.cli" "compile" "app"]]
-                  :jvm-opts ["-Dconf=test-config.edn"]
-                  :resource-paths ["env/test/resources"]}
-
-   :profiles/dev {}
-   :profiles/test {:plugins [[lein-test-report-junit-xml "0.2.0"]]}})
+                            :source-paths ["env/dev/clj"  "env/dev/cljs" "test/cljs"]
+                            :resource-paths ["env/dev/resources"]
+                            :repl-options {:init-ns user
+                                           :timeout 120000}
+                            :injections [(require 'pjstadig.humane-test-output)
+                                         (pjstadig.humane-test-output/activate!)]}
+             :project/test {:prep-tasks ["compile" ["run" "-m" "shadow.cljs.devtools.cli" "compile" "app"]]
+                            :jvm-opts ["-Dconf=test-config.edn"]
+                            :resource-paths ["env/test/resources"]}
+             :kaocha {:prep-tasks ["compile" ["run" "-m" "shadow.cljs.devtools.cli" "compile" "app"]]
+                      :dependencies [[lambdaisland/kaocha "1.77.1236"]
+                                     [lambdaisland/kaocha-junit-xml "1.17.101"]]}
+             :profiles/dev {}
+             :profiles/test {:plugins [[lein-test-report-junit-xml "0.2.0"]]}}
+  :aliases {"kaocha" ["with-profile" "+kaocha" "run" "-m" "kaocha.runner"]})

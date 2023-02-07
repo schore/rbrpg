@@ -12,7 +12,7 @@
                  [day8.re-frame/http-fx "0.2.4"]
                  [expound "0.9.0"]
                  [funcool/struct "1.4.0"]
-                 [com.google.javascript/closure-compiler-unshaded "v20221102"]
+                 [com.google.javascript/closure-compiler-unshaded "v20230103"]
                  [json-html "0.4.7"]
                  [luminus-transit "0.1.5"]
                  ;; [luminus-undertow "0.1.11"]
@@ -42,7 +42,7 @@
                  [juji/editscript "0.6.2"]
                  [etaoin "1.0.39"]
                  [haslett "0.1.7"]
-                 [thheller/shadow-cljs "2.20.17"]]
+                 [thheller/shadow-cljs "2.20.20"]]
 
   :min-lein-version "2.0.0"
 

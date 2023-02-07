@@ -5,8 +5,10 @@
          {:id          :integration
           :test-paths  ["test/e2e"]
           :ns-patterns [".*"]}]
-          :plugins [:kaocha.plugin/junit-xml]
+
+          :plugins [:kaocha.plugin/junit-xml :kaocha.plugin/profiling]
           :kaocha.plugin.junit-xml/target-file "target/test-reports/junit.xml"
+          :kaocha.plugin.junit-xml/add-location-metadata? true
           :reporter kaocha.report.progress/report
           ;; :plugins [:kaocha.plugin/profiling :kaocha.plugin/notifier]
  }

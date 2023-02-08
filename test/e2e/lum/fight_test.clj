@@ -15,6 +15,7 @@
   (loop [i 0]
     (when (and (< i 1000)
                (not (c/fight-screen?)))
+      (e/wait *driver* 0.01)
       (c/move :left)
       (recur (inc i)))))
 

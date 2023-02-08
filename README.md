@@ -15,22 +15,26 @@ You will need [Leiningen][1] 2.0 or above installed.
 ## Running
 ### Dev environment
 
-`
+``` shell
 npm install .
 shadow-cljs watch app
-`
+```
 
 ### Run tests
 
-`
+
+
+``` shell
 npm install .
 npx lein kaocha
-`
+```
+
 
 ### Run locally
 
-`
+``` shell
 npm install .
 lein uberjar
 java -jar target/
-`
+```
+

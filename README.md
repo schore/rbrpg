@@ -1,8 +1,10 @@
-# lum
+# Role based RPG
 
-generated using Luminus version "4.16"
+[![Clojure CI](https://github.com/schore/rbrpg/actions/workflows/clojure.yml/badge.svg)](https://github.com/schore/rbrpg/actions/workflows/clojure.yml)
 
-FIXME
+Just a small game, which you can play on github pages
+
+[rbRPG](https://schore.github.io/rbrpg-static-site/)
 
 ## Prerequisites
 
@@ -11,11 +13,24 @@ You will need [Leiningen][1] 2.0 or above installed.
 [1]: https://github.com/technomancy/leiningen
 
 ## Running
+### Dev environment
 
-To start a web server for the application, run:
+`
+npm install .
+shadow-cljs watch app
+`
 
-    lein run 
+### Run tests
 
-## License
+`
+npm install .
+npx lein kaocha
+`
 
-Copyright © 2021 FIXME
+### Run locally
+
+`
+npm install .
+lein uberjar
+java -jar target/
+`

@@ -75,11 +75,11 @@
                                            [pjstadig/humane-test-output "0.11.0"]
                                            [prone "2021-04-23"]
                                            [re-frisk "1.6.0"]
-                                           [ring/ring-devel "1.9.6"]
+                                           [lambdaisland/kaocha "1.77.1236"]
+                                           [lambdaisland/kaocha-junit-xml "1.17.101"]      [ring/ring-devel "1.9.6"]
                                            [ring/ring-mock "0.4.0"]]
                             :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
                                            [jonase/eastwood "0.3.5"]]
-
                             :source-paths ["env/dev/clj"  "env/dev/cljs" "test/cljs"]
                             :resource-paths ["env/dev/resources"]
                             :repl-options {:init-ns user

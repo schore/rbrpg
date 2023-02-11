@@ -4,7 +4,8 @@
    [etaoin.keys :as keys]
    [user]
    [clojure.tools.logging :as log]
-   [clojure.java.io :as io]))
+   [clojure.java.io :as io]
+   [lum.maputil :as mu]))
 
 (def ^:dynamic *driver*)
 
@@ -111,6 +112,7 @@
   (let [query  [{:class "grid-container"}
                 {:tag :img}]]
     (e/wait-exists *driver* query [:timeout 60])
+    (e/wait *driver* 0.5)
     (->> (e/get-element-csss *driver* query  :left :top)
          (map (fn [inp] (apply str (filter #(Character/isDigit %) inp))))
          (map #(Integer/parseInt %))
@@ -310,3 +312,11 @@
   []
   (e/wait-visible *driver* {:tag :h1})
   (e/get-element-text *driver* {:tag :h1}))
+
+(defn get-tile
+  ([] (get-tile (get-player-position)))
+  ([[x y]]
+   (case (e/get-element-text *driver* [{:class "grid-item"
+                                        :index (inc (mu/position-to-n x y))}])
+     "<" :stair-down
+     :unknown)))

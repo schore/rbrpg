@@ -21,7 +21,8 @@
    [lum.game.gamelogic :as gamelogic]
    [lum.game.fight :as fight]
    [lum.game.utilities :as u]
-   [lum.game-config :as config]))
+   [lum.game-config :as config]
+   [lum.game.cavegen :as cavegen]))
 
 (defn keyify-ws
   [msg]
@@ -86,7 +87,7 @@
                                    [[:game/key :confirm] [{:keyCode 13}]];;enter
                                    ]}]]
          [:dispatch [::rp/add-keyboard-event-listener "keypress"]]]
-    :game/send-message [:initialize]}))
+    :game/send-message [:initialize (cavegen/get-dungeon)]}))
 
 (defn fight?
   [db]
@@ -144,7 +145,7 @@
 (rf/reg-event-fx
  :game/new-game
  (fn [_ _]
-   {:game/send-message [:initialize]}))
+   {:game/send-message [:initialize (cavegen/get-dungeon)]}))
 
 (rf/reg-event-fx
  :game/get-new-map

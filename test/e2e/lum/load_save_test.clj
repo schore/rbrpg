@@ -15,3 +15,6 @@
 (deftest ^:integration show-docs
   (c/click-menu-item "Help")
   (is (= "Round Based RPG" (c/get-heading))))
+
+(deftest ^:integration initialize
+  (is (= :stair-down (c/get-tile))))

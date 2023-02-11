@@ -132,7 +132,6 @@
   (let [[command & _] input]
     (case command
       :new-board [:new-board (cavegen/get-dungeon)]
-      :initialize [:initialize (cavegen/get-dungeon)]
       input)))
 
 (defn get-map

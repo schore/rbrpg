@@ -107,17 +107,23 @@
       (process-actions action)
       view/process-view))
 
+(defn calc-commands
+  [data action]
+  (let [new-data (process-round data action)]
+    {:data (assoc new-data :coeffects [])
+     :events (if (empty? (:coeffects new-data))
+               [[:new-state new-data]]
+               (:coeffects new-data))}))
+
 (defn game-logic
   [input-chan]
   (let [out (chan)]
     (go-loop [data {}]
       (if-let [action (<! input-chan)]
-        (let [new-data (process-round data action)]
-          (if (empty? (:coeffects new-data))
-            (>! out [:new-state new-data])
-            (doseq [effect (:coeffects new-data)]
-              (>! out effect)))
-          (recur (assoc new-data :coeffects [])))
+        (let [{new-data :data
+               events :events} (calc-commands data action)]
+          (doseq [event events] (>! out event))
+          (recur new-data))
         (close! out)))
     out))
 

@@ -150,7 +150,7 @@
 (rf/reg-event-fx
  :game/get-new-map
  (fn [_ _]
-   {:game/send-message [:new-board]}))
+   {:game/send-message [:new-board (cavegen/get-dungeon)]}))
 
 (rf/reg-event-fx
  :game/combine

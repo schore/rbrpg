@@ -18,3 +18,13 @@
 
 (deftest ^:integration initialize
   (is (= :stair-down (c/get-tile))))
+
+(deftest ^:integration new-board
+  (c/on-test-map)
+  (is (= :stair-down (c/get-tile))))
+
+(deftest ^:integration new-map
+  (let [pos (c/get-player-position)]
+    (c/new-map)
+    (is (= :stair-down (c/get-tile)))
+    (is (not= pos (c/get-player-position)))))

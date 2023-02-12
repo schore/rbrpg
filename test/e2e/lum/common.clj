@@ -84,6 +84,10 @@
   []
   (e/click-visible *driver* {:tag :input :value "Load map"}))
 
+(defn new-map
+  []
+  (e/click-visible *driver* {:tag :input :value "New map"}))
+
 (defn wait-map-screen
   []
   (e/wait-visible *driver* [{:class "grid-container"}

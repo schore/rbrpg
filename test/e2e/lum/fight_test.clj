@@ -12,6 +12,7 @@
 
 (defn enter-fight-screen
   []
+  (e/wait *driver* 0.5)
   (loop [i 0]
     (when (and (< i 1000)
                (not (c/fight-screen?)))

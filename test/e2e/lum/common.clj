@@ -82,11 +82,13 @@
 
 (defn on-test-map
   []
-  (e/click-visible *driver* {:tag :input :value "Load map"}))
+  (e/click-visible *driver* {:tag :input :value "Load map"})
+  (e/wait *driver* 0.5))
 
 (defn new-map
   []
-  (e/click-visible *driver* {:tag :input :value "New map"}))
+  (e/click-visible *driver* {:tag :input :value "New map"})
+  (e/wait *driver* 0.5))
 
 (defn wait-map-screen
   []
@@ -115,7 +117,7 @@
   []
   (let [query  [{:class "grid-container"}
                 {:tag :img}]]
-    (e/wait-exists *driver* query [:timeout 60])
+    (e/wait-visible *driver* query [:timeout 10])
     (e/wait *driver* 0.5)
     (->> (e/get-element-csss *driver* query  :left :top)
          (map (fn [inp] (apply str (filter #(Character/isDigit %) inp))))
@@ -320,7 +322,10 @@
 (defn get-tile
   ([] (get-tile (get-player-position)))
   ([[x y]]
-   (case (e/get-element-text *driver* [{:class "grid-item"
-                                        :index (inc (mu/position-to-n x y))}])
-     "<" :stair-down
-     :unknown)))
+   (let [tile
+         (e/get-element-text *driver* [{:class "grid-item"
+                                        :index (inc (mu/position-to-n x y))}])]
+
+     (case tile
+       "<" :stair-down
+       tile))))

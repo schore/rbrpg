@@ -6,7 +6,7 @@
    [lum.common :as c]))
 
 (t/use-fixtures :once c/fixture-start-server c/fixture-driver c/open-website)
-(t/use-fixtures :each c/fixture-prepare-directory c/refresh)
+(t/use-fixtures :each c/fixture-prepare-directory c/open-website)
 
 (deftest ^:integration load-game
   (c/load-game "got-two-batblood.edn")
@@ -21,7 +21,8 @@
 
 (deftest ^:integration new-board
   (c/on-test-map)
-  (is (= :stair-down (c/get-tile))))
+  (is (= [10 10] (c/get-player-position)))
+  (is (= "" (c/get-tile))))
 
 (deftest ^:integration new-map
   (let [pos (c/get-player-position)]

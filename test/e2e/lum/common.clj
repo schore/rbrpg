@@ -71,10 +71,6 @@
   (open)
   (f))
 
-(defn refresh [f]
-  (e/refresh *driver*)
-  (f))
-
 (defn click-menu-item
   [item]
   (e/click-visible *driver* [{:class :navbar-start}

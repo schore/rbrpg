@@ -8,16 +8,15 @@
 (t/use-fixtures :once
   c/fixture-prepare-directory
   c/fixture-start-server
-  c/fixture-driver
-  c/open-website)
+  c/fixture-driver)
 
 (t/use-fixtures
-  :each c/refresh)
+  :each c/open-website)
 
 (defn move-with-retry
   [direction]
   (loop [i 0]
-    (c/refresh #())
+    (c/open-website #())
     (c/load-game "test-map.edn")
     (c/move direction)
     (when (and (< i 20)

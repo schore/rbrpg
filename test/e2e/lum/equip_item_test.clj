@@ -9,10 +9,9 @@
 
 (t/use-fixtures :once
   c/fixture-start-server
-  c/fixture-driver c/open-website)
+  c/fixture-driver)
 
-(t/use-fixtures :each c/fixture-prepare-directory c/refresh)
-
+(t/use-fixtures :each c/fixture-prepare-directory c/open-website)
 
 (deftest ^:integration selcet-sword
   (c/load-game "got-two-batblood.edn")

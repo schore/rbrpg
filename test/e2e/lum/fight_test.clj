@@ -6,9 +6,9 @@
    [lum.common :as c :refer [*driver*]]
    [clojure.tools.logging :as log]))
 
-(t/use-fixtures :once c/fixture-start-server c/fixture-driver c/open-website)
+(t/use-fixtures :once c/fixture-start-server c/fixture-driver)
 
-(t/use-fixtures :each c/fixture-prepare-directory c/refresh)
+(t/use-fixtures :each c/fixture-prepare-directory c/open-website)
 
 (defn enter-fight-screen
   []

@@ -5,7 +5,7 @@
    ;;[etaoin.keys]
    [lum.common :as c]))
 
-(t/use-fixtures :once c/fixture-start-server c/fixture-driver c/open-website)
+(t/use-fixtures :once c/fixture-start-server c/fixture-driver)
 (t/use-fixtures :each c/fixture-prepare-directory c/open-website)
 
 (deftest ^:integration load-game

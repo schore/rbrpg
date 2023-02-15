@@ -45,14 +45,19 @@
 
 (defprotocol IGame
   (exec [this command])
+  (get-data [this])
+  (get-events [this])
   (close [this]))
 
-(deftype Game [in out]
+(deftype Game [in out data]
   IGame
 
   (exec [_ command]
     (a/put! in command)
-    (first (a/alts!! [out (a/timeout 1000)])))
+    (reset! data (first (a/alts!! [out (a/timeout 1000)]))))
+
+  (get-data [_] @data)
+  (get-events [_] nil)
 
   (close [_]
     (a/close! in)))
@@ -63,8 +68,10 @@
   (exec [_ command]
     ;; (log/info "Execute command" command)
     (swap! state (fn [state]
-                   (gamelogic/process-round state command)))
-    @state)
+                   (gamelogic/calc-commands (:data state) command))))
+
+  (get-data [_] (:data @state))
+  (get-events [_] (:events @state))
 
   (close [_]))
 
@@ -73,7 +80,7 @@
 (defn create-game-with-chan
   ([]
    (let [[in out] (create-game-maser)]
-     (Game. in out)))
+     (Game. in out (atom {}))))
   ([f]
    (binding [*game* (create-game-with-chan)]
      (f)
@@ -110,7 +117,11 @@
 
 (defn get-state-unchecked
   []
-  (exec *game* [:nop]))
+  (get-data *game*))
+
+(defn get-event
+  []
+  (get-events *game*))
 
 (defn initalize-game
   []
@@ -122,12 +133,18 @@
   ([& rolls]
    (exec-with-rolls activate rolls)))
 
-(defn game-is-initialized
+(defn get-state
   []
   (let [state (get-state-unchecked)]
-    (if (not (s/valid? :game/game state))
-      (initalize-game)
-      state)))
+    (when (not (s/valid? :game/game state)) (log/error (s/explain :game/game state)))
+    (is (s/valid? :game/game state))
+    state))
+
+(defn game-is-initialized
+  []
+  (when (not (s/valid? :game/game (get-state-unchecked)))
+    (initalize-game))
+  (get-state))
 
 (defn load-game
   [new-sate]
@@ -140,13 +157,6 @@
 (defn set-position
   [x y]
   (exec *game* [:set-position x y]))
-
-(defn get-state
-  []
-  (let [state (exec *game* [:nop])]
-    (when (not (s/valid? :game/game state)) (log/error (s/explain :game/game state)))
-    (is (s/valid? :game/game state))
-    state))
 
 (defn combine
   [& s]

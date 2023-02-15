@@ -53,7 +53,8 @@
         state (dsl/game-is-initialized)]
     (dsl/save-game filename)
     (dsl/initalize-game)
-    (is (= state (dsl/load-game filename)))))
+    (dsl/load-game filename)
+    (is (= state (dsl/get-state)))))
 
 (deftest valid-state-after-save-game
   (dsl/game-is-initialized)

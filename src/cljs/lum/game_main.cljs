@@ -27,7 +27,6 @@
 (defn keyify-ws
   [msg]
   (let [msg (clojure.walk/keywordize-keys msg)]
-    (print msg)
     (rf/dispatch
      (case (first msg)
        "data" [:game/update (second msg)]
@@ -45,13 +44,11 @@
     {:stream stream
      :send-message send-message}))
 
-;; (defonce wsconn (create-ws))
-
 (defn create-game
   []
   (let [in (a/chan)
         out (-> in
-                gamelogic/game-master)]
+                gamelogic/game-logic)]
     [in out]))
 
 (defonce gamelogic (let [[in out] (create-game)]
@@ -59,14 +56,22 @@
                       :out out}))
 
 (go-loop []
-  (when-let [msg (<! (:out gamelogic))]
-    (rf/dispatch [:game/update msg])
+  (when-let [[event & data] (<! (:out gamelogic))]
+    (case event
+      :new-state (rf/dispatch [:game/update (first data)])
+      :enter-unknown-level (rf/dispatch [:enter-unknown-level (first data)])
+      (println event))
+
     (recur)))
+
+(rf/reg-event-fx
+ :enter-unknown-level
+ (fn [_ [_ level]]
+   {:game/send-message [:enter-unknown-level level (gamelogic/get-map level)]}))
 
 (rf/reg-fx
  :game/send-message
  (fn [msg]
-   (print msg)
    (when (some? msg)
      (a/put! (:in gamelogic) msg))))
 ;; (rf/reg-fx
@@ -95,7 +100,6 @@
 
 (defn add-clockwise
   [min max & entries]
-  (println min " " max " " entries)
   (let [n (+ max (- min) 1)
         sum (reduce + entries)]
     (+ (mod (- sum min) n) min)))
@@ -103,7 +107,6 @@
 (rf/reg-event-fx
  :game/key
  (fn [{:keys [db]} [_ action]]
-   (println action)
    (merge
     (when (and (not (fight? db))
                (some #{action} [:up :down :left :right]))
@@ -131,7 +134,6 @@
                                nil)
          :db (update-in db [:action :active]
                         (fn [ac]
-                          (println "ac" action " " ac)
                           (if (coll? action)
                             (conj ac 1)
                             ac)))}))

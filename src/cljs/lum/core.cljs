@@ -6,7 +6,7 @@
    [goog.history.EventType :as HistoryEventType]
    [lum.ajax :as ajax]
    [lum.events]
-   [lum.game-main :refer [game item]]
+   [lum.game-views :as views]
    [markdown.core :refer [md->html]]
    [re-frame.core :as rf]
    [reagent.core :as r]
@@ -76,12 +76,12 @@
 (def router
   (reitit/router
    [["/" {:name        :home
-          :view        #'game
+          :view        #'views/game
           :controllers [{:start (fn [_] (rf/dispatch [:page/init-home]))}]}]
     ["/help" {:name :help
               :view #'help-page}]
     ["/item" {:name :item
-              :view #'item}]]))
+              :view #'views/item}]]))
 
 (defn start-router! []
   (rfe/start!

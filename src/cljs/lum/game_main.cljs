@@ -7,34 +7,12 @@
    [clojure.walk]
    [lum.maputil :as maputil]
    [ajax.core :as ajax]
-   [haslett.client :as ws]
-   [haslett.format :as fmt]
    [clojure.edn :as edn]
-   [cljs.core.async :as a :refer [<! >! go-loop go]]
+   [cljs.core.async :as a :refer [<! go-loop]]
    [lum.game.game-database :as db]
    [lum.game.gamelogic :as gamelogic]
    [lum.game-config :as config]
    [lum.game.cavegen :as cavegen]))
-
-(defn keyify-ws
-  [msg]
-  (let [msg (clojure.walk/keywordize-keys msg)]
-    (rf/dispatch
-     (case (first msg)
-       "data" [:game/update (second msg)]
-       "boards" [:game/board-update (second msg)]))))
-
-(defn create-ws
-  []
-  (let [stream  (ws/connect "ws://localhost:3000/game/ws"
-                            {:format fmt/json})
-        send-message (fn [msg] (go (>! (:sink (<! stream)) msg)))]
-
-    (go (while (ws/connected? (<! stream))
-          (let [message (<! (:source (<! stream)))]
-            (keyify-ws message))))
-    {:stream stream
-     :send-message send-message}))
 
 (defn create-game
   []
@@ -66,9 +44,6 @@
  (fn [msg]
    (when (some? msg)
      (a/put! (:in gamelogic) msg))))
-;; (rf/reg-fx
-;;  :game/send-message
-;;  (fn [msg] ((:send-message wsconn) msg)))
 
 (def sizex maputil/sizex)
 (def sizey maputil/sizey)

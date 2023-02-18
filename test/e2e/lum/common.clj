@@ -61,6 +61,7 @@
   (prepare-save-game "test-map.edn")
   (prepare-save-game "not-full-hp.edn")
   (prepare-save-game "items-two-combine.edn")
+  (prepare-save-game "on-stairs-to-special-map.edn")
   (f)
   (delete-directory-recursive (io/file "tmp")))
 

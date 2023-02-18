@@ -3,8 +3,7 @@
    [clojure.test :as t :refer [deftest is]]
    [etaoin.api :as e]
    [etaoin.keys]
-   [lum.common :as c :refer [*driver*]]
-   [clojure.tools.logging :as log]))
+   [lum.common :as c :refer [*driver*]]))
 
 (t/use-fixtures :once c/fixture-start-server c/fixture-driver)
 

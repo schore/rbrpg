@@ -49,3 +49,9 @@
   (let [prev-pos (c/get-player-position)]
     (c/activate)
     (is (not= prev-pos (c/get-player-position)))))
+
+(deftest ^:integration enter-special-map
+
+  (c/load-game "on-stairs-to-special-map.edn")
+  (c/activate)
+  (is (= [22 19] (c/get-player-position))))

@@ -6,7 +6,7 @@
 
 (deftest new-map-event
   (dsl/player-is-on :stair-down)
-  (dsl/activate)
+  (dsl/activate 20 20)
   (is (= :enter-unknown-level (get-in (dsl/get-event) [0 0]))))
 
 (deftest correct-level-requested
@@ -14,5 +14,5 @@
     (testing (str "correct level " i)
       (dsl/player-is-on-level i)
       (dsl/player-is-on :stair-down)
-      (dsl/activate)
+      (dsl/activate 20 20)
       (is (= (inc i) (get-in (dsl/get-event) [0 1]))))))

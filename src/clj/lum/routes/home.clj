@@ -21,6 +21,10 @@
    [(str "/" config/path "/docs.md") {:get (fn [_]
                                              (-> (response/ok (-> "docs/docs.md" io/resource slurp))
                                                  (response/header "Content-Type" "text/plain; charset=utf-8")))}]
+   [(str "/" config/path "/maps/:map") {:get (fn [req]
+                                               (let [id (get-in req [:path-params :map] "Noooo")]
+                                                 (-> (response/ok (-> (str "docs/" id) io/resource slurp))
+                                                     (response/header "Content-Type" "text/plain; charset=utf-8"))))}]
    [(str "/" config/path "/game/data/:id") {:get (fn [req]
                                                    (let [id (get-in req [:path-params :id])
                                                          savegame (load-save/load-rest-interface id)]

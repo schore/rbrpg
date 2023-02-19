@@ -166,6 +166,7 @@
 
 (def special-maps
   {5 {:map (load/static-load-file "resources/docs/test.txt")
+      :uri "test.txt"
       :effects [[11 10] :message "A board squeezes"
                 [0 0] :message "Bla"
                 [11 11] :enemy "Bandit"

@@ -12,7 +12,9 @@
    [lum.game.game-database :as db]
    [lum.game.gamelogic :as gamelogic]
    [lum.game-config :as config]
-   [lum.game.cavegen :as cavegen]))
+   [lum.game.cavegen :as cavegen]
+   [lum.game.load-save :as load]
+   [lum.game.move :as move]))
 
 (defn create-game
   []
@@ -34,10 +36,29 @@
 
     (recur)))
 
+(defn load-special-map
+  [map level]
+  (-> map
+      (load/load-map-from-string)
+      (move/load-effect level)))
+
 (rf/reg-event-fx
  :enter-unknown-level
  (fn [_ [_ level]]
-   {:game/send-message [:enter-unknown-level level (gamelogic/get-map level)]}))
+   (if (contains? db/special-maps level)
+     {:http-xhrio {:method :get
+                   :uri (str "/"  config/path "/maps/" (get-in db/special-maps [level :uri]))
+                   :timeout 10000
+                   :response-format (ajax/text-response-format)
+                   :on-success [:game/map-resp level]}}
+     {:game/send-message [:enter-unknown-level level (gamelogic/get-map level)]})))
+
+(rf/reg-event-fx
+ :game/map-resp
+ (fn [_ [_ level map]]
+   (println level map)
+   {:game/send-message [:enter-unknown-level level
+                        (load-special-map map level)]}))
 
 (rf/reg-fx
  :game/send-message

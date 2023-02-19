@@ -14,6 +14,9 @@ git clone git@github.com:schore/rbrpg-static-site.git
 npx shadow-cljs release app
 cp -f resources/public/css/screen.css rbrpg-static-site/css/
 cp -f resources/docs/docs.md rbrpg-static-site/
+mkdir -p rbrpg-static-site/maps/
+cp -f resources/docs/* rbrpg-static-site/maps/
+
 cp -f target/cljsbuild/public/js/app.js rbrpg-static-site/
 
 cd rbrpg-static-site

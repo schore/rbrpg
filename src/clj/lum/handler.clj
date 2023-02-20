@@ -1,14 +1,13 @@
 (ns lum.handler
   (:require
-    [lum.middleware :as middleware]
-    [lum.layout :refer [error-page]]
-    [lum.routes.home :refer [home-routes]]
-    [lum.routes.websockets :refer [ws-routes]]
-    [reitit.ring :as ring]
-    [ring.middleware.content-type :refer [wrap-content-type]]
-    [ring.middleware.webjars :refer [wrap-webjars]]
-    [lum.env :refer [defaults]]
-    [mount.core :as mount]))
+   [lum.middleware :as middleware]
+   [lum.layout :refer [error-page]]
+   [lum.routes.home :refer [home-routes]]
+   [reitit.ring :as ring]
+   [ring.middleware.content-type :refer [wrap-content-type]]
+   [ring.middleware.webjars :refer [wrap-webjars]]
+   [lum.env :refer [defaults]]
+   [mount.core :as mount]))
 
 (mount/defstate init-app
   :start ((or (:init defaults) (fn [])))
@@ -18,8 +17,7 @@
   :start
   (ring/ring-handler
    (ring/router
-    [(home-routes)
-     ws-routes])
+    [(home-routes)])
    (ring/routes
     (ring/create-resource-handler
      {:path "/"})

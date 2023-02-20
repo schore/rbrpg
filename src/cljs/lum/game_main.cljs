@@ -12,9 +12,7 @@
    [lum.game.game-database :as db]
    [lum.game.gamelogic :as gamelogic]
    [lum.game-config :as config]
-   [lum.game.cavegen :as cavegen]
-   [lum.game.load-save :as load]
-   [lum.game.move :as move]))
+   [lum.game.cavegen :as cavegen]))
 
 (defn create-game
   []
@@ -36,12 +34,6 @@
 
     (recur)))
 
-(defn load-special-map
-  [map level]
-  (-> map
-      (load/load-map-from-string)
-      (move/load-effect level)))
-
 (rf/reg-event-fx
  :enter-unknown-level
  (fn [_ [_ level]]
@@ -58,7 +50,7 @@
  (fn [_ [_ level map]]
    (println level map)
    {:game/send-message [:enter-unknown-level level
-                        (load-special-map map level)]}))
+                        (gamelogic/load-special-map map level)]}))
 
 (rf/reg-fx
  :game/send-message

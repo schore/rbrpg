@@ -11,7 +11,8 @@
    [lum.game.move :as move]
    [lum.game.fight :as fight]
    [lum.game.magic :as magic]
-   [lum.game.game-database :as db]))
+   [lum.game.game-database :as db]
+   [lum.game.load-save :as load]))
 
 (def inital-items
   {"small healing potion" 2})
@@ -132,6 +133,12 @@
   (let [[command & _] input]
     (case command
       input)))
+
+(defn load-special-map
+  [map level]
+  (-> map
+      (load/load-map-from-string)
+      (move/load-effect level)))
 
 (defn get-map
   [level]

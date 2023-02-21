@@ -1,18 +1,15 @@
 (ns lum.game.gamelogic
   (:require
-   [clojure.core.async :as a :refer [<! >! chan close! go-loop go]]
+   [clojure.core.async :as a :refer [<! >! chan close! go-loop]]
    [clojure.string]
-   [lum.game.view :as view]
-   [lum.game.cavegen :as cavegen]
-   [lum.game.load-save :as load-save]
    [lum.game.dataspec]
-   [lum.game.update-data]
-   [lum.game.item :as item]
-   [lum.game.move :as move]
    [lum.game.fight :as fight]
+   [lum.game.item :as item]
+   [lum.game.load-save :as load]
    [lum.game.magic :as magic]
-   [lum.game.game-database :as db]
-   [lum.game.load-save :as load]))
+   [lum.game.move :as move]
+   [lum.game.update-data]
+   [lum.game.view :as view]))
 
 (def inital-items
   {"small healing potion" 2})
@@ -22,10 +19,6 @@
    (-> data
        (assoc-in [:boards (dec (:level data))] board)
        (move/set-to-tile :stair-up))))
-
-(defn set-to-tile
-  [data [_ tile]]
-  (move/set-to-tile data tile))
 
 (defn initialize
   [_ [_ board]]
@@ -57,9 +50,9 @@
 
 (def basic-mode
   {:initialize [initialize]
-   :load [load-save/load-game]
+   :load [load/load-game]
    :enter-unknown-level [move/enter-unknown-level]
-   :save [#?(:clj load-save/save-game)]
+   :save [#?(:clj load/save-game)]
    :equip [item/equip-item]
    :unequip [item/unequip-item]
    :nop []})
@@ -79,7 +72,7 @@
   (merge basic-mode
          {:activate [move/activate fight/check-fight]
           :cast-spell [magic/cast-spell]
-          :load-map [load-save/load-map]
+          :load-map [load/load-map]
           :move [move/move fight/check-fight]
           :set-position [move/set-position]
           :new-board [new-board]

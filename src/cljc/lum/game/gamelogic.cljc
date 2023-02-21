@@ -147,26 +147,3 @@
         (move/load-effect level))
     (cavegen/get-dungeon)))
 
-(defn output-router
-  [in backchannel]
-  (let [out (chan)]
-    (go-loop []
-      (if-let [[command & data] (<! in)]
-        (do
-          (case command
-            :new-state (>! out (first data))
-            :enter-unknown-level (go
-                                   (>! backchannel [:enter-unknown-level
-                                                    (first data)
-                                                    (get-map (first data))]))
-            (println "Default reached" command))
-          (recur))
-        (close! out)))
-    out))
-
-(defn game-master
-  [in]
-  (let [gl-in (a/map input-map [in])
-        gl-out (game-logic gl-in)
-        out (output-router gl-out in)]
-    out))

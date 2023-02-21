@@ -9,7 +9,8 @@
             [lum.game.utilities :as util]
             [clojure.java.io :as io]
             [lum.maputil :as mu]
-            [lum.game.cavegen :as cavegen]))
+            [lum.game.cavegen :as cavegen]
+            [lum.game.game-database :as db]))
 
 (defn delete-directory-recursive
   "Recursively delete a director ."
@@ -36,12 +37,6 @@
   [filename]
   (spit (str "tmp/" filename)
         (slurp (io/resource (str "savegames/" filename)))))
-
-(defn create-game-maser
-  []
-  (let [in (a/chan)
-        out (gamelogic/game-master in)]
-    [in out]))
 
 (defprotocol IGame
   (exec [this command])
@@ -76,15 +71,6 @@
   (close [_]))
 
 (def ^:dynamic *game*)
-
-(defn create-game-with-chan
-  ([]
-   (let [[in out] (create-game-maser)]
-     (Game. in out (atom {}))))
-  ([f]
-   (binding [*game* (create-game-with-chan)]
-     (f)
-     (close *game*))))
 
 (defn create-game-without-chan
   [f]
@@ -357,9 +343,11 @@
     (load-game (assoc-in state [:boards level (mu/position-to-n x y) :items] items))))
 
 (defn enter-level
-  [level]
-  (game-is-initialized)
-  (exec *game* [:enter-unknown-level level (cavegen/get-dungeon)]))
+  ([level]
+   (enter-level level (cavegen/get-dungeon)))
+  ([level map]
+   (game-is-initialized)
+   (exec *game* [:enter-unknown-level level map])))
 
 (defn player-is-on-level
   [level]
@@ -411,12 +399,9 @@
 
 (defn player-is-on-special-map
   []
-  (game-is-initialized)
-  (let [level 5]
-    (while (and (> level (get-level))
-                (not (in-fight?)))
-      (player-is-on :stair-down)
-      (activate 20 20))))
+  (player-is-on-level 4)
+  (enter-level 5
+               (gamelogic/load-special-map  (get-in db/special-maps [5 :map]) 5)))
 
 (defn player-steps-on-message-trigger
   []

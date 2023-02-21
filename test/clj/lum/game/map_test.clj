@@ -6,7 +6,7 @@
    [lum.game.dataspec]))
 
 (t/use-fixtures
-  :each dsl/create-game-with-chan)
+  :each dsl/create-game)
 
 (deftest level-5-is-special-map
   (dsl/player-is-on-special-map)

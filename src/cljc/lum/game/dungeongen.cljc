@@ -1,10 +1,9 @@
 (ns lum.game.dungeongen
-  (:require [lum.maputil :as m]
-            [lum.game.game-database :as db]
-            [lum.maputil :as mu]))
+  (:require
+   [lum.maputil :as mu]))
 
-(def xsize m/sizex)
-(def ysize m/sizey)
+(def xsize mu/sizex)
+(def ysize mu/sizey)
 
 (defn empty-board
   []

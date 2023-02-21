@@ -1,12 +1,11 @@
 (ns lum.game.move
   (:require
-   [lum.game.utilities :as u]
-   [lum.game.game-database :as db]
-   [lum.maputil :as mu]
-   [lum.game.cavegen :as cavegen]
-   [lum.game.load-save :as load]
    [clojure.spec.alpha :as s]
-   [lum.game.utilities :as util]))
+   [lum.game.cavegen :as cavegen]
+   [lum.game.game-database :as db]
+   [lum.game.load-save :as load]
+   [lum.game.utilities :as u]
+   [lum.maputil :as mu]))
 
 (defn active-item-can-dig?
   [data]

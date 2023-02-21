@@ -1,6 +1,5 @@
 (ns lum.game.view
   (:require
-   [clojure.spec.alpha :as s]
    [clojure.math :as math]
    [lum.maputil :as mu]
    [lum.game.dataspec]))

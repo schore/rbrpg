@@ -128,22 +128,8 @@
         (close! out)))
     out))
 
-(defn input-map
-  [input]
-  (let [[command & _] input]
-    (case command
-      input)))
-
 (defn load-special-map
   [map level]
   (-> map
       (load/load-map-from-string)
       (move/load-effect level)))
-
-(defn get-map
-  [level]
-  (if (contains? db/special-maps level)
-    (-> (move/load-special-map level)
-        (move/load-effect level))
-    (cavegen/get-dungeon)))
-

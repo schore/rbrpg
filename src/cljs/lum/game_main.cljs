@@ -43,7 +43,7 @@
                    :timeout 10000
                    :response-format (ajax/text-response-format)
                    :on-success [:game/map-resp level]}}
-     {:game/send-message [:enter-unknown-level level (gamelogic/get-map level)]})))
+     {:game/send-message [:enter-unknown-level level (cavegen/get-dungeon)]})))
 
 (rf/reg-event-fx
  :game/map-resp

@@ -8,7 +8,6 @@
    [lum.game.load-save :as load]
    [lum.game.magic :as magic]
    [lum.game.move :as move]
-   [lum.game.update-data]
    [lum.game.view :as view]))
 
 (def inital-items

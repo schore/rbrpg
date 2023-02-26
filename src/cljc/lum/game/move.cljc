@@ -68,10 +68,6 @@
                      (get-in db/special-maps [level :effects]
                              []))))
 
-(defn load-special-map
-  [level]
-  (load/load-map-from-string (get-in db/special-maps [level :map])))
-
 (defn cavegen-required?
   [state]
   (> (inc (:level state)) (count (:boards state))))

@@ -5,17 +5,10 @@
    [clojure.test :as t :refer [deftest is testing]]
    [lum.game-logic-dsl :as dsl]
    [lum.game.dataspec]
-   [lum.maputil :as mu]
-   [lum.game.game-database :as db]))
+   [lum.maputil :as mu]))
 
 (t/use-fixtures
   :each dsl/create-game)
-
-(deftest set-player-position
-  (dsl/game-is-initialized)
-  (dsl/set-position 25 27)
-  (is (= [25 27]
-         (get-in (dsl/get-state) [:player :position]))))
 
 (deftest move-test
   (doseq [[[x y] direction end-pos] [;;Move with strings

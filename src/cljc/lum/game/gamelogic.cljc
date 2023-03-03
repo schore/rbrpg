@@ -73,7 +73,6 @@
           :cast-spell [magic/cast-spell]
           :load-map [load/load-map]
           :move [move/move fight/check-fight]
-          :set-position [move/set-position]
           :new-board [new-board]
           :combine [item/remember-recipies item/combine]
           :use-item [item/use-item]}))

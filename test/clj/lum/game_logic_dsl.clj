@@ -140,10 +140,6 @@
   [filename]
   (exec *game* [:save filename]))
 
-(defn set-position
-  [x y]
-  (exec *game* [:set-position x y]))
-
 (defn combine
   [& s]
   (exec *game* [:combine (frequencies s)]))
@@ -222,6 +218,21 @@
 (defn load-map
   [file]
   (exec *game* [:load-map file]))
+
+(defn ensure-valid-map
+  [state]
+  (if (s/valid? :game/game state)
+    state
+    (recur (assoc-in state [:boards (dec (:level state))]
+                     (cavegen/get-dungeon)))))
+
+(defn set-position
+  [x y]
+  (game-is-initialized)
+  (-> (get-state)
+      (assoc-in [:player :position] [x y])
+      ensure-valid-map
+      load-game))
 
 (defn test-map-loaded
   ([]

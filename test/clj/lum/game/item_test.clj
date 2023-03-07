@@ -76,7 +76,7 @@
   (dsl/combine "batblood" "batblood")
   (is (= {"batblood" 1} (dsl/get-items))))
 
-(deftest apply-item
+(deftest apply-item-can-heal
   (dsl/player-has-items {"small healing potion" 1})
   (dsl/player-has-hp 5)
   (dsl/use-item "small healing potion")
@@ -89,7 +89,7 @@
   (dsl/use-item "small healing potion")
   (is (= 5 (dsl/get-hp))))
 
-(deftest apply-item-when-dead
+(deftest apply-item-when-dead-fails
   (dsl/player-has-items {"small healing potion" 1})
   (dsl/player-has-hp 0)
   (dsl/use-item "small healing potion")

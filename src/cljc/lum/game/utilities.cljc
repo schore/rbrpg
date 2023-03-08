@@ -182,3 +182,12 @@
       (assoc :fight {:enemy (get-enemy-stat enemy)
                      :actions []})
       (add-message (str "You got attacked by a " enemy))))
+
+(defn useable-item?
+  [item]
+  (let [v (get db/item-data item)]
+    (or (contains? v :hp)
+        (contains? v :mp)
+        (contains? v :maxhp)
+        (contains? (get v :properties #{}) :recipie)
+        (contains? v :spell))))

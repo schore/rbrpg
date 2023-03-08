@@ -3,7 +3,8 @@
             [reagent.core :as r]
             [lum.game-main]
             [lum.game.game-database :as db]
-            [lum.maputil :as maputil]))
+            [lum.maputil :as maputil]
+            [lum.game.utilities :as u]))
 
 (def sizex maputil/sizex)
 (def sizey maputil/sizey)
@@ -218,7 +219,7 @@
   []
   (let [items (rf/subscribe [:game/items])]
     (fn []
-      (let [items @items]
+      (let [items (filter (fn [[i _]] (u/useable-item? i)) @items)]
         [:table>tbody
          (for [[k v] (sort items)]
            ^{:key (str "show_items_use_" k)}

@@ -72,15 +72,23 @@
                {"wooden stick" 10} ["wooden shield" "Protect yourself with wood"]})
 
 (def item-data {"small healing potion" {:target :player
+                                        :damage [1 4]
+                                        :slots #{:right-hand}
                                         :hp 3
                                         :rarity 5}
                 "small mana potion" {:target :player
+                                     :damage [1 4]
+                                     :slots #{:right-hand}
                                      :mp 3
                                      :rarity 5}
                 "medium mana potion" {:target :player
+                                      :damage [1 4]
+                                      :slots #{:right-hand}
                                       :mp 30
                                       :rarity 2}
                 "medium healing potion" {:target :player
+                                         :damage [1 4]
+                                         :slots #{:right-hand}
                                          :hp 30
                                          :rarity 3}
                 "batblood" {}

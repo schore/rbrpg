@@ -100,11 +100,16 @@
   (dsl/use-item "sword")
   (s/valid? :game/game (dsl/get-state)))
 
-(deftest apply-equipped-item
+(deftest some-items-can-not-be-applied
   (dsl/player-has-items {"sword" 1})
-  (dsl/player-equips :right-hand "sword")
   (dsl/use-item "sword")
-  (is (not (contains? (dsl/get-items) "sword")))
+  (is (contains? (dsl/get-items) "sword")))
+
+(deftest apply-equipped-item
+  (dsl/player-has-items {"small healing potion" 1})
+  (dsl/player-equips :right-hand "small healing potion")
+  (dsl/use-item "small healing potion")
+  (is (not (contains? (dsl/get-items) "small healing potion")))
   (is (not (contains? (dsl/get-equipped-items) :right-hand))))
 
 (deftest combine-equipped-items

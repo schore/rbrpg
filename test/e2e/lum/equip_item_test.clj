@@ -25,7 +25,7 @@
   (is (= (c/get-equipment-slot "right-hand") "none")))
 
 (deftest ^:integration use-equipped-item
-  (c/load-game "got-two-batblood.edn")
-  (c/equip "right-hand" "sword")
-  (c/use-item "sword")
+  (c/load-game "on-stairs-to-special-map.edn")
+  (c/equip "right-hand" "small healing potion")
+  (c/use-item "small healing potion")
   (is (= (c/get-equipment-slot "right-hand") "none")))

@@ -6,6 +6,17 @@
   [data required-items]
   (every? (fn [[k v]] (<= v (get-in data [:player :items k] 0))) required-items))
 
+(defn useable-item?
+  [item]
+  (let [useable-items   (->> db/item-data
+                             (filter (fn [[_ v]] (or (contains? v :hp)
+                                                     (contains? v :mp)
+                                                     (contains? v :maxhp)
+                                                     (contains? (get v :properties #{}) :recipie)
+                                                     (contains? v :spell))))
+                             (map first))]
+    (some #{item} useable-items)))
+
 (defn incriedients-2-item
   [incriedients]
   (get-in db/recipies [incriedients 0]))
@@ -45,7 +56,8 @@
 
 (defn use-item
   [data [_ item]]
-  (if (enough-items? data {item 1})
+  (if (and (enough-items? data {item 1})
+           (useable-item? item))
     (-> data
         (u/add-items {item -1})
         (u/process-event [(str "Use item: " item) [(get db/item-data item {})]])

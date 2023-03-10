@@ -138,6 +138,23 @@
          (map parse-item-str)
          (into {}))))
 
+(defn parse-use-item-str
+  [str]
+  (let [[_ k v] (re-matches #"(.*) ([0-9]*)" str)]
+    [k  (Integer/parseInt v)]))
+
+(defn get-useable-items
+  []
+  (click-menu-item "Home")
+  (let [query [{:class "items-use"}
+               {:tag :table}
+               {:tag :tr}]]
+    (e/wait-visible *driver* query)
+    (->> (e/query-all *driver* query)
+         (map #(e/get-element-text-el *driver* %))
+         (map parse-use-item-str)
+         (into {}))))
+
 (defn get-hp
   []
   (click-menu-item "Home")

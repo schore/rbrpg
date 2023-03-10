@@ -137,3 +137,12 @@
   (c/load-game "not-full-hp.edn")
   (c/cast-spell "Healing")
   (is (= 7 (c/get-hp))))
+
+(deftest ^:integration check-useable-items
+  (c/load-game "items-two-combine.edn")
+  (let [useable-items (c/get-useable-items)
+        all-items (c/get-items)]
+    (is (contains? all-items "wooden stick"))
+    (is (not (contains? useable-items "wooden stick")))
+    (is (contains? all-items "medium healing potion"))
+    (is (contains? useable-items "medium healing potion"))))

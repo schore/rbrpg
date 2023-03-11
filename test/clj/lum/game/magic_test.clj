@@ -57,7 +57,7 @@
   (dsl/in-a-fight)
   (dsl/player-has-hp 1)
   (dsl/player-know-spell "Healing")
-  (dsl/cast-spell "Healing")
+  (dsl/cast-spell "Healing" 2)
   (is (> (dsl/get-hp) 1)))
 
 (deftest healing-spell-during-moving

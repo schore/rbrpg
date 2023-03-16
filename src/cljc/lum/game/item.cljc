@@ -1,10 +1,11 @@
 (ns lum.game.item
   (:require [lum.game.game-database :as db]
-            [lum.game.utilities :as u]))
+            [lum.game.utilities :as u]
+            [lum.game.items :as items]))
 
 (defn enough-items?
   [data required-items]
-  (every? (fn [[k v]] (<= v (get-in data [:player :items k] 0))) required-items))
+  (items/enough? (get-in data [:player :items]) required-items))
 
 (defn incriedients-2-item
   [incriedients]

@@ -7,10 +7,6 @@
   [data required-items]
   (items/enough? (get-in data [:player :items]) required-items))
 
-(defn incriedients-2-item
-  [incriedients]
-  (get-in db/recipies [incriedients 0]))
-
 (defn add-recipie
   [data recipie]
   (update data :recepies #(distinct (conj % recipie))))
@@ -59,17 +55,16 @@
   [items]
   (u/filter-map (fn [[_ v]] (pos-int? v)) items))
 
+(defn unequip-items-not-in-inventory
+  [data item]
+  (update-in data [:player :equipment]
+             #(u/filter-map (fn [[_ v]] (not= v item)) %)))
+
 (defn combine
   [data [_ used-items]]
-  (let [used-items (clear-empty-items used-items)
-        new-item (incriedients-2-item used-items)]
-    (if (enough-items? data used-items)
-      (-> data
-          (u/add-items (u/map-map (fn [[k v]] [k (* -1 v)]) used-items))
-          (u/add-items (if new-item
-                         {new-item 1}
-                         {})))
-      data)))
+  (reduce unequip-items-not-in-inventory
+          (update-in data [:player :items] #(items/combine % used-items))
+          (map first used-items)))
 
 (defn remember-recipies
   [data [_ used-items]]

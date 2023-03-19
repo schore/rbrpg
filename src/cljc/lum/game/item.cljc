@@ -1,7 +1,8 @@
 (ns lum.game.item
   (:require [lum.game.game-database :as db]
             [lum.game.utilities :as u]
-            [lum.game.items :as items]))
+            [lum.game.items :as items]
+            [lum.game.player :as player]))
 
 (defn enough-items?
   [data required-items]
@@ -62,9 +63,7 @@
 
 (defn combine
   [data [_ used-items]]
-  (reduce unequip-items-not-in-inventory
-          (update-in data [:player :items] #(items/combine % used-items))
-          (map first used-items)))
+  (update data :player #(player/combine % used-items)))
 
 (defn remember-recipies
   [data [_ used-items]]

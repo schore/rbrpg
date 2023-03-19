@@ -56,11 +56,6 @@
   [items]
   (u/filter-map (fn [[_ v]] (pos-int? v)) items))
 
-(defn unequip-items-not-in-inventory
-  [data item]
-  (update-in data [:player :equipment]
-             #(u/filter-map (fn [[_ v]] (not= v item)) %)))
-
 (defn combine
   [data [_ used-items]]
   (update data :player #(player/combine % used-items)))

@@ -19,7 +19,7 @@
 
 (defn unequip-item
   [state [_ slot]]
-  (update-in state [:player :equipment] #(dissoc % (keyword slot))))
+  (update state :player #(player/unequip-item % slot)))
 
 (defn learn-recipie-from-item
   [data item]

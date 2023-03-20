@@ -18,3 +18,7 @@
   (if (items/enough? (:items player) {item 1})
     (assoc-in player [:equipment (keyword slot)] item)
     player))
+
+(defn unequip-item
+  [player slot]
+  (update player :equipment #(dissoc % (keyword slot))))

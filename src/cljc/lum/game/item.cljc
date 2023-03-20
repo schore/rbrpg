@@ -15,9 +15,7 @@
 ;; High level functions
 (defn equip-item
   [state [_ slot item]]
-  (if (enough-items? state {item 1})
-    (assoc-in state [:player :equipment (keyword slot)] item)
-    state))
+  (update state :player #(player/equip-item % slot item)))
 
 (defn unequip-item
   [state [_ slot]]

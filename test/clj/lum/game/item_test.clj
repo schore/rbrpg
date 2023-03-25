@@ -85,7 +85,8 @@
 
 (deftest apply-item-message
   (doseq [[item message] [["small healing potion" "HP: 3"]
-                          ["small mana potion" "MP: 3"]]]
+                          ["small mana potion" "MP: 3"]
+                          ["roast beef" "Maxhp: 1"]]]
     (testing (str item ":" message)
       (dsl/player-has-items {item 1})
       (dsl/use-item item)

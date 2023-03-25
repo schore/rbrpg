@@ -45,6 +45,7 @@
     (cond-> data
       (contains? i :hp) (u/add-message (str "HP: " (:hp i)))
       (contains? i :mp) (u/add-message (str "MP: " (:mp i)))
+      (contains? i :maxhp) (u/add-message (str "Maxhp: " (:maxhp i)))
       true (u/add-message (str "Use item: " item)))))
 
 (defn use-item

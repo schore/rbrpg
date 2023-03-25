@@ -39,13 +39,20 @@
         (update-in [:player :spells] #(conj % spell)))
     data))
 
+(defn add-use-message
+  [data item]
+  (let [i (get db/item-data item)]
+    (cond-> data
+      (contains? i :hp) (u/add-message (str "HP: " (:hp i)))
+      true (u/add-message (str "Use item: " item)))))
+
 (defn use-item
   [data [_ item]]
   (if (and (enough-items? data {item 1})
            (u/useable-item? item))
     (-> data
         (update :player #(player/use-item % item))
-        ;;(u/process-event [(str "Use item: " item) [(get db/item-data item {})]])
+        (add-use-message item)
         (learn-recipie-from-item item)
         (add-spell item))
     data))

@@ -83,11 +83,14 @@
   (is (= 8 (dsl/get-hp)))
   (is (nil? (get (dsl/get-items) "small healing potion"))))
 
-(deftest applay-item-message
-  (dsl/player-has-items {"small healing potion" 1})
-  (dsl/use-item "small healing potion")
-  (is (= "Use item: small healing potion" (first (dsl/get-messages))))
-  (is (= "HP: 3" (second (dsl/get-messages)))))
+(deftest apply-item-message
+  (doseq [[item message] [["small healing potion" "HP: 3"]
+                          ["small mana potion" "MP: 3"]]]
+    (testing (str item ":" message)
+      (dsl/player-has-items {item 1})
+      (dsl/use-item item)
+      (is (= (str "Use item: " item) (first (dsl/get-messages))))
+      (is (= message (second (dsl/get-messages)))))))
 
 (deftest apply-item-not-in-inventory
   (dsl/player-has-items {})

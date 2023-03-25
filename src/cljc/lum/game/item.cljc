@@ -44,8 +44,8 @@
   (if (and (enough-items? data {item 1})
            (u/useable-item? item))
     (-> data
-        (u/add-items {item -1})
-        (u/process-event [(str "Use item: " item) [(get db/item-data item {})]])
+        (update :player #(player/use-item % item))
+        ;;(u/process-event [(str "Use item: " item) [(get db/item-data item {})]])
         (learn-recipie-from-item item)
         (add-spell item))
     data))

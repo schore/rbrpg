@@ -48,6 +48,12 @@
   (update player :hp
           (fn [[v max]] [(+ v n) (+ max n)])))
 
+(defn add-spell
+  [player spell]
+  (if (not= spell "")
+    (update player :spells #(conj % spell))
+    player))
+
 (defn use-item
   [player item]
   (let [i (get db/item-data item {})]
@@ -55,4 +61,5 @@
         (add-items {item -1})
         (add-hp (get i :hp 0))
         (add-mp (get i :mp 0))
-        (add-max-hp (get i :maxhp 0)))))
+        (add-max-hp (get i :maxhp 0))
+        (add-spell (get i :spell "")))))

@@ -31,14 +31,6 @@
           (add-recipie recipie)))
     data))
 
-(defn add-spell
-  [data item]
-  (if-let [spell (get-in db/item-data [item :spell])]
-    (-> data
-        (u/add-message (str "Learned spell " spell))
-        (update-in [:player :spells] #(conj % spell)))
-    data))
-
 (defn add-use-message
   [data item]
   (let [i (get db/item-data item)]
@@ -46,6 +38,7 @@
       (contains? i :hp) (u/add-message (str "HP: " (:hp i)))
       (contains? i :mp) (u/add-message (str "MP: " (:mp i)))
       (contains? i :maxhp) (u/add-message (str "Maxhp: " (:maxhp i)))
+      (contains? i :spell) (u/add-message (str "Learned spell: " (:spell i)))
       true (u/add-message (str "Use item: " item)))))
 
 (defn use-item
@@ -55,8 +48,7 @@
     (-> data
         (update :player #(player/use-item % item))
         (add-use-message item)
-        (learn-recipie-from-item item)
-        (add-spell item))
+        (learn-recipie-from-item item))
     data))
 
 (defn clear-empty-items

@@ -10,7 +10,7 @@
 
 (defn add-recipie
   [data recipie]
-  (update data :recepies #(distinct (conj % recipie))))
+  (update-in data [:player :recepies] #(distinct (conj % recipie))))
 
 ;; High level functions
 (defn equip-item

@@ -426,4 +426,4 @@
 
 (defn get-known-recepies
   []
-  (:recepies (get-state)))
+  (-> (get-state) :player :recepies))

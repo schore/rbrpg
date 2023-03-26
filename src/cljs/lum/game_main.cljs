@@ -274,7 +274,7 @@
 (rf/reg-sub
  :game/recepies
  (fn [db _]
-   (->> (get-in db [:game :recepies] [])
+   (->> (get-in db [:game :player :recepies] [])
         (map (fn [incriedients]
                {:incriedients incriedients
                 :item (get-in db/recipies [incriedients 0])

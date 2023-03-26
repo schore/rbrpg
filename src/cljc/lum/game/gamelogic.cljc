@@ -28,7 +28,9 @@
                    "Welcome to my dungeon"
                    "" ""
                    "You will have a lot of fun"
-                   "The madness will go into your soul"
+                   "T
+
+he madness will go into your soul"
                    "" ""
                    "Try not to die")
        :player {:position [10 10]
@@ -37,9 +39,9 @@
                 :hp [10 10]
                 :mp [3 3]
                 :equipment {}
+                :recepies []
                 :spells #{"Burning Hands" "Healing"}
                 :items inital-items}
-       :recepies []
        :coeffects []}
       (move/set-to-tile :stair-up)))
 

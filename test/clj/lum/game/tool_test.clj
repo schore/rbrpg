@@ -14,6 +14,12 @@
   (vec
    (map add-visible-to-board boards)))
 
+(defn move-recepies-to-player
+  [game]
+  (-> game
+      (assoc-in [:player :recepies] (:recepies game))
+      (dissoc :recepies)))
+
 (defn update-save-game
   ([file update-function]
    (let [state (edn/read-string (slurp file))]

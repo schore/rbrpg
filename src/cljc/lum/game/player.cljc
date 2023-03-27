@@ -8,12 +8,6 @@
   (update player :equipment
           #(u/filter-map (fn [[_ v]] (not= v item)) %)))
 
-(defn combine
-  [player used-items]
-  (reduce unequip-items-not-in-inventory
-          (update player :items #(items/combine % used-items))
-          (map first used-items)))
-
 (defn equip-item
   [player slot item]
   (if (items/enough? (:items player) {item 1})
@@ -54,6 +48,18 @@
     (update player :spells #(conj % spell))
     player))
 
+(defn add-recipie
+  [player recipie]
+  (if (some? recipie)
+    (update player :recepies #(distinct (conj % recipie)))
+    player))
+
+(defn- get-recipie-to-learn
+  [item]
+  (if (contains? (:properties item) :recipie)
+    (rand-nth (keys db/recipies))
+    nil))
+
 (defn use-item
   [player item]
   (let [i (get db/item-data item {})]
@@ -62,4 +68,16 @@
         (add-hp (get i :hp 0))
         (add-mp (get i :mp 0))
         (add-max-hp (get i :maxhp 0))
-        (add-spell (get i :spell "")))))
+        (add-spell (get i :spell ""))
+        (add-recipie (get-recipie-to-learn i)))))
+
+(defn combine
+  [player used-items]
+  (let [used-items (items/clear-empty-items used-items)]
+    (reduce unequip-items-not-in-inventory
+            (-> player
+                (add-recipie (when (and (items/enough? (:items player) used-items)
+                                        (contains? db/recipies used-items))
+                               used-items))
+                (update :items #(items/combine % used-items)))
+            (map first used-items))))

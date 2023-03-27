@@ -160,7 +160,7 @@
   (dsl/player-has-items {"note" 1})
   (dsl/use-item "note")
   (is (some
-       #{(first (dsl/get-messages))}
+       #{(second (dsl/get-messages))}
        db/hints)))
 
 (deftest reading-a-note-learns-a-recipie

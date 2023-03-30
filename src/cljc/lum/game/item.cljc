@@ -17,29 +17,12 @@
   [state [_ slot]]
   (update state :player #(player/unequip-item % slot)))
 
-(defn get-item-hint
-  [data]
-  (second (get db/recipies (first (get-in data [:player :recepies])))))
-
-(defn add-use-message
-  [data item]
-  (let [i (get db/item-data item)]
-    (cond-> data
-      (contains? i :hp) (u/add-message (str "HP: " (:hp i)))
-      (contains? i :mp) (u/add-message (str "MP: " (:mp i)))
-      (contains? i :maxhp) (u/add-message (str "Maxhp: " (:maxhp i)))
-      (contains? i :spell) (u/add-message (str "Learned spell: " (:spell i)))
-      (contains? (:properties i) :recipie) (u/add-message (get-item-hint data))
-      true (u/add-message (str "Use item: " item)))))
-
 (defn use-item
   [data [_ item]]
-  (if (and (enough-items? data {item 1})
-           (u/useable-item? item))
-    (-> data
-        (update :player #(player/use-item % item))
-        (add-use-message item))
-    data))
+  (let [{player :player msg :messages} (player/use-item (:player data) item)]
+    (reduce u/add-message
+            (assoc data :player player)
+            msg)))
 
 (defn clear-empty-items
   [items]

@@ -60,16 +60,35 @@
     (rand-nth (keys db/recipies))
     nil))
 
+(defn- get-item-hint
+  [player]
+  (second (get db/recipies (first (get player :recepies)))))
+
+(defn- use-item-message
+  [player item]
+  (let [i (get db/item-data item)]
+    (cond-> []
+      (contains? i :hp) (conj (str "HP: " (:hp i)))
+      (contains? i :mp) (conj (str "MP: " (:mp i)))
+      (contains? i :maxhp) (conj (str "Maxhp: " (:maxhp i)))
+      (contains? i :spell) (conj (str "Learned spell: " (:spell i)))
+      (contains? (:properties i) :recipie) (conj (get-item-hint player))
+      true (conj (str "Use item: " item)))))
+
 (defn use-item
   [player item]
-  (let [i (get db/item-data item {})]
-    (-> player
-        (add-items {item -1})
-        (add-hp (get i :hp 0))
-        (add-mp (get i :mp 0))
-        (add-max-hp (get i :maxhp 0))
-        (add-spell (get i :spell ""))
-        (add-recipie (get-recipie-to-learn i)))))
+  (if (and (items/enough? (:items player) {item 1})
+           (u/useable-item? item))
+    (let [i (get db/item-data item {})
+          player (-> player
+                     (add-items {item -1})
+                     (add-hp (get i :hp 0))
+                     (add-mp (get i :mp 0))
+                     (add-max-hp (get i :maxhp 0))
+                     (add-spell (get i :spell ""))
+                     (add-recipie (get-recipie-to-learn i)))]
+      {:player player :messages (use-item-message player item)})
+    {:player player :messages []}))
 
 (defn combine
   [player used-items]

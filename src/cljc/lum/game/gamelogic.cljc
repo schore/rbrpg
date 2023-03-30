@@ -76,7 +76,7 @@ he madness will go into your soul"
           :load-map [load/load-map]
           :move [move/move fight/check-fight]
           :new-board [new-board]
-          :combine [item/remember-recipies item/combine]
+          :combine [item/combine]
           :use-item [item/use-item]}))
 
 (defn get-mode-map

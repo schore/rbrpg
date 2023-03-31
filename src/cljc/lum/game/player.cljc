@@ -100,3 +100,9 @@
                                used-items))
                 (update :items #(items/combine % used-items)))
             (map first used-items))))
+
+(defn active-item-can-dig?
+  [player]
+  (let [weapon (get-in player [:equipment :right-hand])
+        function (get-in db/item-data [weapon :properties])]
+    (some #{:digging} function)))

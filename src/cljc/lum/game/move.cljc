@@ -5,16 +5,10 @@
    [lum.game.player :as player]
    [lum.maputil :as mu]))
 
-(defn active-item-can-dig?
-  [data]
-  (let [weapon (get-in data [:player :equipment :right-hand])
-        function (get-in db/item-data [weapon :properties])]
-    (some #{:digging} function)))
-
 (defn pick-wall
   [data]
   (if (and (= :wall (u/get-active-tile data))
-           (active-item-can-dig? data)
+           (player/active-item-can-dig? (:player data))
            (< 0 (u/roll-dice 20)))
     (u/change-active-tile data :ground)
     data))

@@ -2,6 +2,7 @@
   (:require
    [lum.game.game-database :as db]
    [lum.game.utilities :as u]
+   [lum.game.player :as player]
    [lum.maputil :as mu]))
 
 (defn active-item-can-dig?
@@ -99,7 +100,7 @@
   [state]
   (let [items (get-items-on-tile state)]
     (-> state
-        (u/add-items (into {} items))
+        (update :player #(player/add-items % (into {} items)))
         (u/update-active-tile #(dissoc % :items))
         (add-found-item-messages items))))
 

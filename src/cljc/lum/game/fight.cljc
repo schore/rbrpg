@@ -1,7 +1,8 @@
 (ns lum.game.fight
   (:require
    [lum.game.game-database :as db]
-   [lum.game.utilities :as u]))
+   [lum.game.utilities :as u]
+   [lum.game.player :as player]))
 
 (defn enemy-allowed?
   [level [_ enemy-data]]
@@ -67,7 +68,7 @@
   (reduce (fn [data [item dice]]
             (if (>= (u/roll-dice 20) dice)
               (-> data
-                  (u/add-item item 1)
+                  (update :player #(player/add-items % {item 1}))
                   (u/add-message (str "You looted a "  item)))
               data))
           data

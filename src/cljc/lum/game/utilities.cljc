@@ -143,31 +143,6 @@
   (min (roll-dice n)
        (roll-dice n)))
 
-(defn remove-if-empty
-  [data item]
-  (if (pos-int? (get-in data [:player :items item]))
-    data
-    (-> data
-        (update-in [:player :items] #(dissoc % item))
-        (update-in [:player :equipment]
-                   #(filter-map (fn [[_ v]] (not= v item)) %)))))
-
-(defn add-item
-  [data item n]
-  ;; nil is passed in case the k is not in the list
-  (-> (update-in data [:player :items item] #(+ (if % % 0) n))
-      (remove-if-empty item)))
-
-(defn add-items
-  [data used-items]
-  (reduce (fn [data [item n]] (add-item data item n))
-          data
-          used-items))
-
-(defn update-if
-  [m cond f]
-  (if cond (f m) m))
-
 (defn get-enemy-stat
   [k]
   (let [enemy (get db/enemies k)]

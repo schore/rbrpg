@@ -4,6 +4,7 @@
    [lum.maputil :as mu]))
 
 (def view-radius 10)
+(def get-tile mu/get-tile)
 
 (defn- in-view?
   [player-x player-y x y]
@@ -34,18 +35,23 @@
   [board x y player-x player-y]
   (let [boxes (relevant-boxes x y player-x player-y)
         number-of-obstacles (->> boxes
-                                 (map (fn [[x y]] (mu/get-tile board x y)))
+                                 (map (fn [[x y]] (get-tile board x y)))
                                  (reduce (fn [a e] (if (or (> a 0)
                                                            (= (:type e) :wall))
                                                      (inc a)
                                                      a)) 0))]
     (<= number-of-obstacles 1)))
 
-(defn update-board
+(defn update-view
   [board player-x player-y]
   (vec (for [y (range mu/sizey)
              x (range mu/sizex)]
          (if (and (in-view? player-x player-y x y)
                   (visible-box? board x y player-x player-y))
-           (assoc (mu/get-tile board x y) :visible? true)
-           (mu/get-tile board x y)))))
+           (assoc (get-tile board x y) :visible? true)
+           (get-tile board x y)))))
+
+(defn change-tile
+  [board x y f]
+  (update board (mu/position-to-n x y) f))
+

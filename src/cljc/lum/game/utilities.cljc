@@ -100,10 +100,6 @@
   [data f]
   (update-in data [:boards (dec (:level data))] f))
 
-(defn change-tile
-  [data x y f]
-  (update-active-board data #(update % (mu/position-to-n x y) f)))
-
 (defn change-active-tile
   [data new-type]
   (update-active-tile data #(assoc % :type new-type)))

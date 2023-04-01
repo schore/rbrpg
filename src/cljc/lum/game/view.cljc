@@ -10,7 +10,7 @@
   (let [[x y] (get-in data [:player :position])]
     (update-in data [:boards (dec (:level data))]
                (fn [board]
-                 (board/update-board board x y)))))
+                 (board/update-view board x y)))))
 
 (defn process-view
   [data]

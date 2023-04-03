@@ -19,12 +19,11 @@
              (assert (< tries 10) "No valid game state created")
              (if (s/valid? :game/game game-state)
                game-state
-               (recur {:boards [(cavegen/get-dungeon)]
-                       :level 1
+               (recur {:board {:dungeons [(cavegen/get-dungeon)]
+                               :player-position [1 12 12]}
                        :messages '("")
                        :coeffects []
-                       :player {:position [12 12]
-                                :ac 5
+                       :player {:ac 5
                                 :xp 0
                                 :hp [10 10]
                                 :mp [3 3]

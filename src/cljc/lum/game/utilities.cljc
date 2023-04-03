@@ -2,6 +2,19 @@
   (:require [lum.maputil :as mu]
             [lum.game.game-database :as db]))
 
+(defn get-level
+  [state]
+  (get-in state [:board :player-position 0]))
+
+(defn update-level
+  [state f]
+  (update-in state [:board :player-position 0] f))
+
+(defn get-position
+  [state]
+  (let [[_ x y] (get-in state [:board :player-position])]
+    [x y]))
+
 (defn add-message
   [data message]
   (update data :messages #(take 10 (conj % message))))
@@ -90,15 +103,16 @@
 
 (defn update-active-tile
   [data f]
-  (let [[x y] (get-in data [:player :position])]
-    (update-in data [:boards
-                     (dec (:level data))
+  (let [[x y] (get-position data)]
+    (update-in data [:board
+                     :dungeons
+                     (dec (get-level data))
                      (mu/position-to-n x y)]
                f)))
 
 (defn update-active-board
   [data f]
-  (update-in data [:boards (dec (:level data))] f))
+  (update-in data [:board :dungeons (dec (get-level data))] f))
 
 (defn change-active-tile
   [data new-type]
@@ -106,17 +120,18 @@
 
 (defn get-active-board
   [state]
-  (get-in state [:boards (dec (:level state))]))
+  (get-in state [:board :dungeons
+                 (dec (get-in state [:board :player-position 0]))]))
 
 (defn get-active-tile
   [data]
   (let [board (get-active-board data)
-        [x y] (get-in data [:player :position])]
+        [_ x y] (get-in data [:board :player-position])]
     (:type (mu/get-tile board x y))))
 
 (defn player-tile
   [state]
-  (let [[x y] (get-in state [:player :position])]
+  (let [[_ x y] (get-in state [:board :player-position])]
     (mu/get-tile (get-active-board state) x y)))
 
 (defn roll

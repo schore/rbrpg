@@ -1,7 +1,7 @@
 (ns lum.game.dataspec
   (:require [clojure.spec.alpha :as s]
             [lum.maputil :as mu]
-            ;[lum.game.cavegen :as g]
+            [lum.game.cavegen :as g]
             [lum.game.game-database :as db]
             ;[clojure.tools.logging :as log]
             ))
@@ -29,20 +29,36 @@
 (defn board-contains-element?
   [element board]
   (< 0 (count (filter #(= element (:type %))
-                      (s/unform :game/board board)))))
+                      (s/unform :game/dungeon board)))))
 
-(s/def :game/board (s/and (s/coll-of :game/tile
-                                     :count 1500)
-                          (partial board-contains-element? :stair-up)
-                          (partial board-contains-element? :stair-down)))
+(s/def :game/dungeon (s/and (s/coll-of :game/tile
+                                       :count 1500)
+                            (partial board-contains-element? :stair-up)
+                            (partial board-contains-element? :stair-down)))
 
-(s/def :game/boards (s/coll-of :game/board))
-(s/def :game/level pos-int?)
+(s/def :game/dungeons (s/coll-of :game/dungeon))
 
-(s/def :game/position (s/cat :x (s/and nat-int?
-                                       #(< % mu/sizex))
-                             :y (s/and nat-int?
-                                       #(< % mu/sizey))))
+(s/def :game/position (s/cat
+                       :level pos-int?
+                       :x (s/and nat-int? #(< % mu/sizex))
+                       :y (s/and nat-int? #(< % mu/sizey))))
+
+(defn valid-position?
+  [data]
+  (let [[level x y] (get data :player-positions)
+        tile (:type (mu/get-tile (get-in data [:dungeons (dec level)]) x y))]
+    (contains? #{:ground
+                 :stair-down
+                 :stair-up}
+               tile)))
+
+(defn valid-level?
+  [data]
+  (>= (count (:dungeons data)) (get-in data [:player-position 0])))
+
+(s/def :game/board (s/and (s/keys :req-unq [:game/dungeons :game/position])
+        ;;                  valid-position?
+                          valid-level?))
 
 (s/def :player/xp nat-int?)
 
@@ -66,8 +82,7 @@
 (s/def :game/recepie recepie)
 (s/def :game/recepies (s/coll-of :game/recepie))
 
-(s/def :game/player (s/keys :req-un [:game/position
-                                     :player/ac
+(s/def :game/player (s/keys :req-un [:player/ac
                                      :player/xp
                                      :player/hp
                                      :player/mp
@@ -102,41 +117,24 @@
 (s/def :game/messages (s/coll-of string?
                                  :max-count 10))
 
-(defn valid-position?
-  [data]
-  (let [data (s/unform :game/game data)
-        [x y] (get-in data [:player :position])
-        tile (:type (mu/get-tile (get-in data [:boards (dec (:level data))]) x y))]
-    (contains? #{:ground
-                 :stair-down
-                 :stair-up}
-               tile)))
-
-(defn valid-level?
-  [data]
-  (>= (count (:boards data)) (:level data)))
-
 (s/def :game/game (s/and (s/keys :req-un [:game/player
-                                          :game/boards
-                                          :game/level
+                                          :game/board
                                           :game/messages]
-                                 :opt-un [:game/fight])
-                         valid-position?
-                         valid-level?))
+                                 :opt-un [:game/fight])))
 
-;; (s/explain :game/game {:boards [(g/get-dungeon)]
-;;                        :level 1
-;;                        :player {:position [10 10]
-;;                                 :xp 0
+;; (s/explain :game/game {:board {:dungeons [(g/get-dungeon)]
+;;                                :player-position [1 10 10]}
+;;                        :player {:xp 0
 ;;                                 :ac 10
 ;;                                 :hp [8 10]
 ;;                                 :mp [0 3]
 ;;                                 :spells #{"Burning Hands"}
 ;;                                 :equipment {:right-hand "sword"}
+;;                                 :recepies {}
 ;;                                 :items {"batwing" 2
 ;;                                         "batblood" 2}}
 ;;                        :messages ["Hello World"]
-;;                        :fight {:enemy {:name "bat"
+;;                        :fight {:enemy {:name "Bat"
 ;;                                        :ac 1
 ;;                                        :hp [20 20]
 ;;                                        :mp [0 0]}

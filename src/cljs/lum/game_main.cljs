@@ -214,13 +214,14 @@
 (rf/reg-sub
  :game/position
  (fn [db _]
-   [(get-in db [:game :player :position 0])
-    (get-in db [:game :player :position 1])]))
+   (let [[_ x y] (get-in db [:game :board :player-position])]
+     [x y])))
 
 (rf/reg-sub
  :game/board
  (fn [db _]
-   (get-in db [:game :boards (dec (get-in db [:game :level]))])))
+   (get-in db [:game :board :dungeons
+               (dec (get-in db [:game :board :player-position 0]))])))
 
 (rf/reg-sub
  :game/fight?

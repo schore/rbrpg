@@ -32,11 +32,12 @@
 
 (defn load-map
   [data [_ file]]
-  (if-let [mf testmap]
-    (-> data
-        (assoc-in [:boards (dec (:level data))] (load-map-from-string mf))
-        (assoc-in [:player :position] [10 10]))
-    data))
+  (let [level (get-in data [:board :player-position 0])]
+    (if-let [mf testmap]
+      (-> data
+          (assoc-in [:board :dungeons (dec level)] (load-map-from-string mf))
+          (assoc-in [:board :player-position] [level 10 10]))
+      data)))
 
 (defn load-game
   [state [_ input]]

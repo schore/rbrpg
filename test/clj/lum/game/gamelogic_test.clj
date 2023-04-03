@@ -18,8 +18,9 @@
   (testing "load a map from file"
     (dsl/test-map-loaded)
     (let [m (dsl/get-board)]
+      (println m)
       ;; check if map is valid
-      (is (s/valid? :game/board m))
+      (is (s/valid? :game/dungeon m))
       ;;(log/info (s/explain :game/board m))
       ;;only some examples
       (is (= :ground (:type (first m))))

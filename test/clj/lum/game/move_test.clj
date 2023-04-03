@@ -41,6 +41,7 @@
       (dsl/test-map-loaded x y)
       (is (= tile (:type (mu/get-tile (dsl/get-board) x y))))
       (is (= [x y] (dsl/get-position))))))
+
 (deftest on-stairs-up-when-entering-next-level
   (dsl/enter-level 2)
   (is (= :stair-up (:type (dsl/get-tile)))))
@@ -70,7 +71,7 @@
   (dsl/player-is-on :stair-up)
   (dsl/activate);;go-up
   (dsl/activate);;go-down
-  (is (= 2 (count (:boards (dsl/get-state))))))
+  (is (= 2 (count (get-in (dsl/get-state) [:board :dungeons])))))
 
 (deftest going-up-on-level-one-does-not-crash
   (dsl/player-is-on-level 1)

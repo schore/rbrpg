@@ -20,6 +20,17 @@
       (assoc-in [:player :recepies] (:recepies game))
       (dissoc :recepies)))
 
+(defn reorganise-boards
+  [game]
+  (-> game
+      (dissoc :boards)
+      (dissoc :level)
+      (update-in [:player] #(dissoc % :position))
+      (assoc :board {:dungeons (:boards game)
+                     :player-position [(:level game)
+                                       (get-in game [:player :position 0])
+                                       (get-in game [:player :position 1])]})))
+
 (defn update-save-game
   ([file update-function]
    (let [state (edn/read-string (slurp file))]

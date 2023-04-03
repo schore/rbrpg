@@ -14,7 +14,7 @@
 
 (defn possible-enemies
   [data]
-  (let [level (:level data)]
+  (let [level (u/get-level data)]
     (->> db/enemies
          (filter #(enemy-allowed? level %))
          (map first))))

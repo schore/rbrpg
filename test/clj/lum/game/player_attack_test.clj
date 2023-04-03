@@ -60,7 +60,7 @@
 
 (defn possible-enemis-on-level
   [level]
-  (into [] (f/possible-enemies {:level level})))
+  (into [] (f/possible-enemies {:board {:player-position [level]}})))
 
 (deftest daemon-not-before-level-5
   (is (not (some #{"Deamon"} (possible-enemis-on-level 1))))

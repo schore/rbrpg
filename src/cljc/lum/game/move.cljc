@@ -16,11 +16,11 @@
 (defn move-unchecked
   [data direction]
   (let [new-data (case (keyword direction)
-                   :left (update-in data [:player :position 0] dec)
-                   :right (update-in data [:player :position 0] inc)
-                   :up (update-in data [:player :position 1] dec)
-                   :down (update-in data [:player :position 1] inc))
-        [x y] (get-in new-data [:player :position])]
+                   :left (update-in data [:board :player-position 1] dec)
+                   :right (update-in data [:board :player-position 1] inc)
+                   :up (update-in data [:board :player-position 2] dec)
+                   :down (update-in data [:board :player-position 2] inc))
+        [_ x y] (get-in new-data [:board :player-position])]
     (if (u/position-on-board? x y)
       new-data
       data)))
@@ -37,8 +37,10 @@
 
 (defn set-to-tile
   [state tile]
-  (assoc-in state [:player :position]
-            (find-tile (u/get-active-board state) tile)))
+  (update-in state [:board :player-position]
+             (fn [[level _ _]]
+               (let [[x y] (find-tile (u/get-active-board state) tile)]
+                 [level x y]))))
 
 (defn apply-map-effect
   [board effect]
@@ -62,21 +64,21 @@
 
 (defn cavegen-required?
   [state]
-  (> (inc (:level state)) (count (:boards state))))
+  (> (inc (u/get-level state)) (count (get-in state [:board :dungeons]))))
 
 (defn enter-next-level
   [state]
   (if (cavegen-required? state)
-    (update state :coeffects #(conj % [:enter-unknown-level (inc (:level state))]))
+    (update state :coeffects #(conj % [:enter-unknown-level (inc (u/get-level state))]))
     (-> state
-        (update :level inc)
+        (u/update-level inc)
         (set-to-tile :stair-up))))
 
 (defn enter-previous-level
   [state]
-  (if (not (= 1 (:level state)))
+  (if (not= 1 (u/get-level state))
     (-> state
-        (update :level dec)
+        (u/update-level dec)
         (set-to-tile :stair-down))
     state))
 
@@ -138,6 +140,6 @@
 (defn enter-unknown-level
   [data [_ level board]]
   (-> data
-      (assoc-in [:boards (dec level)] board)
-      (assoc :level level)
+      (assoc-in [:board :dungeons (dec level)] board)
+      (assoc-in [:board :player-position 0] level)
       (set-to-tile :stair-up)))

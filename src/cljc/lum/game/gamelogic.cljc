@@ -16,13 +16,14 @@
 (defn new-board
   ([data [_ board]]
    (-> data
-       (assoc-in [:boards (dec (:level data))] board)
+       (assoc-in [:board :dungeons
+                  (dec (get-in data [:board :player-position 0]))] board)
        (move/set-to-tile :stair-up))))
 
 (defn initialize
   [_ [_ board]]
-  (-> {:boards [board]
-       :level 1
+  (-> {:board {:dungeons [board]
+               :player-position [1 10 10]}
        :messages '("Hello adventurer"
                    ""
                    "Welcome to my dungeon"
@@ -33,8 +34,7 @@
 he madness will go into your soul"
                    "" ""
                    "Try not to die")
-       :player {:position [10 10]
-                :ac 5
+       :player {:ac 5
                 :xp 0
                 :hp [10 10]
                 :mp [3 3]

@@ -7,8 +7,8 @@
 
 (defn update-data
   [data]
-  (let [[x y] (get-in data [:player :position])]
-    (update-in data [:boards (dec (:level data))]
+  (let [[level x y] (get-in data [:board :player-position])]
+    (update-in data [:board :dungeons (dec level)]
                (fn [board]
                  (board/update-view board x y)))))
 

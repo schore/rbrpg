@@ -3,11 +3,6 @@
             [lum.game.game-database :as db]
             [lum.game.board :as board]))
 
-(defn get-position
-  [state]
-  (let [[_ x y] (get-in state [:board :player-position])]
-    [x y]))
-
 (defn add-message
   [data message]
   (update data :messages #(take 10 (conj % message))))
@@ -96,7 +91,7 @@
 
 (defn update-active-tile
   [data f]
-  (let [[x y] (get-position data)]
+  (let [[x y] (board/get-position (:board data))]
     (update-in data [:board
                      :dungeons
                      (dec (board/get-level (:board data)))

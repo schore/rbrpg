@@ -338,7 +338,7 @@
 
 (defn get-current-field
   []
-  (let [[x y] (util/get-position (get-state))
+  (let [[x y] (board/get-position (:board (get-state)))
         board (get-board)]
     (mu/get-tile board x y)))
 
@@ -353,7 +353,7 @@
   [items]
   (let [state (game-is-initialized)
         level (dec (board/get-level (:board state)))
-        [x y] (u/get-position state)]
+        [x y] (board/get-position (:board state))]
     (load-game (assoc-in state [:board :dungeons level (mu/position-to-n x y) :items] items))))
 
 (defn enter-level

@@ -1,10 +1,7 @@
 (ns lum.game.utilities
   (:require [lum.maputil :as mu]
-            [lum.game.game-database :as db]))
-
-(defn get-level
-  [state]
-  (get-in state [:board :player-position 0]))
+            [lum.game.game-database :as db]
+            [lum.game.board :as board]))
 
 (defn update-level
   [state f]
@@ -106,13 +103,13 @@
   (let [[x y] (get-position data)]
     (update-in data [:board
                      :dungeons
-                     (dec (get-level data))
+                     (dec (board/get-level (:board data)))
                      (mu/position-to-n x y)]
                f)))
 
 (defn update-active-board
   [data f]
-  (update-in data [:board :dungeons (dec (get-level data))] f))
+  (update-in data [:board :dungeons (dec (board/get-level (:board data)))] f))
 
 (defn change-active-tile
   [data new-type]

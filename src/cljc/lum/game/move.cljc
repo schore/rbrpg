@@ -1,6 +1,7 @@
 (ns lum.game.move
   (:require
    [lum.game.game-database :as db]
+   [lum.game.board :as board]
    [lum.game.utilities :as u]
    [lum.game.player :as player]
    [lum.maputil :as mu]))
@@ -64,19 +65,19 @@
 
 (defn cavegen-required?
   [state]
-  (> (inc (u/get-level state)) (count (get-in state [:board :dungeons]))))
+  (> (inc (board/get-level (:board state))) (count (get-in state [:board :dungeons]))))
 
 (defn enter-next-level
   [state]
   (if (cavegen-required? state)
-    (update state :coeffects #(conj % [:enter-unknown-level (inc (u/get-level state))]))
+    (update state :coeffects #(conj % [:enter-unknown-level (inc (board/get-level (:board state)))]))
     (-> state
         (u/update-level inc)
         (set-to-tile :stair-up))))
 
 (defn enter-previous-level
   [state]
-  (if (not= 1 (u/get-level state))
+  (if (not= 1 (board/get-level (:board state)))
     (-> state
         (u/update-level dec)
         (set-to-tile :stair-down))

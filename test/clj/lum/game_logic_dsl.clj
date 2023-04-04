@@ -6,12 +6,13 @@
             [lum.game.dataspec]
             [lum.game.gamelogic :as gamelogic]
             [lum.game.fight :as fight]
+            [lum.game.utilities :as u]
             [lum.game.utilities :as util]
             [clojure.java.io :as io]
             [lum.maputil :as mu]
             [lum.game.cavegen :as cavegen]
             [lum.game.game-database :as db]
-            [lum.game.utilities :as u]))
+            [lum.game.board :as board]))
 
 (defn delete-directory-recursive
   "Recursively delete a director ."
@@ -215,7 +216,7 @@
 
 (defn get-level
   []
-  (u/get-level (get-state)))
+  (board/get-level (:board (get-state))))
 
 (defn load-map
   [file]
@@ -332,12 +333,12 @@
 
 (defn get-coordinates
   [state field]
-  (let [board (get-in state [:board :dungeons (dec (u/get-level state))])]
+  (let [board (get-in state [:board :dungeons (dec (board/get-level (:board state)))])]
     (mu/n-to-position (find-index board #(= field (:type %))))))
 
 (defn get-current-field
   []
-  (let [[x y] (u/get-position (get-state))
+  (let [[x y] (util/get-position (get-state))
         board (get-board)]
     (mu/get-tile board x y)))
 
@@ -351,7 +352,7 @@
 (defn items-on-ground
   [items]
   (let [state (game-is-initialized)
-        level (dec (u/get-level state))
+        level (dec (board/get-level (:board state)))
         [x y] (u/get-position state)]
     (load-game (assoc-in state [:board :dungeons level (mu/position-to-n x y) :items] items))))
 

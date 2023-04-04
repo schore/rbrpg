@@ -2,6 +2,7 @@
   (:require
    [lum.game.game-database :as db]
    [lum.game.utilities :as u]
+   [lum.game.board :as board]
    [lum.game.player :as player]))
 
 (defn enemy-allowed?
@@ -14,7 +15,7 @@
 
 (defn possible-enemies
   [data]
-  (let [level (u/get-level data)]
+  (let [level (board/get-level (:board data))]
     (->> db/enemies
          (filter #(enemy-allowed? level %))
          (map first))))

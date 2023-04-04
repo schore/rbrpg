@@ -2,6 +2,7 @@
   (:require
    [lum.game.utilities :as u]
    [lum.game.game-database :as db]
+   [lum.game.board :as board]
    [lum.game.fight :as fight]))
 
 (defn known-spell?
@@ -46,8 +47,11 @@
 (defn map-effect
   [state spell]
   (if (:mapping? spell)
-    (u/update-active-board state (fn [b]
-                                   (into [] (map #(assoc % :visible? true) b))))
+    (update state :board
+            (fn [board]
+              (board/update-active-board board
+                                         (fn [b]
+                                           (into [] (map #(assoc % :visible? true) b))))))
     state))
 
 ;;

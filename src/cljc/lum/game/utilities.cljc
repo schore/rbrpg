@@ -89,10 +89,6 @@
        (nat-int? y)
        (< y mu/sizey)))
 
-(defn update-active-board
-  [data f]
-  (update-in data [:board :dungeons (dec (board/get-level (:board data)))] f))
-
 (defn change-active-tile
   [data new-type]
   (update data :board

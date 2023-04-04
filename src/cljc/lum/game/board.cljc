@@ -22,3 +22,7 @@
                       (dec (get-level board))
                       (mu/position-to-n x y)]
                f)))
+
+(defn update-active-board
+  [board f]
+  (update-in board [:dungeons (dec (get-level board))] f))

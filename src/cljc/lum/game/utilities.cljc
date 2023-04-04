@@ -89,17 +89,6 @@
        (nat-int? y)
        (< y mu/sizey)))
 
-(defn get-active-board
-  [state]
-  (get-in state [:board :dungeons
-                 (dec (get-in state [:board :player-position 0]))]))
-
-(defn get-active-tile
-  [data]
-  (let [board (board/get-active-board (:board data))
-        [_ x y] (get-in data [:board :player-position])]
-    (:type (mu/get-tile board x y))))
-
 (defn player-tile
   [state]
   (let [[_ x y] (get-in state [:board :player-position])]

@@ -34,3 +34,8 @@
 (defn get-active-board
   [board]
   (get-in board [:dungeons (dec (get-level board))]))
+
+(defn get-active-tile
+  [board]
+  (let [[x y] (get-position board)]
+    (:type (mu/get-tile (get-active-board board) x y))))

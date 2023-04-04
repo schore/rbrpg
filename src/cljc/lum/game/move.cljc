@@ -8,7 +8,7 @@
 
 (defn pick-wall
   [data]
-  (if (and (= :wall (u/get-active-tile data))
+  (if (and (= :wall (board/get-active-tile (:board data)))
            (player/active-item-can-dig? (:player data))
            (< 0 (u/roll-dice 20)))
     (update data :board #(board/change-active-tile % :ground))
@@ -127,7 +127,7 @@
                      (pick-wall))]
 ;;    (s/explain :game/game new-data)
     (if (contains? #{:ground :stair-down :stair-up}
-                   (u/get-active-tile new-data))
+                   (board/get-active-tile (:board new-data)))
       (execute-scripts new-data)
       data)))
 

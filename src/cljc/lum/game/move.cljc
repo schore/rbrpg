@@ -72,14 +72,14 @@
   (if (cavegen-required? state)
     (update state :coeffects #(conj % [:enter-unknown-level (inc (board/get-level (:board state)))]))
     (-> state
-        (u/update-level inc)
+        (update :board #(board/update-level % inc))
         (set-to-tile :stair-up))))
 
 (defn enter-previous-level
   [state]
   (if (not= 1 (board/get-level (:board state)))
     (-> state
-        (u/update-level dec)
+        (update :board #(board/update-level % dec))
         (set-to-tile :stair-down))
     state))
 

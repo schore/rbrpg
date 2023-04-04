@@ -3,10 +3,6 @@
             [lum.game.game-database :as db]
             [lum.game.board :as board]))
 
-(defn update-level
-  [state f]
-  (update-in state [:board :player-position 0] f))
-
 (defn get-position
   [state]
   (let [[_ x y] (get-in state [:board :player-position])]

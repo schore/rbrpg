@@ -1,4 +1,6 @@
-(ns lum.game.board)
+(ns lum.game.board
+  (:require
+   [lum.maputil :as mu]))
 
 (defn get-level
   [board]
@@ -12,3 +14,11 @@
   [board]
   (let [[_ x y] (:player-position board)]
     [x y]))
+
+(defn update-active-tile
+  [board f]
+  (let [[x y] (get-position board)]
+    (update-in board [:dungeons
+                      (dec (get-level board))
+                      (mu/position-to-n x y)]
+               f)))

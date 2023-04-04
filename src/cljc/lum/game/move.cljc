@@ -98,7 +98,8 @@
   (let [items (get-items-on-tile state)]
     (-> state
         (update :player #(player/add-items % (into {} items)))
-        (u/update-active-tile #(dissoc % :items))
+        (update :board (fn [board]
+                         (board/update-active-tile board #(dissoc % :items))))
         (add-found-item-messages items))))
 
 (defn scripted-message

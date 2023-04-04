@@ -11,7 +11,7 @@
   (if (and (= :wall (u/get-active-tile data))
            (player/active-item-can-dig? (:player data))
            (< 0 (u/roll-dice 20)))
-    (u/change-active-tile data :ground)
+    (update data :board #(board/change-active-tile % :ground))
     data))
 
 (defn move-unchecked

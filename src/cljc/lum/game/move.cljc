@@ -40,7 +40,7 @@
   [state tile]
   (update-in state [:board :player-position]
              (fn [[level _ _]]
-               (let [[x y] (find-tile (u/get-active-board state) tile)]
+               (let [[x y] (find-tile (board/get-active-board (:board state)) tile)]
                  [level x y]))))
 
 (defn apply-map-effect

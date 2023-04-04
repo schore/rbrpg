@@ -30,3 +30,7 @@
 (defn change-active-tile
   [board new-type]
   (update-active-tile board #(assoc % :type new-type)))
+
+(defn get-active-board
+  [board]
+  (get-in board [:dungeons (dec (get-level board))]))

@@ -96,14 +96,14 @@
 
 (defn get-active-tile
   [data]
-  (let [board (get-active-board data)
+  (let [board (board/get-active-board (:board data))
         [_ x y] (get-in data [:board :player-position])]
     (:type (mu/get-tile board x y))))
 
 (defn player-tile
   [state]
   (let [[_ x y] (get-in state [:board :player-position])]
-    (mu/get-tile (get-active-board state) x y)))
+    (mu/get-tile (board/get-active-board (:board state)) x y)))
 
 (defn roll
   [n]

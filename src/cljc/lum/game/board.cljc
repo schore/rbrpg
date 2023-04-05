@@ -1,6 +1,7 @@
 (ns lum.game.board
   (:require
-   [lum.maputil :as mu]))
+   [lum.maputil :as mu]
+   [lum.game.utilities :as u]))
 
 (defn get-level
   [board]
@@ -43,3 +44,15 @@
 (defn get-active-tile
   [board]
   (:type (player-tile board)))
+
+(defn move
+  [board direction]
+  (let [new-board (case (keyword direction)
+                    :left (update-in board [:player-position 1] dec)
+                    :right (update-in board [:player-position 1] inc)
+                    :up (update-in board [:player-position 2] dec)
+                    :down (update-in board [:player-position 2] inc))
+        [x y] (get-position new-board)]
+    (if (u/position-on-board? x y)
+      new-board
+      board)))

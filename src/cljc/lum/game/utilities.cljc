@@ -1,7 +1,6 @@
 (ns lum.game.utilities
   (:require [lum.maputil :as mu]
-            [lum.game.game-database :as db]
-            [lum.game.board :as board]))
+            [lum.game.game-database :as db]))
 
 (defn add-message
   [data message]

@@ -14,18 +14,6 @@
     (update data :board #(board/change-active-tile % :ground))
     data))
 
-(defn move-unchecked
-  [data direction]
-  (let [new-data (case (keyword direction)
-                   :left (update-in data [:board :player-position 1] dec)
-                   :right (update-in data [:board :player-position 1] inc)
-                   :up (update-in data [:board :player-position 2] dec)
-                   :down (update-in data [:board :player-position 2] inc))
-        [_ x y] (get-in new-data [:board :player-position])]
-    (if (u/position-on-board? x y)
-      new-data
-      data)))
-
 (defn find-index
   [c f]
   (first (keep-indexed (fn [index element]
@@ -123,7 +111,8 @@
 ;; High level
 (defn move
   [data [_ direction]]
-  (let [new-data (-> (move-unchecked data direction)
+  (let [new-data (-> data
+                     (update :board #(board/move % direction))
                      (pick-wall))]
 ;;    (s/explain :game/game new-data)
     (if (contains? #{:ground :stair-down :stair-up}

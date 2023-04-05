@@ -14,23 +14,6 @@
     (update data :board #(board/change-active-tile % :ground))
     data))
 
-(defn find-index
-  [c f]
-  (first (keep-indexed (fn [index element]
-                         (when (f element) index))
-                       c)))
-
-(defn find-tile
-  [board tile]
-  (mu/n-to-position (find-index board #(= tile (:type %)))))
-
-(defn set-to-tile
-  [state tile]
-  (update-in state [:board :player-position]
-             (fn [[level _ _]]
-               (let [[x y] (find-tile (board/get-active-board (:board state)) tile)]
-                 [level x y]))))
-
 (defn apply-map-effect
   [board effect]
   (let [[[x y] type & effect] effect]
@@ -61,14 +44,14 @@
     (update state :coeffects #(conj % [:enter-unknown-level (inc (board/get-level (:board state)))]))
     (-> state
         (update :board #(board/update-level % inc))
-        (set-to-tile :stair-up))))
+        (update :board #(board/set-to-tile % :stair-up)))))
 
 (defn enter-previous-level
   [state]
   (if (not= 1 (board/get-level (:board state)))
     (-> state
         (update :board #(board/update-level % dec))
-        (set-to-tile :stair-down))
+        (update :board #(board/set-to-tile % :stair-down)))
     state))
 
 (defn add-found-item-messages
@@ -133,4 +116,4 @@
   (-> data
       (assoc-in [:board :dungeons (dec level)] board)
       (assoc-in [:board :player-position 0] level)
-      (set-to-tile :stair-up)))
+      (update :board #(board/set-to-tile % :stair-up))))

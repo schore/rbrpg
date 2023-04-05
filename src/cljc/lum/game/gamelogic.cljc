@@ -5,6 +5,7 @@
    [lum.game.dataspec]
    [lum.game.fight :as fight]
    [lum.game.item :as item]
+   [lum.game.board :as board]
    [lum.game.load-save :as load]
    [lum.game.magic :as magic]
    [lum.game.move :as move]
@@ -18,7 +19,7 @@
    (-> data
        (assoc-in [:board :dungeons
                   (dec (get-in data [:board :player-position 0]))] board)
-       (move/set-to-tile :stair-up))))
+       (update :board #(board/set-to-tile % :stair-up)))))
 
 (defn initialize
   [_ [_ board]]
@@ -43,7 +44,7 @@ he madness will go into your soul"
                 :spells #{"Burning Hands" "Healing"}
                 :items inital-items}
        :coeffects []}
-      (move/set-to-tile :stair-up)))
+      (update :board #(board/set-to-tile % :stair-up))))
 
 (defn game-over?
   [data]

@@ -89,11 +89,6 @@
        (nat-int? y)
        (< y mu/sizey)))
 
-(defn player-tile
-  [state]
-  (let [[_ x y] (get-in state [:board :player-position])]
-    (mu/get-tile (board/get-active-board (:board state)) x y)))
-
 (defn roll
   [n]
   (inc (rand-int n)))

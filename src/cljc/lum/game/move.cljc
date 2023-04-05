@@ -91,7 +91,7 @@
 
 (defn get-items-on-tile
   [state]
-  (get (u/player-tile state) :items {}))
+  (get (board/player-tile (:board state)) :items {}))
 
 (defn look-for-item
   [state]
@@ -104,13 +104,13 @@
 
 (defn scripted-message
   [data]
-  (if-some [message (:message (u/player-tile data))]
+  (if-some [message (:message (board/player-tile (:board data)))]
     (u/add-message data message)
     data))
 
 (defn enemy-encounter
   [data]
-  (if-some [enemy (:enemy (u/player-tile data))]
+  (if-some [enemy (:enemy (board/player-tile (:board data)))]
     (u/start-fight data enemy)
     data))
 
@@ -133,7 +133,7 @@
 
 (defn activate
   [state _]
-  (case (:type (u/player-tile state))
+  (case (board/get-active-tile (:board state))
     :stair-down (enter-next-level state)
     :stair-up (enter-previous-level state)
     :ground (look-for-item state)

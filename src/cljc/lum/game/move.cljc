@@ -34,26 +34,6 @@
                      (get-in db/special-maps [level :effects]
                              []))))
 
-(defn cavegen-required?
-  [state]
-  (> (inc (board/get-level (:board state))) (count (get-in state [:board :dungeons]))))
-
-(defn enter-next-level
-  [state]
-  (if (cavegen-required? state)
-    (update state :coeffects #(conj % [:enter-unknown-level (inc (board/get-level (:board state)))]))
-    (-> state
-        (update :board #(board/update-level % inc))
-        (update :board #(board/set-to-tile % :stair-up)))))
-
-(defn enter-previous-level
-  [state]
-  (if (not= 1 (board/get-level (:board state)))
-    (-> state
-        (update :board #(board/update-level % dec))
-        (update :board #(board/set-to-tile % :stair-down)))
-    state))
-
 (defn add-found-item-messages
   [state item]
   (reduce (fn [s [item-name n]]
@@ -106,8 +86,12 @@
 (defn activate
   [state _]
   (case (board/get-active-tile (:board state))
-    :stair-down (enter-next-level state)
-    :stair-up (enter-previous-level state)
+    :stair-down (let [{board :board
+                       effects :effects} (board/enter-next-level (:board state))]
+                  (-> state
+                      (assoc :board board)
+                      (update :coeffects #(reduce conj % effects))))
+    :stair-up (update state :board board/enter-previous-level)
     :ground (look-for-item state)
     state))
 

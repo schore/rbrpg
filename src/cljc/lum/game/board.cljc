@@ -73,3 +73,25 @@
           (fn [[level _ _]]
             (let [[x y] (find-tile (get-active-board board) tile)]
               [level x y]))))
+
+(defn cavegen-required?
+  [board]
+  (> (inc (get-level board)) (count (get board :dungeons))))
+
+(defn enter-next-level
+  [board]
+  {:board (if (cavegen-required? board)
+            board
+            (-> board
+                (update-level inc)
+                (set-to-tile :stair-up)))
+   :effects (when (cavegen-required? board)
+              [[:enter-unknown-level (inc (get-level board))]])})
+
+(defn enter-previous-level
+  [board]
+  (if (not= 1 (get-level board))
+    (-> board
+        (update-level dec)
+        (set-to-tile :stair-down))
+    board))

@@ -1,11 +1,16 @@
 (ns lum.game.board
   (:require
    [lum.maputil :as mu]
-   [lum.game.utilities :as u]))
+   [lum.game.utilities :as u]
+   [lum.game.dungeon :as dungeon]))
 
 (defn get-level
   [board]
   (get-in board [:player-position 0]))
+
+(defn set-level
+  [board level]
+  (assoc-in board [:player-position 0] level))
 
 (defn update-level
   [board f]
@@ -95,3 +100,10 @@
         (update-level dec)
         (set-to-tile :stair-down))
     board))
+
+(defn enter-unknown-level
+  [board level dungeon]
+  (-> board
+      (assoc-in [:dungeons (dec level)] dungeon)
+      (set-level level)
+      (set-to-tile :stair-up)))

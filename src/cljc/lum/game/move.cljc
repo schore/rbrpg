@@ -97,7 +97,4 @@
 
 (defn enter-unknown-level
   [data [_ level board]]
-  (-> data
-      (assoc-in [:board :dungeons (dec level)] board)
-      (assoc-in [:board :player-position 0] level)
-      (update :board #(board/set-to-tile % :stair-up))))
+  (update data :board #(board/enter-unknown-level % level board)))

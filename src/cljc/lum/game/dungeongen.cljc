@@ -1,6 +1,7 @@
 (ns lum.game.dungeongen
   (:require
-   [lum.maputil :as mu]))
+   [lum.maputil :as mu]
+   [lum.game.cavegen :as cavegen]))
 
 (def xsize mu/sizex)
 (def ysize mu/sizey)
@@ -37,9 +38,9 @@
   (mu/n-to-position (find-index board #(= tile %))))
 
 (defn create-corridor
-  ([board]
-   (let [[x1 y1] (find-tile board :ground)
-         [x2 y2] (find-tile board :ground)]
+  ([board from to]
+   (let [[x1 y1] (find-tile board from)
+         [x2 y2] (find-tile board to)]
      (into []
            (for [y (range ysize)
                  x (range xsize)]
@@ -49,16 +50,25 @@
                      (and (= x x2)
                           (>= y (min y1 y2))
                           (<= y (max y1 y2))))
-               :ground
+               (if (= (mu/get-tile board x y)
+                      :wall)
+                 :wall
+                 (mu/get-tile board x y))
                (mu/get-tile board x y))))))
-  ([board n]
-   (nth (iterate create-corridor board) n)))
+  ([board from to n]
+   (nth (iterate #(create-corridor % from to)  board) n)))
 
 (defn create-dungeon
   []
   (-> (empty-board)
       (create-room 10)
-      (create-corridor 5)))
+      (cavegen/add-random-field :stair-up :ground)
+      (cavegen/add-random-field :stair-down :ground)
+      (create-corridor :stair-up :stair-down)
+      (create-corridor :ground :ground 5)
+      (mu/to-map)
+      vec
+      (cavegen/place-items)))
 
 (defn print-new-map
   ([] (print-new-map (create-dungeon)))
@@ -72,4 +82,3 @@
      (println i))
    (println (repeat xsize "-"))))
 
-(print-new-map)

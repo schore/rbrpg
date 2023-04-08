@@ -12,7 +12,8 @@
    [lum.game.game-database :as db]
    [lum.game.gamelogic :as gamelogic]
    [lum.game-config :as config]
-   [lum.game.cavegen :as cavegen]))
+   [lum.game.cavegen :as cavegen]
+   [lum.game.dungeongen :as dungeongen]))
 
 (defn create-game
   []
@@ -43,7 +44,8 @@
                    :timeout 10000
                    :response-format (ajax/text-response-format)
                    :on-success [:game/map-resp level]}}
-     {:game/send-message [:enter-unknown-level level (cavegen/get-dungeon)]})))
+     {:game/send-message [:enter-unknown-level level ((rand-nth [cavegen/get-dungeon
+                                                                 dungeongen/create-dungeon]))]})))
 
 (rf/reg-event-fx
  :game/map-resp
@@ -132,7 +134,8 @@
 (rf/reg-event-fx
  :game/get-new-map
  (fn [_ _]
-   {:game/send-message [:new-board (cavegen/get-dungeon)]}))
+   {:game/send-message [:new-board ((rand-nth [cavegen/get-dungeon
+                                               dungeongen/create-dungeon]))]}))
 
 (rf/reg-event-fx
  :game/combine

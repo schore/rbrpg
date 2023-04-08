@@ -52,7 +52,7 @@
                           (<= y (max y1 y2))))
                (if (= (mu/get-tile board x y)
                       :wall)
-                 :wall
+                 :ground
                  (mu/get-tile board x y))
                (mu/get-tile board x y))))))
   ([board from to n]

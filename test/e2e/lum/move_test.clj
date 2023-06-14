@@ -28,7 +28,6 @@
   (is (= [10 10] (c/get-player-position))))
 
 (deftest ^:integration navigate-left
-  (c/load-game "test-map.edn")
   (move-with-retry :left)
   (is (= [9 10] (c/get-player-position))))
 
@@ -43,6 +42,22 @@
 (deftest ^:integration navigate-down
   (move-with-retry :down)
   (is (= [10 11] (c/get-player-position))))
+
+(deftest ^:integration navigate-down-left
+  (move-with-retry :down-left)
+  (is (= [9 11] (c/get-player-position))))
+
+(deftest ^:integration navigate-down-right
+  (move-with-retry :down-right)
+  (is (= [11 11] (c/get-player-position))))
+
+(deftest ^:integration navigate-up-left
+  (move-with-retry :up-left)
+  (is (= [9 9] (c/get-player-position))))
+
+(deftest ^:integration navigate-up-right
+  (move-with-retry :up-right)
+  (is (= [11 9] (c/get-player-position))))
 
 (deftest ^:integration enter-next-level
   (c/load-game "on-stairs.edn")

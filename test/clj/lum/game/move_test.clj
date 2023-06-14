@@ -16,12 +16,20 @@
                                      [[0 0] "right" [1 0]]
                                      [[0 1] "up" [0 0]]
                                      [[0 0] "down" [0 1]]
+                                     [[1 1] "down-right" [2 2]]
+                                     [[1 1] "down-left" [0 2]]
+                                     [[1 1] "up-right" [2 0]]
+                                     [[1 1] "up-left" [0 0]]
                                      ;; Move with keys
                                      [[1 0] :left [0 0]]
                                      [[0 0] :right [1 0]]
                                      [[0 1] :up [0 0]]
                                      [[0 0] :down [0 1]]
-                                     ;; don't move out of the map
+                                     [[1 1] :down-right [2 2]]
+                                     [[1 1] :down-left [0 2]]
+                                     [[1 1] :up-right [2 0]]
+                                     [[1 1] :up-left [0 0]]
+                ;; don't move out of the map
                                      [[0 0] :left [0 0]]
                                      [[0 0] :up [0 0]]
                                      [[(dec mu/sizex) (dec mu/sizey)] :right [(dec mu/sizex) (dec mu/sizey)]]

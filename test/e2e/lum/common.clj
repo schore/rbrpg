@@ -256,7 +256,11 @@
                 :up "k"
                 :down "j"
                 :left "h"
-                :right "l"))
+                :right "l"
+                :down-left "b"
+                :down-right "n"
+                :up-left "y"
+                :up-right "u"))
   (e/wait *driver* 0.1))
 
 (defn activate

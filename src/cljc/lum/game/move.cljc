@@ -24,7 +24,11 @@
                    :left (update-in data [:player :position 0] dec)
                    :right (update-in data [:player :position 0] inc)
                    :up (update-in data [:player :position 1] dec)
-                   :down (update-in data [:player :position 1] inc))
+                   :down (update-in data [:player :position 1] inc)
+                   :down-right (update-in data [:player :position] (fn [[x y]] [(inc x) (inc y)]))
+                   :down-left (update-in data [:player :position] (fn [[x y]] [(dec x) (inc y)]))
+                   :up-right (update-in data [:player :position] (fn [[x y]] [(inc x) (dec y)]))
+                   :up-left (update-in data [:player :position] (fn [[x y]] [(dec x) (dec y)])))
         [x y] (get-in new-data [:player :position])]
     (if (u/position-on-board? x y)
       new-data

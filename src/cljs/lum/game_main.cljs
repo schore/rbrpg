@@ -71,6 +71,10 @@
                                    [[:game/key :right] [{:keyCode 108}]];;l
                                    [[:game/key :down] [{:keyCode 106}]];;k
                                    [[:game/key :up] [{:keyCode 107}]];;j
+                                   [[:game/key :down-left] [{:keyCode 98}]];;n
+                                   [[:game/key :down-right] [{:keyCode 110}]];;b
+                                   [[:game/key :up-left] [{:keyCode 121}]];;y
+                                   [[:game/key :up-right] [{:keyCode 117}]];;u
                                    [[:game/key :confirm] [{:keyCode 13}]];;enter
                                    ]}]]
          [:dispatch [::rp/add-keyboard-event-listener "keypress"]]]
@@ -91,7 +95,9 @@
  (fn [{:keys [db]} [_ action]]
    (merge
     (when (and (not (fight? db))
-               (some #{action} [:up :down :left :right]))
+               (some #{action} [:up :down :left :right
+                                :down-left :down-right
+                                :up-left :up-right]))
       {:game/send-message [:move action]})
     (when (and (not (fight? db))
                (= action :confirm))

@@ -14,6 +14,10 @@ Try to get as many as possible.
   - **J** move down
   - **K** move up
   - **L** move right
+  - **Y** move up left
+  - **U** move up right
+  - **B** move down left
+  - **N** move down right
   - **Enter** Pick up items, Move on stars
 - In Fight
   - **J** down

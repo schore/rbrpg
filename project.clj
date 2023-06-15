@@ -3,7 +3,7 @@
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
 
-  :dependencies [[ch.qos.logback/logback-classic "1.4.7"]
+  :dependencies [[ch.qos.logback/logback-classic "1.4.8"]
                  [cljs-ajax "0.8.4"]
                  [clojure.java-time "1.2.0"]
                  [com.cognitect/transit-clj "1.0.333"]
@@ -75,7 +75,7 @@
                                            [pjstadig/humane-test-output "0.11.0"]
                                            [prone "2021-04-23"]
                                            [re-frisk "1.6.0"]
-                                           [lambdaisland/kaocha "1.84.1335"]
+                                           [lambdaisland/kaocha "1.85.1342"]
                                            [lambdaisland/kaocha-junit-xml "1.17.101"]
                                            [lambdaisland/kaocha-cloverage "1.1.89"]
                                            [ring/ring-devel "1.10.0"]
@@ -92,7 +92,7 @@
                             :jvm-opts ["-Dconf=test-config.edn"]
                             :resource-paths ["env/test/resources"]}
              :kaocha {:prep-tasks ["compile" ["run" "-m" "shadow.cljs.devtools.cli" "compile" "app"]]
-                      :dependencies [[lambdaisland/kaocha "1.84.1335"]
+                      :dependencies [[lambdaisland/kaocha "1.85.1342"]
                                      [lambdaisland/kaocha-junit-xml "1.17.101"]]}
              :profiles/dev {}
              :profiles/test {:plugins [[lein-test-report-junit-xml "0.2.0"]]}}

@@ -15,7 +15,7 @@ run_tests () {
 generate_allure_report () {
     local execution_dir=$1
     local test_xunit_dir=$2
-    local allure=../allure/allure-2.20.1/bin/allure
+    local allure=../allure/allure-2.22.4/bin/allure
 
     pushd $1
     if [ -d $test_xunit_dir/allure-report/history ]

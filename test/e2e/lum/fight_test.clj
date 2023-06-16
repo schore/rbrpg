@@ -133,6 +133,10 @@
   (select-and-activate "Burning Hands")
   (is (c/map-screen?)))
 
+(deftest ^:integration no-item-menu-in-a-fight
+  (c/load-game "in-a-fight.edn")
+  (is (not (some #{"Items"} (c/get-main-menu-entries)))))
+
 (deftest ^:integration use-magic-in-move-mode
   (c/load-game "not-full-hp.edn")
   (c/cast-spell "Healing")

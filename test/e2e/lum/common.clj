@@ -347,3 +347,9 @@
      (case tile
        "<" :stair-down
        tile))))
+
+(defn get-main-menu-entries
+  []
+  (map  #(e/get-element-text-el *driver* %)
+        (e/query-all *driver* [{:class "navbar-menu"}
+                               {:tag :a}])))

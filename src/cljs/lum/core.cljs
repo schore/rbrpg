@@ -24,7 +24,8 @@
    title])
 
 (defn navbar []
-  (let [expanded? (r/atom false)]
+  (let [expanded? (r/atom false)
+        in-fight? (rf/subscribe [:game/fight?])]
     (fn []
       [:nav.navbar.is-info>div.container
        [:div.navbar-brand
@@ -38,7 +39,7 @@
         {:class (when @expanded? :is-active)}
         [:div.navbar-start
          [nav-link "#/" "Home" :home]
-         [nav-link "#/item" "Items" :item]
+         (when (not @in-fight?) [nav-link "#/item" "Items" :item])
          [nav-link "#/help" "Help" :help]]]])))
 
 (defn help-page []

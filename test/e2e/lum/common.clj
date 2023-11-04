@@ -261,7 +261,7 @@
                 :down-right "n"
                 :up-left "y"
                 :up-right "u"))
-  (e/wait *driver* 0.1))
+  (e/wait *driver* 0.2))
 
 (defn activate
   []
@@ -277,6 +277,7 @@
   (e/fill *driver* [{:tag :input
                      :type :text}]
           filename)
+  (e/wait *driver* 0.5)
   (e/click *driver* [{:tag :input
                       :type :button
                       :value "load"}])

@@ -207,6 +207,10 @@
   []
   (some? (:fight (get-state))))
 
+(defn in-interaction?
+  []
+  (some? (:interaction (get-state))))
+
 (defn game-over?
   []
   (= 0 (get-hp)))
@@ -345,6 +349,14 @@
         [x y] (get-coordinates state field)]
     (set-position x y))
   (is (= field (:type (get-current-field)))))
+
+(defn player-with-npc
+  [npc]
+  (player-is-on :ground)
+  (let [state (game-is-initialized)
+        level (dec (:level state))
+        [x y] (get-in state [:player :position])]
+    (load-game (assoc-in state [:boards level (mu/position-to-n x y) :npc] npc))))
 
 (defn items-on-ground
   [items]

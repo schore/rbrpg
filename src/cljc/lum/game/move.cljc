@@ -107,6 +107,17 @@
         (u/update-active-tile #(dissoc % :items))
         (add-found-item-messages items))))
 
+(defn npc-start-interaction
+  [state]
+  (assoc state :interaction "Foo"))
+
+(defn action-on-ground
+  [state]
+  (println "action-on-ground")
+  (-> state
+      look-for-item
+      npc-start-interaction))
+
 (defn scripted-message
   [data]
   (if-some [message (:message (u/player-tile data))]
@@ -141,7 +152,7 @@
   (case (:type (u/player-tile state))
     :stair-down (enter-next-level state)
     :stair-up (enter-previous-level state)
-    :ground (look-for-item state)
+    :ground (action-on-ground state)
     state))
 
 (defn enter-unknown-level

@@ -109,11 +109,12 @@
 
 (defn npc-start-interaction
   [state]
-  (assoc state :interaction "Foo"))
+  (if-let [npc (:npc (u/player-tile state))]
+    (assoc state :interaction npc)
+    state))
 
 (defn action-on-ground
   [state]
-  (println "action-on-ground")
   (-> state
       look-for-item
       npc-start-interaction))

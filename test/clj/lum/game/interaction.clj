@@ -9,3 +9,8 @@
   (dsl/player-with-npc "Foo")
   (dsl/activate)
   (is (dsl/in-interaction?)))
+
+(deftest start-no-interaction-without-npc
+  (dsl/player-is-on :ground)
+  (dsl/activate)
+  (is (not (dsl/in-interaction?))))

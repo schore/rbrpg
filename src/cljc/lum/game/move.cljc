@@ -110,7 +110,9 @@
 (defn npc-start-interaction
   [state]
   (if-let [npc (:npc (u/player-tile state))]
-    (assoc state :interaction npc)
+    (assoc state :interaction {:npc npc
+                               :interaction-state "init"
+                               :options []})
     state))
 
 (defn action-on-ground

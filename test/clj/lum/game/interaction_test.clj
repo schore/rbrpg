@@ -1,4 +1,4 @@
-(ns lum.game.interaction
+(ns lum.game.interaction-test
   (:require  [clojure.test :as t :refer [deftest is]]
              [lum.game-logic-dsl :as dsl]))
 

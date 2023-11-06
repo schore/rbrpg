@@ -1,10 +1,10 @@
 (ns lum.game.dataspec
   (:require [clojure.spec.alpha :as s]
             [lum.maputil :as mu]
-            ;[lum.game.cavegen :as g]
+            ;; [lum.game.cavegen :as g]
             [lum.game.game-database :as db]
             ;[clojure.tools.logging :as log]
-            ))
+            [clojure.string :as string]))
 
 (s/def :tile/type  #{:wall
                      :ground
@@ -115,12 +115,23 @@
   [data]
   (>= (count (:boards data)) (:level data)))
 
+(s/def ::npc string?)
+(s/def ::interaction-state string?)
+(s/def ::option string?)
+(s/def ::options (s/coll-of ::option
+                            :kind vector?))
+
+(s/def :game/interaction (s/keys :req-un [::npc
+                                          ::interaction-state
+                                          ::options]))
+
 (s/def :game/game (s/and (s/keys :req-un [:game/player
                                           :game/boards
                                           :game/level
                                           :game/messages
                                           :game/recepies]
-                                 :opt-un [:game/fight])
+                                 :opt-un [:game/fight
+                                          :game/interaction])
                          valid-position?
                          valid-level?))
 
@@ -135,11 +146,15 @@
 ;;                                 :equipment {:right-hand "sword"}
 ;;                                 :items {"batwing" 2
 ;;                                         "batblood" 2}}
+;;                        :recepies {}
 ;;                        :messages ["Hello World"]
-;;                        :fight {:enemy {:name "bat"
+;;                        :fight {:enemy {:name "Bat"
 ;;                                        :ac 1
 ;;                                        :hp [20 20]
 ;;                                        :mp [0 0]}
 ;;                                :actions [["Heal" [{:target :player
 ;;                                                    :stat :hp
-;;                                                    :n 5}]]]}})
+;;                                                    :n 5}]]]}
+;;                        :interaction {:npc "Foo"
+;;                                      :interaction-state "init"
+;;                                      :options ["A" "B" "C"]}})

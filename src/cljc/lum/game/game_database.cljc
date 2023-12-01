@@ -271,3 +271,49 @@
 (s/def ::special-map (s/keys :req-un [::map ::effects]))
 
 (s/def ::map-db (s/map-of nat-int? ::special-map))
+
+;;
+;; npc dataspec
+;;
+
+(s/def ::message string?)
+(s/def ::options (s/* (s/cat :key keyword? :message string?)))
+(s/def ::state (s/keys :req-un [::message ::options]))
+(s/def ::states (s/map-of keyword? ::state))
+
+(s/def ::transition (s/cat :from keyword?
+                           :to keyword?
+                           :trigger keyword?))
+(s/def ::transitions (s/* ::transition))
+
+(defn transition-states-valid?
+  [in]
+  (let [states (map first (:states in))
+        transstates (->> (:transitions in)
+                         (map (fn [i] [(:from i) (:to i)]))
+                         flatten)]
+    (every? (set states) transstates)))
+
+(defn events-in-states?
+  [in]
+  (println in)
+  (every? (fn [trans]
+            (let [options (get-in in [:states (:from trans) :options])
+                  events (map :key options)]
+              (some #{(:trigger trans)} events)))
+          (:transitions in)))
+
+(s/def ::communication-statemachine (s/and (s/keys :req-un [::states ::transitions])
+                                           transition-states-valid?
+                                           events-in-states?))
+
+(s/explain ::communication-statemachine
+           {:states {:a {:message "Bla"
+                         :options [:ea "Blaaa"
+                                   :b "Foo"]}
+                     :b {:message "X"
+                         :options [:exit "Exit"]}
+                     :c {:message "Fu"
+                         :options [:noway "Noooo"]}}
+            :transitions [:a :b :ea
+                          :c :a :b]})

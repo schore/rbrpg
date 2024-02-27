@@ -4,8 +4,6 @@ pushd "$(dirname "$0")"
 
 source .jenkins/test.sh
 
-rm ./target/test-reports/*.xml
-
 run_tests .
 testresult=$?
 

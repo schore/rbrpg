@@ -8,7 +8,9 @@ for i in $(seq 1 $1);
 do
     echo "Run: $i"
     echo "########"
-    rm ./target/test-reports/*.xml
     run_tests .
-    generate_allure_report . ./target/test-reports
+    testresult=$?
+    mv ./target/test-reports/junit.xml  ./target/test-results/$(date +%Y-%m-%d-%H:%M).xml
+
+#    generate_allure_report . ./target/test-reports
 done

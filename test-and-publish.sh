@@ -9,7 +9,8 @@ rm ./target/test-reports/*.xml
 run_tests .
 testresult=$?
 
-generate_allure_report . ./target/test-reports
+mv ./target/test-reports/junit.xml  ./target/test-results/$(date +%Y-%m-%d-%H:%M).xml
+#generate_allure_report . ./target/test-reports
 
 if  [[ $testresult == 0 ]]
 then

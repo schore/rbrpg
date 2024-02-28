@@ -12,19 +12,11 @@ run_tests () {
     return $result
 }
 
-generate_allure_report () {
-    local execution_dir=$1
-    local test_xunit_dir=$2
-    local allure=../allure/allure-2.22.4/bin/allure
+generate_report () {
+    local output_dir=$2
+    local test_xunit_dir=$1
 
-    pushd $1
-    if [ -d $test_xunit_dir/allure-report/history ]
-    then
-        cp -r $test_xunit_dir/allure-report/history $test_xunit_dir
-    fi
-
-    $allure generate -c $test_xunit_dir -o $test_xunit_dir/allure-report
-    popd
+    junit2html $1/* --report-matrix $2
 }
 
 if [ $0 == ${BASH_SOURCE} ]

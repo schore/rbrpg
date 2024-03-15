@@ -276,44 +276,38 @@
 ;; npc dataspec
 ;;
 
-(s/def ::message string?)
-(s/def ::options (s/* (s/cat :key keyword? :message string?)))
-(s/def ::state (s/keys :req-un [::message ::options]))
-(s/def ::states (s/map-of keyword? ::state))
+(s/def ::message (s/cat :msg string?))
 
-(s/def ::transition (s/cat :from keyword?
-                           :to keyword?
-                           :trigger keyword?))
-(s/def ::transitions (s/* ::transition))
+(s/def ::option  (s/cat :id #{:option}
+                        :options (s/* (s/cat :msg string?
+                                             :jump keyword?))))
+(s/def ::goto (s/cat :keyword keyword?
+                     :msg string?))
+(s/def ::jmp (s/cat :msg string?
+                    :to keyword?))
 
-(defn transition-states-valid?
-  [in]
-  (let [states (map first (:states in))
-        transstates (->> (:transitions in)
-                         (map (fn [i] [(:from i) (:to i)]))
-                         flatten)]
-    (every? (set states) transstates)))
+(s/def ::action (s/cat :id #{:action}
+                       :aid #{:add-hp :add-mp}
+                       :parameter int?))
 
-(defn events-in-states?
-  [in]
-  (println in)
-  (every? (fn [trans]
-            (let [options (get-in in [:states (:from trans) :options])
-                  events (map :key options)]
-              (some #{(:trigger trans)} events)))
-          (:transitions in)))
+(s/def ::statement (s/or :message ::message
+                         :option ::option
+                         :goto ::goto
+                         :jmp ::jmp
+                         :action ::action))
+(s/def ::communication (s/coll-of ::statement))
 
-(s/def ::communication-statemachine (s/and (s/keys :req-un [::states ::transitions])
-                                           transition-states-valid?
-                                           events-in-states?))
+(s/explain ::communication
+           [["Du hast die Wahl"]
+            ["zwischen gut und böse. Was wirst du wählen"]
+            [:option
+             "Gut"   :Gut
+             "Böse"  :Böse]
+            [:Gut "Du hast gut gewählt"]
+            [:action :add-hp 1]
+            ["Ziehe fort" :exit]
+            [:Böse "Bleibe hier mein Jünger"]
+            [:action :add-mp 20]
+            ["Mach was" :exit]])
 
-(s/explain ::communication-statemachine
-           {:states {:a {:message "Bla"
-                         :options [:ea "Blaaa"
-                                   :b "Foo"]}
-                     :b {:message "X"
-                         :options [:exit "Exit"]}
-                     :c {:message "Fu"
-                         :options [:noway "Noooo"]}}
-            :transitions [:a :b :ea
-                          :c :a :b]})
+;;(s/explain ::option [:option ["Gut" :Gut]])

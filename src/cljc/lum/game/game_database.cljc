@@ -280,8 +280,8 @@
 
 (s/def ::option  (s/cat :id #{:option}
                         :options (s/* (s/cat :msg string?
-                                             :jump keyword?))))
-(s/def ::goto (s/cat :keyword keyword?
+                                             :to keyword?))))
+(s/def ::goto (s/cat :anker keyword?
                      :msg string?))
 (s/def ::jmp (s/cat :msg string?
                     :to keyword?))
@@ -295,7 +295,29 @@
                          :goto ::goto
                          :jmp ::jmp
                          :action ::action))
-(s/def ::communication (s/coll-of ::statement))
+
+(defn jumps-valid?
+  [in]
+  (let [jmp1 (->> in
+                  (filter #(= (first %) :jmp))
+                  (map #(:to (second %))))
+        jmp2 (->> in
+                  (filter #(= (first %) :option))
+                  (map second)
+                  (map :options)
+                  flatten
+                  (map :to))
+        jmpto (into #{} (concat jmp1 jmp2))
+        gotos (->> in
+                   (filter #(= (first %) :goto))
+                   (map second)
+                   (map :anker)
+                   (concat #{:exit})
+                   (into #{}))]
+    (= jmpto gotos)))
+
+(s/def ::communication (s/and (s/coll-of ::statement)
+                              jumps-valid?))
 
 (s/explain ::communication
            [["Du hast die Wahl"]
@@ -310,4 +332,3 @@
             [:action :add-mp 20]
             ["Mach was" :exit]])
 
-;;(s/explain ::option [:option ["Gut" :Gut]])

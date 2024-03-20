@@ -313,22 +313,23 @@
                    (map second)
                    (map :anker)
                    (concat #{:exit})
-                   (into #{}))]
-    (= jmpto gotos)))
+                   (into #{}))
+        missing-markers (filter #(not (contains? gotos %)) jmpto)]
+    (when (not-empty missing-markers) (println "Followin gotos missing " missing-markers))
+    (empty? missing-markers)))
 
 (s/def ::communication (s/and (s/coll-of ::statement)
                               jumps-valid?))
 
-(s/explain ::communication
-           [["Du hast die Wahl"]
-            ["zwischen gut und böse. Was wirst du wählen"]
-            [:option
-             "Gut"   :Gut
-             "Böse"  :Böse]
-            [:Gut "Du hast gut gewählt"]
-            [:action :add-hp 1]
-            ["Ziehe fort" :exit]
-            [:Böse "Bleibe hier mein Jünger"]
-            [:action :add-mp 20]
-            ["Mach was" :exit]])
-
+(def chat
+  [["Du hast die Wahl"]
+   ["zwischen gut und böse. Was wirst du wählen"]
+   [:option
+    "Gut"   :Gut
+    "Böse"  :Böse]
+   [:Gut "Du hast gut gewählt"]
+   [:action :add-hp 1]
+   ["Ziehe fort" :exit]
+   [:Böse "Bleibe hier mein Jünger"]
+   [:action :add-mp 20]
+   ["Mach was" :exit]])

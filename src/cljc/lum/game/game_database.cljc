@@ -281,8 +281,10 @@
 (s/def ::option  (s/cat :id #{:option}
                         :options (s/* (s/cat :msg string?
                                              :to keyword?))))
-(s/def ::goto (s/cat :anker keyword?
-                     :msg string?))
+(s/def ::goto (s/and (s/cat :anker keyword?
+                            :msg string?)
+                     #(not (contains? #{:option :exit :action} (:anker %)))))
+
 (s/def ::jmp (s/cat :msg string?
                     :to keyword?))
 

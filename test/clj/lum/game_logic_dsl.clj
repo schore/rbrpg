@@ -439,3 +439,13 @@
 (defn get-known-recepies
   []
   (:recepies (get-state)))
+
+(defn in-chat
+  [chat]
+  (let [state (game-is-initialized)]
+    (load-game (assoc state :chat {:communication chat
+                                   :chat-position 0}))))
+
+(defn in-chat?
+  []
+  (contains? (get-state) :chat))

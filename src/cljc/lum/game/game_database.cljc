@@ -323,15 +323,15 @@
 (s/def ::communication (s/and (s/coll-of ::statement)
                               jumps-valid?))
 
-(def chat
-  [["Du hast die Wahl"]
-   ["zwischen gut und böse. Was wirst du wählen"]
-   [:option
-    "Gut"   :Gut
-    "Böse"  :Böse]
-   [:Gut "Du hast gut gewählt"]
-   [:action :add-hp 1]
-   ["Ziehe fort" :exit]
-   [:Böse "Bleibe hier mein Jünger"]
-   [:action :add-mp 20]
-   ["Mach was" :exit]])
+;; (def chat
+;;   [["Du hast die Wahl"]
+;;    ["zwischen gut und böse. Was wirst du wählen"]
+;;    [:option
+;;     "Gut"   :Gut
+;;     "Böse"  :Böse]
+;;    [:Gut "Du hast gut gewählt"]
+;;    [:action :add-hp 1]
+;;    ["Ziehe fort" :exit]
+;;    [:Böse "Bleibe hier mein Jünger"]
+;;    [:action :add-mp 20]
+;;    ["Mach was" :exit]])

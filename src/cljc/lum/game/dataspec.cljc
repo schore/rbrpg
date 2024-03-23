@@ -125,12 +125,20 @@
                                           ::interaction-state
                                           ::options]))
 
+(s/def :game/chat-position nat-int?)
+(s/def :game/chat (s/and (s/keys :requ-un [:lum.game.database/communication
+                                           :game/chat-position])
+                         (fn [chat]
+                           (let [chat-len (count (:communication chat))]
+                             (< (:chat-position chat) chat-len)))))
+
 (s/def :game/game (s/and (s/keys :req-un [:game/player
                                           :game/boards
                                           :game/level
                                           :game/messages
                                           :game/recepies]
                                  :opt-un [:game/fight
+                                          :game/chat
                                           :game/interaction])
                          valid-position?
                          valid-level?))

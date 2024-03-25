@@ -3,8 +3,7 @@
    [clojure.string]
    [clojure.test :as t :refer [deftest is testing]]
    [lum.game-logic-dsl :as dsl]
-   [lum.game.dataspec]
-   [lum.maputil :as mu]))
+   [lum.game.dataspec]))
 
 (t/use-fixtures
   :each dsl/create-game)
@@ -17,3 +16,8 @@
   (dsl/in-chat [["Bla"] ["Blub"]])
   (dsl/continue)
   (is (= ["Blub"] (dsl/get-active-chat))))
+
+(deftest leave-when-jump-on-exit
+  (dsl/in-chat [["Bla" :exit]])
+  (dsl/continue)
+  (is (not (dsl/in-chat?))))

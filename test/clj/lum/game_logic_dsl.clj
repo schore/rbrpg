@@ -449,3 +449,14 @@
 (defn in-chat?
   []
   (contains? (get-state) :chat))
+
+(defn get-active-chat
+  []
+  (let [state (get-state)
+        position (get-in state [:chat :chat-position])]
+    (println state)
+    (get-in state [:chat :communication position])))
+
+(defn continue
+  []
+  (exec *game* [:continue]))

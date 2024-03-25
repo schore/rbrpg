@@ -12,3 +12,8 @@
 (deftest in-chat
   (dsl/in-chat [["Bla"]])
   (is (dsl/in-chat?)))
+
+(deftest action-gets-next-message
+  (dsl/in-chat [["Bla"] ["Blub"]])
+  (dsl/continue)
+  (is (= ["Blub"] (dsl/get-active-chat))))

@@ -3,6 +3,7 @@
    [clojure.core.async :as a :refer [<! >! chan close! go-loop]]
    [clojure.string]
    [lum.game.dataspec]
+   [lum.game.chat :as chat]
    [lum.game.fight :as fight]
    [lum.game.item :as item]
    [lum.game.load-save :as load]
@@ -77,11 +78,16 @@
           :combine [item/remember-recipies item/combine]
           :use-item [item/use-item]}))
 
+(def chat-mode
+  (merge basic-mode
+         {:continue [chat/continue]}))
+
 (defn get-mode-map
   [state]
   (cond
     (game-over? state) game-over-mode
     (contains? state :fight) fight-mode
+    (contains? state :chat) chat-mode
     :else move-mode))
 
 (defn process-actions

@@ -1,10 +1,10 @@
 {
   "devDependencies": {
-    "shadow-cljs": "^2.25.10"
+    "shadow-cljs": "^2.28.2"
   },
   "dependencies": {
-    "geckodriver": "^4.2.1",
-    "node": "^21.1.0",
+    "geckodriver": "^4.3.3",
+    "node": "^21.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "xmlhttprequest": "^1.8.0"

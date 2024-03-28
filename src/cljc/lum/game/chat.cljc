@@ -10,10 +10,16 @@
   [statement]
   (s/conform :lum.game.game-database/statement statement))
 
+(defn create-message
+  [data]
+  (update data :coeffects #(conj % [:message (first (get-current-chat-message data))])))
+
 (defn continue [data _]
   (let [statement (conform-statement (get-current-chat-message data))]
     (println statement)
     (case (first statement)
-      :message (update-in data [:chat :chat-position] inc)
+      :message (-> data
+                   (update-in [:chat :chat-position] inc)
+                   (create-message))
       :jmp (dissoc data :chat)
       data)))

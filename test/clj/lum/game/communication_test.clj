@@ -17,6 +17,11 @@
   (dsl/continue)
   (is (= ["Blub"] (dsl/get-active-chat))))
 
+(deftest action-will-sent-a-message-event
+  (dsl/in-chat [["Bla"] ["Blub"]])
+  (dsl/continue)
+  (is (= [:message "Blub"] (first (dsl/get-event)))))
+
 (deftest leave-when-jump-on-exit
   (dsl/in-chat [["Bla" :exit]])
   (dsl/continue)

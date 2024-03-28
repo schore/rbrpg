@@ -26,3 +26,8 @@
   (dsl/in-chat [["Bla" :exit]])
   (dsl/continue)
   (is (not (dsl/in-chat?))))
+
+(deftest can-jump-around
+  (dsl/in-chat [["Bla" :x] ["Foo"] [:x "Blub"]])
+  (dsl/continue)
+  (is (= [:x "Blub"] (dsl/get-active-chat))))

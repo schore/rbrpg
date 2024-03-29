@@ -31,3 +31,8 @@
   (dsl/in-chat [["Bla" :x] ["Foo"] [:x "Blub"]])
   (dsl/continue)
   (is (= [:x "Blub"] (dsl/get-active-chat))))
+
+(deftest jumps-create-messages
+  (dsl/in-chat [["Bla" :x] ["Foo"] [:x "Blub"]])
+  (dsl/continue)
+  (is (= [:message "Blub"] (first (dsl/get-event)))))

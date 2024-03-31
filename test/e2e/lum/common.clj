@@ -157,11 +157,14 @@
 
 (defn get-hp
   []
-  (click-menu-item "Home")
-  (Integer/parseInt (second (re-matches #"hp: (.*)/(.*)"
-                                        (e/get-element-text *driver* [{:class "content"}
-                                                                      {:tag :span
-                                                                       :fn/has-text "hp:"}])))))
+  (let [query [{:class "content"}
+               {:tag :span
+                :fn/has-text "hp:"}]]
+    (click-menu-item "Home")
+    (Integer/parseInt (second (re-matches #"hp: (.*)/(.*)"
+                                          (do
+                                            (e/wait-visible *driver* query)
+                                            (e/get-element-text *driver* query)))))))
 
 (defn get-item-row
   [item]

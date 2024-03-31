@@ -454,7 +454,6 @@
   []
   (let [state (get-state)
         position (get-in state [:chat :chat-position])]
-    (println state)
     (get-in state [:chat :communication position])))
 
 (defn continue

@@ -42,7 +42,7 @@
                  [juji/editscript "0.6.3"]
                  [etaoin "1.0.40"]
                  [haslett "0.1.7"]
-                 [thheller/shadow-cljs "2.28.2"]]
+                 [thheller/shadow-cljs "2.28.3"]]
 
   :min-lein-version "2.0.0"
 

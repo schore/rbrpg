@@ -36,3 +36,13 @@
   (dsl/in-chat [["Bla" :x] ["Foo"] [:x "Blub"]])
   (dsl/continue)
   (is (= [:message "Blub"] (first (dsl/get-event)))))
+
+(deftest message-on-options
+  (dsl/in-chat [["Bla"]
+                [:option
+                 "one" :one
+                 "two" :two]])
+  (dsl/continue)
+  (is (= [:message ["one" :one
+                    "two" :two]]
+         (first (dsl/get-event)))))

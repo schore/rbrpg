@@ -12,15 +12,18 @@
 
 (defn get-message
   [statement]
-  (let [statement (conform-statement statement)]
-    (case (first statement)
-      :message (-> statement second :msg)
-      :goto (-> statement second :msg))))
+  (let [cs (conform-statement statement)]
+    (case (first cs)
+      :message (-> cs second :msg)
+      :goto (-> cs second :msg)
+      :option (rest statement)
+      "")))
 
 (defn create-message
   [data]
   (if (contains? data :chat)
-    (update data :coeffects #(conj % [:message (get-message (get-current-statement data))]))
+    (update data :coeffects
+            #(conj % [:message (get-message (get-current-statement data))]))
     data))
 
 (defn handle-jmp
@@ -36,12 +39,9 @@
 
 (defn continue [data _]
   (let [statement (conform-statement (get-current-statement data))]
-;;    (println statement)
-    (case (first statement)
-      :message (-> data
-                   (update-in [:chat :chat-position] inc)
-                   (create-message))
-      :jmp (-> data
-               (handle-jmp)
-               (create-message))
-      data)))
+    (-> (case (first statement)
+          :message (update-in data [:chat :chat-position] inc)
+          :jmp (-> data (handle-jmp))
+          :option data
+          data)
+        (create-message))))

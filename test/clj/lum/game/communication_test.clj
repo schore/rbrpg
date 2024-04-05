@@ -32,10 +32,15 @@
   (dsl/continue)
   (is (= [:x "Blub"] (dsl/get-active-chat))))
 
-(deftest jumps-create-messages
+(deftest message-for-goto
   (dsl/in-chat [["Bla" :x] ["Foo"] [:x "Blub"]])
   (dsl/continue)
   (is (= [:message "Blub"] (first (dsl/get-event)))))
+
+(deftest message-for-jmp
+  (dsl/in-chat [["Bla"] ["Blu" :a] [:a "a"]])
+  (dsl/continue)
+  (is (= [:message "Blu"] (first (dsl/get-event)))))
 
 (deftest message-on-options
   (dsl/in-chat [["Bla"]

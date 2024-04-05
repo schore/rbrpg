@@ -17,7 +17,7 @@
       :message (-> cs second :msg)
       :goto (-> cs second :msg)
       :option (rest statement)
-      "")))
+      :jmp (-> cs second :msg))))
 
 (defn create-message
   [data]

@@ -46,3 +46,19 @@
   (is (= [:message ["one" :one
                     "two" :two]]
          (first (dsl/get-event)))))
+
+(deftest jump-on-options
+  (testing "First Option"
+    (dsl/in-chat [[:option "one" :one "two" :two]
+                  ["nop"]
+                  [:one "one"]
+                  [:two "two"]]))
+  (dsl/continue :one)
+  (is (= [:one "one"] (dsl/get-active-chat)))
+  (testing "Second Option"
+    (dsl/in-chat [[:option "one" :one "two" :two]
+                  ["nop"]
+                  [:one "one"]
+                  [:two "two"]]))
+  (dsl/continue :two)
+  (is (= [:two "two"] (dsl/get-active-chat))))

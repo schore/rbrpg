@@ -457,5 +457,7 @@
     (get-in state [:chat :communication position])))
 
 (defn continue
-  []
-  (exec *game* [:continue]))
+  ([]
+   (exec *game* [:continue]))
+  ([option]
+   (exec *game* [:continue option])))

@@ -26,22 +26,29 @@
             #(conj % [:message (get-message (get-current-statement data))]))
     data))
 
-(defn handle-jmp
-  [data]
-  (let [[_ jumpto] (get-current-statement data)
-        communication (-> data :chat :communication)
-        n (first (keep-indexed (fn [index item]
-                                 (when (= jumpto (first item)) index))
-                               communication))]
-    (if (= jumpto :exit)
-      (dissoc data :chat)
-      (assoc-in data [:chat :chat-position] n))))
+(defn find-jump-to
+  ([data jumpto]
+   (let [communication (-> data :chat :communication)
+         n (first (keep-indexed (fn [index item]
+                                  (when (= jumpto (first item)) index))
+                                communication))]
+     n)))
 
-(defn continue [data _]
+(defn handle-jmp
+  ([data]
+   (let [[_ jumpto] (get-current-statement data)]
+     (handle-jmp data jumpto)))
+  ([data jumpto]
+   (if (= jumpto :exit)
+     (dissoc data :chat)
+     (assoc-in data [:chat :chat-position] (find-jump-to data jumpto)))))
+
+(defn continue [data [_ jumpto]]
   (let [statement (conform-statement (get-current-statement data))]
     (-> (case (first statement)
           :message (update-in data [:chat :chat-position] inc)
           :jmp (-> data (handle-jmp))
-          :option data
+          :option (-> data
+                      (handle-jmp jumpto))
           data)
         (create-message))))

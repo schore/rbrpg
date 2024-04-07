@@ -22,6 +22,11 @@
   (dsl/continue)
   (is (= [:message "Blub"] (first (dsl/get-event)))))
 
+(deftest next-message-on-goto
+  (dsl/in-chat [[:x "X"] ["Bla"]])
+  (dsl/continue)
+  (is (= ["Bla"] (dsl/get-active-chat))))
+
 (deftest leave-when-jump-on-exit
   (dsl/in-chat [["Bla" :exit]])
   (dsl/continue)

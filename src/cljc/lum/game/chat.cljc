@@ -50,5 +50,5 @@
           :jmp (-> data (handle-jmp))
           :option (-> data
                       (handle-jmp jumpto))
-          data)
+          :goto (update-in data [:chat :chat-position] inc))
         (create-message))))

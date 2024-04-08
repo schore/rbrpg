@@ -39,6 +39,7 @@
   [tile]
   (cond
     (not (:visible? tile)) "+"
+    (some? (:npc tile)) "@"
     (seq (get tile :items {})) [:p {:style {:background-color
                                             (item-color (first (keys (get tile :items))))}}
                                 "i"]

@@ -71,6 +71,11 @@
       field
       items))))
 
+(defn add-npc-on-random-tile
+  [input]
+  (let [i (find-random-tile input :ground)]
+    (assoc-in input [i :npc] [["Hello World"]])))
+
 (defn place-items
   [state]
   (-> state
@@ -85,7 +90,8 @@
         (add-random-field :stair-down :ground)
         m/to-map
         vec
-        place-items)))
+        place-items
+        add-npc-on-random-tile)))
 
 (defn print-new-map
   ([] (print-new-map (get-dungeon)))

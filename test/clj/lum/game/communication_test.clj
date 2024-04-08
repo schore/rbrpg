@@ -72,3 +72,14 @@
                   [:two "two"]]))
   (dsl/continue :two)
   (is (= [:two "two"] (dsl/get-active-chat))))
+
+(deftest start-interaction
+  (dsl/player-with-npc [["Hello"]])
+  (dsl/activate)
+  ;;(println (dsl/get-state))
+  (is (dsl/in-chat?)))
+
+(deftest start-no-interaction-without-npc
+  (dsl/player-is-on :ground)
+  (dsl/activate)
+  (is (not (dsl/in-chat?))))

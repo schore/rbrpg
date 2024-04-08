@@ -4,7 +4,7 @@
             ;; [lum.game.cavegen :as g]
             [lum.game.game-database :as db]
             ;[clojure.tools.logging :as log]
-            [clojure.string :as string]))
+            ))
 
 (s/def :tile/type  #{:wall
                      :ground
@@ -14,6 +14,7 @@
 
 (s/def :tile/visible? boolean?)
 (s/def :tile/message string?)
+(s/def :tile/npc  :lum.game.game-database/communication)
 
 (s/def :enemy/name (into #{} db/enemy-names))
 
@@ -23,6 +24,7 @@
 
 (s/def :game/tile (s/keys :req-un [:tile/type :tile/visible?]
                           :opt-un [:game/items
+                                   :tile/npc
                                    :tile/message
                                    :tile/enemy]))
 
@@ -115,15 +117,10 @@
   [data]
   (>= (count (:boards data)) (:level data)))
 
-(s/def ::npc string?)
 (s/def ::interaction-state string?)
 (s/def ::option string?)
 (s/def ::options (s/coll-of ::option
                             :kind vector?))
-
-(s/def :game/interaction (s/keys :req-un [::npc
-                                          ::interaction-state
-                                          ::options]))
 
 (s/def :game/chat-position nat-int?)
 (s/def :game/chat (s/and (s/keys :requ-un [:lum.game.database/communication
@@ -138,8 +135,7 @@
                                           :game/messages
                                           :game/recepies]
                                  :opt-un [:game/fight
-                                          :game/chat
-                                          :game/interaction])
+                                          :game/chat])
                          valid-position?
                          valid-level?))
 

@@ -3,7 +3,7 @@
    [clojure.core.async :as a :refer [<! >! chan close! go-loop]]
    [clojure.string]
    [lum.game.dataspec]
-   [lum.game.chat :as chat]
+   [lum.game.communication :as communication]
    [lum.game.fight :as fight]
    [lum.game.item :as item]
    [lum.game.load-save :as load]
@@ -70,7 +70,7 @@
 
 (def move-mode
   (merge basic-mode
-         {:activate [move/activate fight/check-fight]
+         {:activate [move/activate communication/activate fight/check-fight]
           :cast-spell [magic/cast-spell]
           :load-map [load/load-map]
           :move [move/move fight/check-fight]
@@ -80,7 +80,7 @@
 
 (def chat-mode
   (merge basic-mode
-         {:continue [chat/continue]}))
+         {:continue [communication/continue]}))
 
 (defn get-mode-map
   [state]

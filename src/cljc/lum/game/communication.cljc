@@ -1,5 +1,6 @@
 (ns lum.game.communication
   (:require [clojure.spec.alpha :as s]
+            [lum.game.utilities :as u]
             [lum.game.game-database]))
 
 (defn get-current-statement
@@ -52,3 +53,10 @@
                       (handle-jmp jumpto))
           :goto (update-in data [:chat :chat-position] inc))
         (create-message))))
+
+(defn activate [data _]
+  (if-let [chat (:npc (u/player-tile data))]
+    (-> data
+        (assoc-in [:chat :communication] chat)
+        (assoc-in [:chat :chat-position] 0))
+    data))

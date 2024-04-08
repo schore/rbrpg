@@ -1,4 +1,4 @@
-(ns lum.game.chat
+(ns lum.game.communication
   (:require [clojure.spec.alpha :as s]
             [lum.game.game-database]))
 

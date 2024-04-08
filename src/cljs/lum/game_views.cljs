@@ -137,6 +137,11 @@
          [enemy-stat]
          [fight-menu entries active]]))))
 
+(defn communication-screen
+  []
+  [:<>
+   [:h2 "Just Talking"]])
+
 (defn game-over
   []
   [:h1 "GAME OVER"])
@@ -281,7 +286,8 @@
 
 (defn game []
   (let [fight? (rf/subscribe [:game/fight?])
-        game-over? (rf/subscribe [:game/game-over?])]
+        game-over? (rf/subscribe [:game/game-over?])
+        communication? (rf/subscribe [:game/communication?])]
     (fn []
       [:section.section>div.container>div.content
        [:div.outer-grid-container
@@ -289,6 +295,7 @@
          (cond
            @game-over? [game-over]
            @fight? [fight-screen]
+           @communication? [communication-screen]
            :else  [:div.grid-container
                    [board]
                    [player]])]

@@ -1,6 +1,4 @@
 (ns lum.game-main
-  ;; (:require-macros
-  ;;  [cljs.core.async.macros :refer [go]])
   (:require
    [re-frame.core :as rf]
    [re-pressed.core :as rp]
@@ -260,6 +258,11 @@
  :game/game-over?
  (fn [db _]
    (= 0 (get-in db [:game :player :hp 0]))))
+
+(rf/reg-sub
+ :game/communication?
+ (fn [db _]
+   (some? (get-in db [:game :chat]))))
 
 (rf/reg-sub
  :game/messages

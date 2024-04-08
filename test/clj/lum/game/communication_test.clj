@@ -76,8 +76,12 @@
 (deftest start-interaction
   (dsl/player-with-npc [["Hello"]])
   (dsl/activate)
-  ;;(println (dsl/get-state))
   (is (dsl/in-chat?)))
+
+(deftest start-interaction-creates-message
+  (dsl/player-with-npc [["Hello"]])
+  (dsl/activate)
+  (is (= [:message "Hello"] (first (dsl/get-event)))))
 
 (deftest start-no-interaction-without-npc
   (dsl/player-is-on :ground)

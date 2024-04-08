@@ -58,5 +58,6 @@
   (if-let [chat (:npc (u/player-tile data))]
     (-> data
         (assoc-in [:chat :communication] chat)
-        (assoc-in [:chat :chat-position] 0))
+        (assoc-in [:chat :chat-position] 0)
+        (create-message))
     data))

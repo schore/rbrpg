@@ -44,6 +44,14 @@
         (assoc inp n new-field)
         (recur)))))
 
+(defn find-random-tile
+  [input type]
+  (let [i (rand-int (* xsize ysize))
+        field (get-in input [i :type])]
+    (if (= type field)
+      i
+      (recur input type))))
+
 (defn add-item-on-random-field
   ([input n]
    (if (= 0 n)
@@ -57,11 +65,8 @@
    (if (= 0 n)
      input
      (recur
-      (loop []
-        (let [i (rand-int (* xsize ysize))]
-          (if (= field (:type (nth input i)))
-            (assoc-in input [i :items] items)
-            (recur))))
+      (let [i (find-random-tile input field)]
+        (assoc-in input [i :items] items))
       (dec n)
       field
       items))))

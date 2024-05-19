@@ -4,7 +4,8 @@
             [lum.game-main]
             [lum.game.game-database :as db]
             [lum.maputil :as maputil]
-            [lum.game.utilities :as u]))
+            [lum.game.utilities :as u]
+            [lum.game.communication :as communication]))
 
 (def sizex maputil/sizex)
 (def sizey maputil/sizey)
@@ -140,8 +141,12 @@
 
 (defn communication-screen
   []
-  [:<>
-   [:h2 "Just Talking"]])
+  (let [communication (rf/subscribe [:game/communication])]
+    (fn []
+      (let [communication @communication]
+        [:<>
+         [:h2 "Taliking"]
+         [:p communication]]))))
 
 (defn game-over
   []

@@ -29,7 +29,9 @@
     (case event
       :new-state (rf/dispatch [:game/update (first data)])
       :enter-unknown-level (rf/dispatch [:enter-unknown-level (first data)])
-      (println event))
+      :message (rf/dispatch (into [:game/message] data))
+      (println event data)
+      nil)
 
     (recur)))
 
@@ -218,6 +220,11 @@
  (fn [db [_ boards]]
    (assoc db :boards boards)))
 
+(rf/reg-event-db
+ :game/message
+ (fn [db [_ data]]
+   (assoc db :chat data)))
+
 (rf/reg-sub
  :game/position
  (fn [db _]
@@ -262,7 +269,12 @@
 (rf/reg-sub
  :game/communication?
  (fn [db _]
-   (some? (get-in db [:game :chat]))))
+   (some? (get-in db [:chat]))))
+
+(rf/reg-sub
+ :game/communication
+ (fn [db _]
+   (get-in db [:chat])))
 
 (rf/reg-sub
  :game/messages

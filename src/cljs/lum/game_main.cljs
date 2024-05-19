@@ -11,7 +11,8 @@
    [lum.game.gamelogic :as gamelogic]
    [lum.game-config :as config]
    [lum.game.cavegen :as cavegen]
-   [lum.game.dungeongen :as dungeongen]))
+   [lum.game.dungeongen :as dungeongen]
+   [lum.game.move :as move]))
 
 (defn create-game
   []
@@ -84,6 +85,14 @@
   [db]
   (some? (get-in db [:game :fight])))
 
+(defn chat?
+  [db]
+  (some? (get-in db [:chat])))
+
+(defn move?
+  [db]
+  (not (or (fight? db) (chat? db))))
+
 (defn add-clockwise
   [min max & entries]
   (let [n (+ max (- min) 1)
@@ -94,12 +103,12 @@
  :game/key
  (fn [{:keys [db]} [_ action]]
    (merge
-    (when (and (not (fight? db))
+    (when (and (move? db)
                (some #{action} [:up :down :left :right
                                 :down-left :down-right
                                 :up-left :up-right]))
       {:game/send-message [:move action]})
-    (when (and (not (fight? db))
+    (when (and (move? db)
                (= action :confirm))
       {:game/send-message [:activate]})
     (when (and (fight? db)

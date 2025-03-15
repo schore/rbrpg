@@ -40,7 +40,7 @@
                  [ring/ring-defaults "0.4.0"]
                  [selmer "1.12.59"]
                  [juji/editscript "0.6.3"]
-                 [etaoin "1.0.40"]
+                 [etaoin "1.1.42"]
                  [haslett "0.1.7"]
                  [thheller/shadow-cljs "2.28.3"]]
 

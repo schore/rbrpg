@@ -19,6 +19,7 @@
                  [luminus-http-kit "0.2.0"]
                  [luminus/ring-ttl-session "0.3.3"]
                  [markdown-clj "1.12.3"]
+                 [markdown-to-hiccup "0.6.2"]
                  [metosin/muuntaja "0.6.11"]
                  [metosin/reitit "0.7.2"]
                  [metosin/ring-http-response "0.9.5"]

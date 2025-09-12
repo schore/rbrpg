@@ -13,7 +13,8 @@
    [reagent.dom :as rdom]
    [reitit.core :as reitit]
    [reitit.frontend.easy :as rfe])
-  (:require-macros [lum.game.load-save :as m])
+  (:require-macros [lum.game.load-save :as m]
+                   [lum.read_macro])
   (:import
    (goog History)))
 
@@ -45,14 +46,8 @@
 (defn help-page []
   (let [docs (rf/subscribe [:docs])]
     (fn []
-      (let [docs @docs]
-        [:section.section>div.container>div.content
-         {:dangerouslySetInnerHTML {:__html (md->html docs)}}]))))
-
-(defn home-page []
-  [:section.section>div.container>div.content
-   (when-let [docs @(rf/subscribe [:docs])]
-     [:div {:dangerouslySetInnerHTML {:__html (md->html docs)}}])])
+      [:section.section>div.container>div.content
+       (lum.read-macro/md-to-inline-hiccup "docs/docs.md")])))
 
 (defn test-page []
   (let [state (rf/subscribe [:test/count])]

@@ -58,6 +58,7 @@
 (rf/reg-fx
  :game/send-message
  (fn [msg]
+   (println msg)
    (when (some? msg)
      (a/put! (:in gamelogic) msg))))
 
@@ -111,6 +112,9 @@
     (when (and (move? db)
                (= action :confirm))
       {:game/send-message [:activate]})
+    (when (and (chat? db)
+               (= action :confirm))
+      {:game/send-message [:continue]})
     (when (and (fight? db)
                (some #{action} [:up :down]))
       (let [{:keys [entries active]} (:action db)
@@ -232,7 +236,9 @@
 (rf/reg-event-db
  :game/message
  (fn [db [_ data]]
-   (assoc db :chat data)))
+   (if (= data :exit)
+     (dissoc db :chat)
+     (assoc db :chat data))))
 
 (rf/reg-sub
  :game/position

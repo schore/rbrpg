@@ -145,7 +145,7 @@
     (fn []
       (let [communication @communication]
         [:<>
-         [:h2 "Taliking"]
+         [:h2 "Talking"]
          [:p communication]]))))
 
 (defn game-over

@@ -32,6 +32,11 @@
   (dsl/continue)
   (is (not (dsl/in-chat?))))
 
+(deftest leave-when-at-end
+  (dsl/in-chat [["Hello"]])
+  (dsl/continue)
+  (is (not (dsl/in-chat?))))
+
 (deftest can-jump-around
   (dsl/in-chat [["Bla" :x] ["Foo"] [:x "Blub"]])
   (dsl/continue)
@@ -72,6 +77,11 @@
                   [:two "two"]]))
   (dsl/continue :two)
   (is (= [:two "two"] (dsl/get-active-chat))))
+
+(deftest message-on-exit
+  (dsl/in-chat [["Hello"]])
+  (dsl/continue)
+  (is (= [:message :exit] (first (dsl/get-event)))))
 
 (deftest start-interaction
   (dsl/player-with-npc [["Hello"]])

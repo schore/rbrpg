@@ -25,7 +25,8 @@
   (if (contains? data :chat)
     (update data :coeffects
             #(conj % [:message (get-message (get-current-statement data))]))
-    data))
+    (update data :coeffects
+            #(conj % [:message :exit]))))
 
 (defn find-jump-to
   ([data jumpto]
@@ -44,10 +45,17 @@
      (dissoc data :chat)
      (assoc-in data [:chat :chat-position] (find-jump-to data jumpto)))))
 
+(defn handle-message
+  [data]
+  (if (> (count (-> data :chat :communication))
+         (inc (-> data :chat :chat-position)))
+    (update-in data [:chat :chat-position] inc)
+    (dissoc data :chat)))
+
 (defn continue [data [_ jumpto]]
   (let [statement (conform-statement (get-current-statement data))]
     (-> (case (first statement)
-          :message (update-in data [:chat :chat-position] inc)
+          :message (handle-message data)
           :jmp (-> data (handle-jmp))
           :option (-> data
                       (handle-jmp jumpto))

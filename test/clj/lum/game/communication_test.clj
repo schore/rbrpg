@@ -79,9 +79,13 @@
   (is (= [:two "two"] (dsl/get-active-chat))))
 
 (deftest message-on-exit
-  (dsl/in-chat [["Hello"]])
-  (dsl/continue)
-  (is (= [:message :exit] (first (dsl/get-event)))))
+  (doseq [chat [[["Hello"]]
+                [["Hello" :exit]]
+                [["Hello" :exit] ["Nope"]]]]
+    (testing chat
+      (dsl/in-chat chat)
+      (dsl/continue)
+      (is (= [:message :exit] (first (dsl/get-event)))))))
 
 (deftest start-interaction
   (dsl/player-with-npc [["Hello"]])

@@ -18,7 +18,7 @@
 (defn fixture-driver
   "Intitalize web driver"
   [f]
-  (e/with-firefox-headless {} driver
+  (e/with-firefox {} driver
     (binding [*driver* driver]
       (f))))
 
@@ -62,6 +62,7 @@
   (prepare-save-game "not-full-hp.edn")
   (prepare-save-game "items-two-combine.edn")
   (prepare-save-game "on-stairs-to-special-map.edn")
+  (prepare-save-game "chat.edn")
   (f)
   (delete-directory-recursive (io/file "tmp")))
 
@@ -103,6 +104,19 @@
   (e/exists? *driver* [{:class "content"}
                        {:tag :h1
                         :fn/has-text "FIGHT"}]))
+
+(defn in-chat?
+  []
+
+  (loop [i 0]
+    (let [result   (e/exists? *driver* [{:class "content"}
+                                        {:tag :h2
+                                         :fn/has-text "Talking"}])]
+      (e/wait *driver* 0.1)
+      (if (or result
+              (> i 20))
+        result
+        (recur (inc i))))))
 
 (defn game-over?
   []

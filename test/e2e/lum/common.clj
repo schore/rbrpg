@@ -18,18 +18,31 @@
 (defn fixture-driver
   "Intitalize web driver"
   [f]
-  (e/with-firefox {} driver
+  (e/with-firefox-headless {} driver
     (binding [*driver* driver]
       (f))))
 
 (defn retry
-  ([fn] (retry fn 20))
-  ([fn n]
-   (loop [n n]
-     (if (or (fn)
-             (= 0 n))
-       nil
-       (recur (dec n))))))
+  ([f] (retry f 20))
+  ([f times] (retry f times 0.1))
+  ([f times waittime]
+   (loop [n 0]
+     (let [result (f)]
+       (if (or (>= n times)
+               result)
+         result
+         (do
+           (e/wait *driver* waittime)
+           (recur (inc n))))))))
+
+;; (defn retry
+;;   ([fn] (retry fn 20))
+;;   ([fn n]
+;;    (loop [n n]
+;;      (if (or (fn)
+;;              (= 0 n))
+;;        nil
+;;        (recur (dec n))))))
 
 (defn delete-directory-recursive
   "Recursively delete a directory."
@@ -107,16 +120,9 @@
 
 (defn in-chat?
   []
-
-  (loop [i 0]
-    (let [result   (e/exists? *driver* [{:class "content"}
-                                        {:tag :h2
-                                         :fn/has-text "Talking"}])]
-      (e/wait *driver* 0.1)
-      (if (or result
-              (> i 20))
-        result
-        (recur (inc i))))))
+  (retry #(e/exists? *driver* [{:class "content"}
+                               {:tag :h2
+                                :fn/has-text "Talking"}])))
 
 (defn game-over?
   []
